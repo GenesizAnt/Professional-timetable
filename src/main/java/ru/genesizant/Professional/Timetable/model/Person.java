@@ -2,7 +2,6 @@ package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
@@ -43,13 +42,13 @@ public class Person {
     private String password;
 
     @NotEmpty(message = "Номер телефона не должен быть пустым")
-    @Column(name = "phoneNumber")
+    @Column(name = "phonenumber")
     private String phoneNumber;
 
-    @Column(name = "numberVisits")
+    @Column(name = "numbervisits")
     private String numberVisits;
 
-    @Column(name = "totalAmount")
+    @Column(name = "totalamount")
     private BigDecimal totalAmount;
 
     @Column(name = "role")
