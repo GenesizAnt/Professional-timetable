@@ -22,7 +22,9 @@ public class PersonDTO {
     @Column(name = "patronymic")
     private String patronymic;
 
-    private String password;
+    @NotEmpty(message = "Номер телефона не должен быть пустым")
+    @Column(name = "phoneNumber")
+    private String phoneNumber;
 
     @NotEmpty(message = "email не должен быть пустым")
     @Size(min = 2, max = 100, message = "email должен быть от 2 до 100 символов")
@@ -30,9 +32,7 @@ public class PersonDTO {
     @Column(name = "email")
     private String  email;
 
-    @NotEmpty(message = "Номер телефона не должен быть пустым")
-    @Column(name = "phoneNumber")
-    private String phoneNumber;
+    private String password;
 
     public String getUsername() {
         return username;
@@ -74,4 +74,11 @@ public class PersonDTO {
         this.password = password;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

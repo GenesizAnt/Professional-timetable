@@ -46,7 +46,7 @@ public class Person {
     private String phoneNumber;
 
     @Column(name = "numbervisits")
-    private String numberVisits;
+    private int numberVisits;
 
     @Column(name = "totalamount")
     private BigDecimal totalAmount;
@@ -121,11 +121,11 @@ public class Person {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getNumberVisits() {
+    public int getNumberVisits() {
         return numberVisits;
     }
 
-    public void setNumberVisits(String numberVisits) {
+    public void setNumberVisits(int numberVisits) {
         this.numberVisits = numberVisits;
     }
 
