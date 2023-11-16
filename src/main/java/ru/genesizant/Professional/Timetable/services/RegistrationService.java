@@ -11,22 +11,22 @@ import ru.genesizant.Professional.Timetable.repositories.PeopleRepository;
 public class RegistrationService {
 
     private final PeopleRepository peopleRepository;
-//    private final PasswordEncoder passwordEncoder;
-
-//    @Autowired
-//    public RegistrationService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder) {
-//        this.peopleRepository = peopleRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationService(PeopleRepository peopleRepository) {
+    public RegistrationService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder) {
         this.peopleRepository = peopleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
+//    @Autowired
+//    public RegistrationService(PeopleRepository peopleRepository) {
+//        this.peopleRepository = peopleRepository;
+//    }
 
     @Transactional
     public void register(Person person) {
-//        person.setPassword(passwordEncoder.encode(person.getPassword()));
+        person.setPassword(passwordEncoder.encode(person.getPassword()));
 //        person.setRole("ROLE_USER");
         peopleRepository.save(person);
     }
