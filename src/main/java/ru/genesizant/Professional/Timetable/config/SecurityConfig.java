@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity //csrf(CsrfConfigurer::disable) если не отправляется токен с формы
+        httpSecurity.csrf(CsrfConfigurer::disable) //если не отправляется токен с формы
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/super").hasRole("SUPER")
                         .requestMatchers("/admin").hasAnyRole("ADMIN", "SUPER")
