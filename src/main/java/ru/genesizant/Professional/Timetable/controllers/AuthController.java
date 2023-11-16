@@ -56,7 +56,7 @@ public class AuthController {
         Person person = this.modelMapper.map(personDTO, Person.class);
         person.setNumberVisits(0);
         person.setTotalAmount(BigDecimal.ZERO);
-        person.setRole("ROLE_USER"); //ToDo это должно быть не здесь временная заглушка
+        person.setRole("ROLE_USER"); //ToDo это должно быть не здесь?? временная заглушка
         return person;
     }
 
