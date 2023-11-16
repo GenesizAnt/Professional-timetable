@@ -45,12 +45,9 @@ public class AuthController {
     public String performRegistration(@ModelAttribute("person") @Valid PersonDTO personDTO, BindingResult bindingResult) {
         Person person = concertPerson(personDTO);
         personValidator.validate(person, bindingResult);
-
         if (bindingResult.hasErrors()) {
-            return "/auth/registration";
+            return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
         }
-
-
         registrationService.register(person);
         return "redirect:/auth/login";
     }

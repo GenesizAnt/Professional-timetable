@@ -27,4 +27,9 @@ public class TestController {
         return "super";
     }
 
+    @GetMapping("/all")
+    public String allInfo() {
+        return "all";
+    }
+
 }
