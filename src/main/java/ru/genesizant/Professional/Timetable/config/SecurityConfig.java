@@ -38,14 +38,13 @@ public class SecurityConfig {
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/process_login")
                         .defaultSuccessUrl("/hello", true)
-                        .failureUrl("/auth/login?error"));
-//                        .permitAll());
-//                .logout((logout) -> logout
-//                        .logoutUrl("/logout")
-//                        .logoutSuccessUrl("/auth/login")
-//                        .permitAll())
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));//не сохраняет сессию на сервере
-
+                        .failureUrl("/auth/login?error")
+                        .permitAll())
+                .logout((logout) -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/auth/login").permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));//ToDo разобраться правильно ли так писать и может перестает работать форма регистрации, если стоит STATELESS не сохраняет сессию на сервере
+        
 //        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();

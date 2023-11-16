@@ -5,6 +5,11 @@
     <title>Admin</title>
 </head>
 <body>
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <h1>Admin</h1>
+<form th:method="POST" action="/logout">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <input type="submit" value="logout">
+</form>
 </body>
 </html>
