@@ -20,7 +20,7 @@ public class JWTUtil {
     private String secret;
 
     public String generateToken(String username, String email, String phoneNumber) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(1).toInstant());
 
         return JWT.create()
                 .withSubject("User details") //sub (subject) — определяет тему токена.

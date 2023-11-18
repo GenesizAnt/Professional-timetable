@@ -3,7 +3,10 @@ package ru.genesizant.Professional.Timetable.controllers;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonDTO;
@@ -12,7 +15,6 @@ import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.RegistrationService;
 import ru.genesizant.Professional.Timetable.util.PersonValidator;
 
-import javax.naming.AuthenticationException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -24,13 +26,15 @@ public class AuthController {
     private final RegistrationService registrationService;
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper) {
+    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, AuthenticationManager authenticationManager) {
         this.personValidator = personValidator;
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
+        this.authenticationManager = authenticationManager;
     }
 
     //работает без JWT
@@ -69,21 +73,20 @@ public class AuthController {
         return Map.of("jwt-token", token);
     }
 
-//    @PostMapping("/login")
-//    @ResponseBody
-//    public Map<String, String> performLogin(@RequestBody PersonDTO personDTO) { //@AuthenticationPrincipal UserDetails userDetails
-//        UsernamePasswordAuthenticationToken authInputToken =
-//                new UsernamePasswordAuthenticationToken(personDTO.getUsername(), personDTO.getPassword());
-//
-//        try {
-//            authenticationManager.authenticate(authInputToken);
-//        } catch (AuthenticationException e) {
-//            return Map.of("message", "Incorrect credentials!"); //ToDo как создать свою ошибку 1:03:00 https://youtu.be/NIv9TFTSIlg?t=3933
-//        }
-//
-//        String token = jwtUtil.generateToken(personDTO.getUsername());
-//        return Map.of("jwt-token", token);
-//    }
+    @PostMapping("/login")
+    public Map<String, String> performLogin(@RequestBody PersonDTO personDTO) { //@AuthenticationPrincipal UserDetails userDetails
+        UsernamePasswordAuthenticationToken authInputToken =
+                new UsernamePasswordAuthenticationToken(personDTO.getEmail(), personDTO.getPassword());
+
+        try {
+            authenticationManager.authenticate(authInputToken);
+        } catch (BadCredentialsException e) {
+            return Map.of("message", "Incorrect credentials!"); //ToDo как создать свою ошибку 1:03:00 https://youtu.be/NIv9TFTSIlg?t=3933
+        }
+
+        String token = jwtUtil.generateToken(personDTO.getUsername(), personDTO.getEmail(), personDTO.getPhoneNumber());
+        return Map.of("jwt-token", token);
+    }
 
     private Person concertPerson(PersonDTO personDTO) {
         Person person = this.modelMapper.map(personDTO, Person.class);
