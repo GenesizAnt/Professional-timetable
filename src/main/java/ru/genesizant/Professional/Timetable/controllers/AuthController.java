@@ -48,9 +48,10 @@ public class AuthController {
     }
 
     @PostMapping("/process_login")
+    @ResponseBody
     public ResponseEntity<String> processLogin(@RequestParam("username") String username, @RequestParam("password") String password) {
 
-        System.out.println();
+        System.out.println(username);
 
 //        // Проверяем логин и пароль пользователя
 //        if (userService.authenticate(personDTO.getUsername(), personDTO.getPassword())) {
