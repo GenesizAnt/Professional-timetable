@@ -50,9 +50,11 @@ public class SecurityConfig {
                 .logout((logout) -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/auth/login").permitAll())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));//ToDo разобраться правильно ли так писать и может перестает работать форма регистрации, если стоит STATELESS не сохраняет сессию на сервере
 
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+//        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
@@ -64,7 +66,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-//        return NoOpPasswordEncoder.getInstance();
         return new BCryptPasswordEncoder();
     }
 
@@ -82,3 +83,16 @@ public class SecurityConfig {
         return providerManager;
     }
 }
+
+// Предложка ИИ - не работает
+//    @Bean
+//    public AuthenticationManager authenticationManager() {
+//        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider();
+//        // настройка провайдера аутентификации для JWT токена
+//        authenticationProvider.setJwtTokenValidator(jwtTokenValidator); // установите свой класс для проверки валидности JWT токена
+//
+//        ProviderManager providerManager = new ProviderManager(List.of(authenticationProvider));
+//        // настройка менеджера провайдеров
+//        providerManager.setEraseCredentialsAfterAuthentication(true); // очищать учетные данные после аутентификации
+//        return providerManager;
+//    }
