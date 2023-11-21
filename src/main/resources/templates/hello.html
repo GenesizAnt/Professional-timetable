@@ -5,17 +5,17 @@
     <title>Hello</title>
 </head>
 <body>
-<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <h1>Hello</h1>
 
-<!--/*@thymesVar id="username" type="ru.genesizant.Professional.Timetable.dto.PersonDTO"*/-->
-<h1 th:text="'Привет, ' + ${username}">Привет, пользователь</h1>
+<!--/*@thymesVar id="email" type="ru.genesizant.Professional.Timetable.dto.PersonDTO"*/-->
+<h1 th:text="'Привет, ' + ${email}">Привет, пользователь</h1>
 
-<input type="submit" value="logout">
+<!--<input type="submit" value="logout">-->
 
-<!--<form th:method="POST" action="/logout">-->
-<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-<!--    <input type="submit" value="logout">-->
-<!--</form>-->
+<form th:method="POST" action="/logout">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <input type="submit" value="logout">
+</form>
 </body>
 </html>

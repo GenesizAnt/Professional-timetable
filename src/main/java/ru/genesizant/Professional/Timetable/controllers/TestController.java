@@ -33,6 +33,13 @@ public class TestController {
 
         String expiredJwtToken = (String) session.getAttribute("jwtToken");
 
+        if(expiredJwtToken == null) { // ToDo временная проверка на токен
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
+            expiredJwtToken = personDetails.getJwtToken();
+        }
+
+
         try {
             DecodedJWT jwt = JWT.decode(expiredJwtToken); // декодирование токена
             String username = jwt.getClaim("username").asString(); // извлечение утверждения (claim) "username"

@@ -54,5 +54,9 @@ public class PersonDetails implements UserDetails {
     public Person getPerson() {
         return this.person;
     }
+
+    public String getJwtToken() {
+        return this.person.getJwtToken();
+    }
 }
 
