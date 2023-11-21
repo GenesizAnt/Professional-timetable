@@ -107,12 +107,12 @@ public class AuthController {
             return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
         }
 
-        String jwtToken = jwtUtil.generateToken(person.getUsername(), person.getEmail(), person.getPhoneNumber());
+        String jwtToken = jwtUtil.generateToken(person.getEmail());
 //        response.addHeader("Authorization", "Bearer " + jwtToken); // добавить новый токен в заголовок ответа
         System.out.println(jwtToken); // //ToDo временный код для проверки
         session.setAttribute("jwtToken", jwtToken);
 
-        registrationService.register(person);
+        registrationService.register(person, jwtToken);
         return "redirect:/auth/login";
     }
 

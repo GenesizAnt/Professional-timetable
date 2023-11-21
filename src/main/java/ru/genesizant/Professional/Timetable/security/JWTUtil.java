@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class JWTUtil {
@@ -19,22 +17,22 @@ public class JWTUtil {
     @Value("${jwt_secret}")
     private String secret;
 
-    public String generateToken(String username, String email, String phoneNumber) {
-//        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
-        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(30).toInstant());
+    public String generateToken(String email) {
+        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+//        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(30).toInstant());
 
         return JWT.create()
                 .withSubject("User details") //sub (subject) — определяет тему токена.
-                .withClaim("username", username) //Payload — это полезные данные, которые хранятся внутри JWT. Эти данные также называют JWT-claims (заявки)
+//                .withClaim("username", username) //Payload — это полезные данные, которые хранятся внутри JWT. Эти данные также называют JWT-claims (заявки)
                 .withClaim("email", email) //Payload — это полезные данные, которые хранятся внутри JWT. Эти данные также называют JWT-claims (заявки)
-                .withClaim("phoneNumber", phoneNumber) //Payload — это полезные данные, которые хранятся внутри JWT. Эти данные также называют JWT-claims (заявки)
+//                .withClaim("phoneNumber", phoneNumber) //Payload — это полезные данные, которые хранятся внутри JWT. Эти данные также называют JWT-claims (заявки)
                 .withIssuedAt(new Date()) // время когда был выдан токен
                 .withIssuer("Professional-Timetable") //ToDo поменять если изменится название
                 .withExpiresAt(expirationDate)//в какое время закончится срок действия
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public Map<String, String> validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
+    public String validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User details")
                 .withIssuer("Professional-Timetable")
@@ -42,12 +40,12 @@ public class JWTUtil {
 
         DecodedJWT jwt = verifier.verify(token);
 
-        Map<String, String> claims = new HashMap<>();
-        claims.put("username", jwt.getClaim("username").asString());
-        claims.put("email", jwt.getClaim("email").asString());
-        claims.put("phoneNumber", jwt.getClaim("phoneNumber").asString());
-
-        return claims;
-//        return jwt.getClaim("username").asString();
+//        Map<String, String> claims = new HashMap<>();
+//        claims.put("username", jwt.getClaim("username").asString());
+//        claims.put("email", jwt.getClaim("email").asString());
+//        claims.put("phoneNumber", jwt.getClaim("phoneNumber").asString());
+//
+//        return claims;
+        return jwt.getClaim("email").asString();
     }
 }

@@ -39,7 +39,7 @@ public class TestController {
             String email = jwt.getClaim("email").asString();
             String phoneNumber = jwt.getClaim("phoneNumber").asString();
 
-            String jwtToken = jwtUtil.generateToken(username, email, phoneNumber);
+            String jwtToken = jwtUtil.generateToken(email);
             session.setAttribute("jwtToken", jwtToken);
 
         } catch (Exception e) {
@@ -52,8 +52,8 @@ public class TestController {
             String jwtToken = (String) session.getAttribute("jwtToken");
             if (jwtToken != null) {
                 try {
-                    Map<String, String> claim = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
-                    model.addAttribute("username", claim.get("username"));
+                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+                    model.addAttribute("email", email);
                 } catch (Exception e) {
                     model.addAttribute("error", "Упс! Пора перелогиниться!");
                     return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
@@ -112,8 +112,8 @@ public class TestController {
             String jwtToken = (String) session.getAttribute("jwtToken");
             if (jwtToken != null) {
                 try {
-                    Map<String, String> claim = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
-                    model.addAttribute("username", claim.get("username"));
+                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+                    model.addAttribute("email", email);
                 } catch (Exception e) {
                     model.addAttribute("error", "Упс! Пора перелогиниться!");
                     return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"

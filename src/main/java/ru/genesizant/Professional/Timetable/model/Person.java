@@ -54,6 +54,9 @@ public class Person {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "jwttoken")
+    private String jwtToken;
+
     public Person() {
     }
 
@@ -135,6 +138,14 @@ public class Person {
 
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
     }
 
     @Override
