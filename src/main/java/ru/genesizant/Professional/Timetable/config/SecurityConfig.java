@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.genesizant.Professional.Timetable.services.PersonDetailsService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -44,7 +43,7 @@ public class SecurityConfig {
                 .formLogin(login -> login
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/process_login")
-                        .defaultSuccessUrl("/hello", true)
+                        .defaultSuccessUrl("/auth/check_jwt", true)
                         .failureUrl("/auth/login?error")
                         .permitAll())
                 .logout((logout) -> logout
@@ -83,16 +82,3 @@ public class SecurityConfig {
         return providerManager;
     }
 }
-
-// Предложка ИИ - не работает
-//    @Bean
-//    public AuthenticationManager authenticationManager() {
-//        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider();
-//        // настройка провайдера аутентификации для JWT токена
-//        authenticationProvider.setJwtTokenValidator(jwtTokenValidator); // установите свой класс для проверки валидности JWT токена
-//
-//        ProviderManager providerManager = new ProviderManager(List.of(authenticationProvider));
-//        // настройка менеджера провайдеров
-//        providerManager.setEraseCredentialsAfterAuthentication(true); // очищать учетные данные после аутентификации
-//        return providerManager;
-//    }
