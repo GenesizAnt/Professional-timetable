@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "Person")
@@ -14,7 +15,7 @@ public class Person {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotEmpty(message = "Имя не должно быть пустым")
     @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов")
@@ -45,26 +46,53 @@ public class Person {
     @Column(name = "phonenumber")
     private String phoneNumber;
 
-    @Column(name = "numbervisits")
-    private int numberVisits;
-
-    @Column(name = "totalamount")
-    private BigDecimal totalAmount;
-
     @Column(name = "role")
     private String role;
 
     @Column(name = "jwttoken")
     private String jwtToken;
 
+    @OneToMany(mappedBy = "ownerService")
+    private List<ProfessionalServices> professionalServicesList; //ToDo переименовать??
+
+    @OneToMany(mappedBy = "specialist")
+    private List<SpecialistAppointments> specialistAppointments;
+
+    @OneToMany(mappedBy = "visitor")
+    private List<SpecialistAppointments> visitorAppointments;
+
     public Person() {
     }
 
-    public int getId() {
+    public List<SpecialistAppointments> getSpecialistAppointments() {
+        return specialistAppointments;
+    }
+
+    public void setSpecialistAppointments(List<SpecialistAppointments> specialistAppointments) {
+        this.specialistAppointments = specialistAppointments;
+    }
+
+    public List<SpecialistAppointments> getVisitorAppointments() {
+        return visitorAppointments;
+    }
+
+    public void setVisitorAppointments(List<SpecialistAppointments> visitorAppointments) {
+        this.visitorAppointments = visitorAppointments;
+    }
+
+    public List<ProfessionalServices> getProfessionalServicesList() {
+        return professionalServicesList;
+    }
+
+    public void setProfessionalServicesList(List<ProfessionalServices> professionalServicesList) {
+        this.professionalServicesList = professionalServicesList;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -122,22 +150,6 @@ public class Person {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public int getNumberVisits() {
-        return numberVisits;
-    }
-
-    public void setNumberVisits(int numberVisits) {
-        this.numberVisits = numberVisits;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
     public String getJwtToken() {
