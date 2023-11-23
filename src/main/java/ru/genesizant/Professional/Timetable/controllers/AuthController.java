@@ -68,8 +68,8 @@ public class AuthController {
         }
 
         String jwtToken = jwtUtil.generateToken(person.getEmail());
-        System.out.println(jwtToken); // //ToDo временный код для проверки
-        session.setAttribute("jwtToken", jwtToken);
+        System.out.println(jwtToken); //ToDo временный код для проверки
+        session.setAttribute("jwtToken", jwtToken); // ToDo добавить в форму регистрации зарегистрироваться как специалист
 
         registrationService.register(person, jwtToken);
         return "redirect:/auth/login";
@@ -95,7 +95,7 @@ public class AuthController {
         } catch (Exception e) {
             return "redirect:/auth/login?error";
         }
-        return "redirect:/hello";
+        return "redirect:/visitors/start_menu";
     }
 
     //ToDo lesson 92 - правильно сделать отдельный метод @ExceptionHandler для возвращения кода и ошибки
