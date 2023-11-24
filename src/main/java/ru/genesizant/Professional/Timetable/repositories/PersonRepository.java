@@ -7,10 +7,7 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import java.util.Optional;
 
 @Repository
-public interface PeopleRepository extends JpaRepository<Person, Integer> {
-
-//    Optional<Person> findByUsername(String username);
-
+public interface PersonRepository extends JpaRepository<Person, Long> {
     Optional<Person> findByEmail(String email);
 
 }

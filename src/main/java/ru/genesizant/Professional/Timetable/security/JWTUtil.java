@@ -5,11 +5,16 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
+import ru.genesizant.Professional.Timetable.model.Person;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JWTUtil {
@@ -47,5 +52,22 @@ public class JWTUtil {
 //
 //        return claims;
         return jwt.getClaim("email").asString();
+    }
+
+    public boolean isValidJWTAndSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
+
+        if (session != null) {
+            String jwtToken = (String) session.getAttribute("jwtToken");
+            if (jwtToken != null) {
+                try {
+                    validateTokenAndRetrieveClaim(jwtToken);
+                } catch (JWTVerificationException e) {
+                    return false;
+                    //ToDo какую ошибку тут передать или ничего не надо???
+                }
+            }
+        }
+        return true;
     }
 }

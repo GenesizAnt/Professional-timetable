@@ -5,17 +5,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.repositories.PeopleRepository;
+import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 
 @Service
 public class RegistrationService {
 
-    private final PeopleRepository peopleRepository;
+    private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder) {
-        this.peopleRepository = peopleRepository;
+    public RegistrationService(PersonRepository personRepository, PasswordEncoder passwordEncoder) {
+        this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -29,6 +29,6 @@ public class RegistrationService {
         person.setJwtToken(jwtToken);
         person.setPassword(passwordEncoder.encode(person.getPassword()));
 //        person.setRole("ROLE_USER");
-        peopleRepository.save(person);
+        personRepository.save(person);
     }
 }

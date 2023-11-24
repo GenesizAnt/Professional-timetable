@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.repositories.PeopleRepository;
+import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 
 import java.util.Optional;
@@ -18,33 +18,63 @@ import java.util.Optional;
 public class VisitorsController {
 
     private final JWTUtil jwtUtil;
-    private final PeopleRepository peopleRepository;
+    private final PersonRepository personRepository;
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PeopleRepository peopleRepository) {
+    public VisitorsController(JWTUtil jwtUtil, PersonRepository personRepository) {
         this.jwtUtil = jwtUtil;
-        this.peopleRepository = peopleRepository;
+        this.personRepository = personRepository;
     }
 
-    @GetMapping("/start_menu")
+    @GetMapping("/start_menu_visitor")
     public String getStartMenu(Model model, HttpServletRequest request) {
 
-        HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
+        //ToDo добавить навигационный бар https://getbootstrap.com/docs/5.0/components/navbar/
 
-        if (session != null) {
-            String jwtToken = (String) session.getAttribute("jwtToken");
-            if (jwtToken != null) {
-                try {
-                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
-                    Optional<Person> visitor = peopleRepository.findByEmail(email);
-                    model.addAttribute("name", visitor.get().getUsername());
-                    
-                } catch (Exception e) {
-                    model.addAttribute("error", "Упс! Пора перелогиниться!");
-                    return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
-                }
-            }
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+//            нужно добавить в html страницу отображение карточки, при этом количество карточек может меняться <div class="card" style="width: 18rem;">
+//  <img src="..." class="card-img-top" alt="...">
+//  <div class="card-body">
+//    <h5 class="card-title">Card title</h5>
+//    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+//                    <a href="#" class="btn btn-primary">Go somewhere</a>
+//  </div>
+//</div> как сделать такую html страницу с разным количеством отображения карточек
+
+
+
+
+//            String jwtToken = (String) request.getSession().getAttribute("jwtToken");
+//            String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+//            Optional<Person> visitor = personRepository.findByEmail(email);
+//            model.addAttribute("name", visitor.get().getUsername());
+
+            model.addAttribute("name", request.getSession().getAttribute("name"));
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
         }
-        return "visitors/start_menu";
+
+        return "visitors/start_menu_visitor";
+
+//        HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
+//
+//        if (session != null) {
+//            String jwtToken = (String) session.getAttribute("jwtToken");
+//            if (jwtToken != null) {
+//                try {
+//                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+//                    Optional<Person> visitor = personRepository.findByEmail(email);
+//                    model.addAttribute("name", visitor.get().getUsername());
+//
+//                } catch (Exception e) {
+//                    model.addAttribute("error", "Упс! Пора перелогиниться!");
+//                    return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+//                }
+//            }
+//        }
+//        return "visitors/start_menu_visitor";
     }
 }
