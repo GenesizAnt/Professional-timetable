@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "SpecialistAppointments")
@@ -21,11 +22,11 @@ public class SpecialistAppointments {
 
     @ManyToOne
     @JoinColumn(name = "specialist_id", referencedColumnName = "id")
-    private Person specialist;
+    private Person specialist_appointments;
 
     @ManyToOne
     @JoinColumn(name = "visitor_id", referencedColumnName = "id")
-    private Person visitor;
+    private Person visitor_appointments;
 
     @ManyToOne
     @JoinColumn(name = "services_id", referencedColumnName = "id")
@@ -46,7 +47,29 @@ public class SpecialistAppointments {
     @Column(name = "consultation_fee")
     private BigDecimal consultationFee;
 
+    @OneToMany(mappedBy = "specialistAppointments")
+    private List<StatisticalAnalysis> statisticalAnalysesList;
+
+    @OneToMany(mappedBy = "appointmentsNotes")
+    private List<SpecialistNotes> specialistNotesList;
+
     public SpecialistAppointments() {
+    }
+
+    public List<StatisticalAnalysis> getStatisticalAnalysesList() {
+        return statisticalAnalysesList;
+    }
+
+    public void setStatisticalAnalysesList(List<StatisticalAnalysis> statisticalAnalysesList) {
+        this.statisticalAnalysesList = statisticalAnalysesList;
+    }
+
+    public List<SpecialistNotes> getSpecialistNotesList() {
+        return specialistNotesList;
+    }
+
+    public void setSpecialistNotesList(List<SpecialistNotes> specialistNotesList) {
+        this.specialistNotesList = specialistNotesList;
     }
 
     public Long getId() {
@@ -57,20 +80,20 @@ public class SpecialistAppointments {
         this.id = id;
     }
 
-    public Person getSpecialist() {
-        return specialist;
+    public Person getSpecialist_appointments() {
+        return specialist_appointments;
     }
 
-    public void setSpecialist(Person specialist) {
-        this.specialist = specialist;
+    public void setSpecialist_appointments(Person specialist_appointments) {
+        this.specialist_appointments = specialist_appointments;
     }
 
-    public Person getVisitor() {
-        return visitor;
+    public Person getVisitor_appointments() {
+        return visitor_appointments;
     }
 
-    public void setVisitor(Person visitor) {
-        this.visitor = visitor;
+    public void setVisitor_appointments(Person visitor_appointments) {
+        this.visitor_appointments = visitor_appointments;
     }
 
     public ProfessionalServices getProfessionalServices() {

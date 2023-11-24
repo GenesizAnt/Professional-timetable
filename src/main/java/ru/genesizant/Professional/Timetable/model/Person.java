@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -55,29 +54,65 @@ public class Person {
     @OneToMany(mappedBy = "ownerService")
     private List<ProfessionalServices> professionalServicesList; //ToDo переименовать??
 
-    @OneToMany(mappedBy = "specialist")
-    private List<SpecialistAppointments> specialistAppointments;
+    @OneToMany(mappedBy = "specialist_appointments")
+    private List<SpecialistAppointments> specialistAppointmentsList;
 
-    @OneToMany(mappedBy = "visitor")
-    private List<SpecialistAppointments> visitorAppointments;
+    @OneToMany(mappedBy = "visitor_appointments")
+    private List<SpecialistAppointments> visitorAppointmentsList;
+
+    @OneToMany(mappedBy = "specialist_statistical")
+    private List<StatisticalAnalysis> statisticalAnalysesList;
+
+    @OneToMany(mappedBy = "specialist_notes")
+    private List<SpecialistNotes> specialistNotesList;
+
+    @OneToMany(mappedBy = "visitor_notes")
+    private List<SpecialistNotes> visitorNotesList;
+
+    @OneToMany(mappedBy = "specialist_date_appointments")
+    private List<DatesAppointments> datesAppointmentsList;
 
     public Person() {
     }
 
-    public List<SpecialistAppointments> getSpecialistAppointments() {
-        return specialistAppointments;
+    public List<SpecialistNotes> getSpecialistNotesList() {
+        return specialistNotesList;
     }
 
-    public void setSpecialistAppointments(List<SpecialistAppointments> specialistAppointments) {
-        this.specialistAppointments = specialistAppointments;
+    public void setSpecialistNotesList(List<SpecialistNotes> specialistNotesList) {
+        this.specialistNotesList = specialistNotesList;
     }
 
-    public List<SpecialistAppointments> getVisitorAppointments() {
-        return visitorAppointments;
+    public List<SpecialistNotes> getVisitorNotesList() {
+        return visitorNotesList;
     }
 
-    public void setVisitorAppointments(List<SpecialistAppointments> visitorAppointments) {
-        this.visitorAppointments = visitorAppointments;
+    public void setVisitorNotesList(List<SpecialistNotes> visitorNotesList) {
+        this.visitorNotesList = visitorNotesList;
+    }
+
+    public List<StatisticalAnalysis> getStatisticalAnalysesList() {
+        return statisticalAnalysesList;
+    }
+
+    public void setStatisticalAnalysesList(List<StatisticalAnalysis> statisticalAnalysesList) {
+        this.statisticalAnalysesList = statisticalAnalysesList;
+    }
+
+    public List<SpecialistAppointments> getSpecialistAppointmentsList() {
+        return specialistAppointmentsList;
+    }
+
+    public void setSpecialistAppointmentsList(List<SpecialistAppointments> specialistAppointments) {
+        this.specialistAppointmentsList = specialistAppointments;
+    }
+
+    public List<SpecialistAppointments> getVisitorAppointmentsList() {
+        return visitorAppointmentsList;
+    }
+
+    public void setVisitorAppointmentsList(List<SpecialistAppointments> visitorAppointments) {
+        this.visitorAppointmentsList = visitorAppointments;
     }
 
     public List<ProfessionalServices> getProfessionalServicesList() {
