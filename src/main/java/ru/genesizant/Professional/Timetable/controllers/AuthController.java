@@ -14,14 +14,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonDTO;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.security.PersonDetails;
+import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.RegistrationService;
 import ru.genesizant.Professional.Timetable.util.PersonValidator;
-
-import java.math.BigDecimal;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
@@ -31,15 +28,15 @@ public class AuthController {
     private final RegistrationService registrationService;
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
-    private final PersonRepository personRepository;
+    private final PersonService personService;
 
     @Autowired
-    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonRepository personRepository) {
+    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService) {
         this.personValidator = personValidator;
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
-        this.personRepository = personRepository;
+        this.personService = personService;
     }
 
     @GetMapping("/login")
@@ -83,7 +80,7 @@ public class AuthController {
             String email = decodedJWT.getClaim("email").asString();
 
             String newJwtToken = jwtUtil.generateToken(email);
-            updateJwtToken(email, newJwtToken);
+            personService.updateJwtToken(email, newJwtToken);
 
             session.setAttribute("jwtToken", newJwtToken);
             session.setAttribute("name", personDetails.getUsername());
@@ -97,11 +94,6 @@ public class AuthController {
 
     //ToDo lesson 92 - правильно сделать отдельный метод @ExceptionHandler для возвращения кода и ошибки
 // return Map.of("message", "Incorrect credentials!"); //ToDo как создать свою ошибку 1:03:00 https://youtu.be/NIv9TFTSIlg?t=3933
-    private void updateJwtToken(String email, String newJwtToken) {
-        Optional<Person> person = personRepository.findByEmail(email);
-        person.get().setJwtToken(newJwtToken);
-        personRepository.save(person.get());
-    }
 
 
     private Person concertPerson(PersonDTO personDTO) {

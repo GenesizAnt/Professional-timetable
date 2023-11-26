@@ -13,35 +13,56 @@
 
 <h2> Выбери самого лучшего специалиста! </h2>
 
+
 <table class="table">
     <thead>
     <tr>
         <th scope="col">#</th>
         <th scope="col">First</th>
         <th scope="col">Last</th>
-        <th scope="col">Handle</th>
+        <th scope="col">Email</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-    </tr>
-    <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-    </tr>
-    <tr>
-        <th scope="row">3</th>
-        <td colspan="2">Larry the Bird</td>
-        <td>@twitter</td>
+    <!--/*@thymesVar id="specialists" type="ru.genesizant.Professional.Timetable.controllers.visitors.VisitorsController"*/-->
+    <tr th:each="specialist, iterStat : ${specialists}">
+        <th scope="row" th:text="${iterStat.index + 1}">1</th>
+        <td><a th:href="@{'/specialist/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>
+        <td th:text="${specialist.surname}"></td>
+        <td th:text="${specialist.email}"></td>
     </tr>
     </tbody>
 </table>
+
+<!--<table class="table">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th scope="col">#</th>-->
+<!--        <th scope="col">First</th>-->
+<!--        <th scope="col">Last</th>-->
+<!--        <th scope="col">Handle</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr>-->
+<!--        <th scope="row">1</th>-->
+<!--        <td>Mark</td>-->
+<!--        <td>Otto</td>-->
+<!--        <td>@mdo</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <th scope="row">2</th>-->
+<!--        <td>Jacob</td>-->
+<!--        <td>Thornton</td>-->
+<!--        <td>@fat</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <th scope="row">3</th>-->
+<!--        <td colspan="2">Larry the Bird</td>-->
+<!--        <td>@twitter</td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
 
 </body>
 </html>

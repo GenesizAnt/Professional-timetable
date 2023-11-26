@@ -1,29 +1,28 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.services.PersonService;
 
-import java.util.Optional;
+import java.util.List;
 
 @Controller
 @RequestMapping("/visitors")
 public class VisitorsController {
 
     private final JWTUtil jwtUtil;
-    private final PersonRepository personRepository;
+    private final PersonService personService;
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonRepository personRepository) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService) {
         this.jwtUtil = jwtUtil;
-        this.personRepository = personRepository;
+        this.personService = personService;
     }
 
     @GetMapping("/start_menu_visitor")
@@ -50,7 +49,9 @@ public class VisitorsController {
 //            Optional<Person> visitor = personRepository.findByEmail(email);
 //            model.addAttribute("name", visitor.get().getUsername());
 
+            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
             model.addAttribute("name", request.getSession().getAttribute("name"));
+            model.addAttribute("specialists", specialists);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");

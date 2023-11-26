@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.services.PeopleService;
+import ru.genesizant.Professional.Timetable.services.PersonService;
 
 @Component
 public class PersonValidator implements Validator {
 
-    private final PeopleService peopleService;
+    private final PersonService personService;
 //    private final PersonDetailsService personDetailsService;
 
 //    @Autowired
@@ -20,8 +20,8 @@ public class PersonValidator implements Validator {
 //    }
 
     @Autowired
-    public PersonValidator(PeopleService peopleService) {
-        this.peopleService = peopleService;
+    public PersonValidator(PersonService personService) {
+        this.personService = personService;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PersonValidator implements Validator {
         if (person.getPassword() == null) {
             errors.rejectValue("password", "", "Обязательно должен быть пароль!"); //ToDo установить правило пароля, не менее 4 символов например
         }
-        if (peopleService.loadUserByEmail(person.getEmail()).isPresent()) {
+        if (personService.loadUserByEmail(person.getEmail()).isPresent()) {
             errors.rejectValue("email", "", "Человек с таким email уже существует");
         }
     }
