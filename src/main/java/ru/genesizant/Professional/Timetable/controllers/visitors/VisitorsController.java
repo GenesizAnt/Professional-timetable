@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/visitors")
@@ -25,7 +27,7 @@ public class VisitorsController {
         this.personService = personService;
     }
 
-    @GetMapping("/start_menu_visitor")
+    @GetMapping("/start_menu_visitor") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getStartMenu(Model model, HttpServletRequest request) {
 
         //ToDo добавить навигационный бар https://getbootstrap.com/docs/5.0/components/navbar/
@@ -77,5 +79,25 @@ public class VisitorsController {
 //            }
 //        }
 //        return "visitors/start_menu_visitor";
+    }
+
+    @GetMapping("/specialist_choose/{id}") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
+    public String getSpecialistMenu(Model model, HttpServletRequest request, @PathVariable String id) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            Optional<Person> specialist = personService.findById(Long.valueOf(id));
+
+
+//            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
+//            model.addAttribute("name", request.getSession().getAttribute("name"));
+            model.addAttribute("specialist", specialist.get().getUsername());
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+        }
+
+        return "visitors/specialist_choose";
     }
 }

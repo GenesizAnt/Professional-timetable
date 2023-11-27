@@ -29,4 +29,8 @@ public class PersonService {
     public List<Person> getPersonByRoleList(String role) {
         return personRepository.findByRole(role);
     }
+
+    public Optional<Person> findById(Long id) {
+        return personRepository.findById(id);
+    }
 }
