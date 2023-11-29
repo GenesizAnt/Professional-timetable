@@ -6,11 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/specialist")
@@ -18,11 +16,13 @@ public class SpecialistController {
 
     private final JWTUtil jwtUtil;
     private final PersonService personService;
+    private final DatesAppointmentsService datesAppointmentsService;
 
     @Autowired
-    public SpecialistController(JWTUtil jwtUtil, PersonService personService) {
+    public SpecialistController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
+        this.datesAppointmentsService = datesAppointmentsService;
     }
 
     @GetMapping("/start_menu_specialist")
@@ -30,9 +30,24 @@ public class SpecialistController {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-//            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
             model.addAttribute("name", request.getSession().getAttribute("name"));
-//            model.addAttribute("specialists", specialists);
+
+            datesAppointmentsService.addFreeDateSchedule("2021-11-30", "2021-12-30", "10:00:00", "18:00:00", "02:00:00");
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
+        return "specialist/start_menu_specialist";
+    }
+
+    @GetMapping("/admission_calendar")
+    public String addAdmissionCalendar(Model model, HttpServletRequest request) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            System.out.println();
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");

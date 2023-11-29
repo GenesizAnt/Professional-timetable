@@ -1,6 +1,5 @@
 package ru.genesizant.Professional.Timetable.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,6 +24,11 @@ public class DatesAppointments {
     private String scheduleTime;
 
     public DatesAppointments() {
+    }
+
+    public DatesAppointments(LocalDate startDateObject, String availableRecordingTime) {
+        visitDate = startDateObject;
+        scheduleTime = availableRecordingTime;
     }
 
     public String getScheduleTime() {
