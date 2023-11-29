@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,7 +21,18 @@ public class DatesAppointments {
     @Column(name = "visit_date")
     private LocalDate visitDate;
 
+    @Column(name = "schedule_time")
+    private String scheduleTime;
+
     public DatesAppointments() {
+    }
+
+    public String getScheduleTime() {
+        return scheduleTime;
+    }
+
+    public void setScheduleTime(String scheduleTime) {
+        this.scheduleTime = scheduleTime;
     }
 
     public Long getId() {

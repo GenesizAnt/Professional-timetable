@@ -89,7 +89,23 @@ public class AuthController {
         } catch (Exception e) {
             return "redirect:/auth/login?error";
         }
-        return "redirect:/visitors/start_menu_visitor";
+
+        switch (personDetails.getRole()) {
+            case "ROLE_USER" -> {
+                return "redirect:/visitors/start_menu_visitor";
+            }
+            case "ROLE_ADMIN" -> {
+                return "redirect:/specialist/start_menu_specialist";
+            }
+            case "ROLE_SUPER" -> {
+                return "redirect:/all"; //ToDo сделать страницу для суперпользователя
+            }
+            default -> {
+                return "redirect:/auth/login?error";
+            }
+        }
+
+//        return "redirect:/visitors/start_menu_visitor";
     }
 
     //ToDo lesson 92 - правильно сделать отдельный метод @ExceptionHandler для возвращения кода и ошибки
