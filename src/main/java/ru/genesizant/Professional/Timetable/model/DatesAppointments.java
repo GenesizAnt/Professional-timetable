@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "DatesAppointments")
+@Table(name = "datesappointments")
 public class DatesAppointments {
 
     @Id
@@ -15,7 +15,7 @@ public class DatesAppointments {
 
     @ManyToOne
     @JoinColumn(name = "specialist_id", referencedColumnName = "id")
-    private Person specialist_date_appointments;
+    private Person specialistDateAppointments;
 
     @Column(name = "visit_date")
     private LocalDate visitDate;
@@ -23,12 +23,15 @@ public class DatesAppointments {
     @Column(name = "schedule_time")
     private String scheduleTime;
 
-    public DatesAppointments() {
-    }
 
-    public DatesAppointments(LocalDate startDateObject, String availableRecordingTime) {
+    public DatesAppointments(Person personSpecialist, LocalDate startDateObject, String availableRecordingTime) {
         visitDate = startDateObject;
         scheduleTime = availableRecordingTime;
+        specialistDateAppointments = personSpecialist;
+    }
+
+    public DatesAppointments() {
+
     }
 
     public String getScheduleTime() {
@@ -47,12 +50,12 @@ public class DatesAppointments {
         this.id = id;
     }
 
-    public Person getSpecialist_date_appointments() {
-        return specialist_date_appointments;
+    public Person getSpecialistDateAppointments() {
+        return specialistDateAppointments;
     }
 
-    public void setSpecialist_date_appointments(Person specialist_date_appointments) {
-        this.specialist_date_appointments = specialist_date_appointments;
+    public void setSpecialistDateAppointments(Person specialist_date_appointments) {
+        this.specialistDateAppointments = specialist_date_appointments;
     }
 
     public LocalDate getVisitDate() {

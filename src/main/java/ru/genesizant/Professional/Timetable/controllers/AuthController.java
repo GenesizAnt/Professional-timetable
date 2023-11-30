@@ -85,6 +85,7 @@ public class AuthController {
             session.setAttribute("jwtToken", newJwtToken);
             session.setAttribute("name", personDetails.getUsername());
             session.setAttribute("email", personDetails.getEmail());
+            session.setAttribute("id", personDetails.getId());
 
         } catch (Exception e) {
             return "redirect:/auth/login?error";

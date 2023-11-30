@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-@Table(name = "Person")
+@Table(name = "person")
 public class Person {
 
     @Id
@@ -69,7 +69,7 @@ public class Person {
     @OneToMany(mappedBy = "visitor_notes")
     private List<SpecialistNotes> visitorNotesList;
 
-    @OneToMany(mappedBy = "specialist_date_appointments")
+    @OneToMany(mappedBy = "specialistDateAppointments")
     private List<DatesAppointments> datesAppointmentsList;
 
     public Person() {

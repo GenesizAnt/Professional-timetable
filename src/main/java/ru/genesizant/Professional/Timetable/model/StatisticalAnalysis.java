@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "StatisticalAnalysis")
+@Table(name = "statisticalanalysis")
 public class StatisticalAnalysis {
 
     @Id

@@ -10,7 +10,7 @@ import java.time.Duration;
 import java.util.List;
 
 @Entity
-@Table(name = "ProfessionalServices")
+@Table(name = "professionalservices")
 public class ProfessionalServices {
 
     @Id

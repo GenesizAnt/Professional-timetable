@@ -1,21 +1,17 @@
 package ru.genesizant.Professional.Timetable.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
+import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.DatesAppointmentsRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 public class DatesAppointmentsService {
@@ -27,18 +23,20 @@ public class DatesAppointmentsService {
         this.datesAppointmentsRepository = datesAppointmentsRepository;
     }
 
-    public void addFreeDateSchedule(String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour) {
+    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
         // Создаем объект LocalDate для конца даты
         LocalDate endDateObject = LocalDate.parse(endDate);
         // Вычисляем количество дней между двумя датами
-        int daysBetween = Period.between(startDateObject, endDateObject).getDays();
+        int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject) + 1; //ToDo есть ли решение лучше
 
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour);
 
         for (int i = 0; i < daysBetween; i++) {
-            datesAppointmentsRepository.save(new DatesAppointments(startDateObject, createScheduleJSON(availableRecordingTime)));
+//            DatesAppointments datesAppointments = new DatesAppointments(id, startDateObject, createScheduleJSON(availableRecordingTime));
+//            datesAppointments.s
+            datesAppointmentsRepository.save(new DatesAppointments(personSpecialist, startDateObject, createScheduleJSON(availableRecordingTime)));
         }
 
     }
@@ -59,9 +57,19 @@ public class DatesAppointmentsService {
         String[] timeArray = timeList.toArray(new String[0]);
         Map<String, String> availableScheduleTime = new HashMap<>();
         for (String time : timeArray) {
-            availableScheduleTime.put(time, "доступно");
+            availableScheduleTime.put(time, "доступно"); //ToDo Сделать энам состояние для расписания. Свободен занят под вопросом
         }
         return availableScheduleTime;
+    }
+
+    public Map<LocalDate, String> getCalendarFreeScheduleById(long id) {
+        List<DatesAppointments> allById = datesAppointmentsRepository.findAllBySpecialistDateAppointmentsIdOrderById(id);
+        Map<LocalDate, String> freeSchedule = new HashMap<>();
+        for (DatesAppointments datesAppointments : allById) {
+            freeSchedule.put(datesAppointments.getVisitDate(), datesAppointments.getScheduleTime());
+        }
+        System.out.println();
+        return freeSchedule;
     }
 
     private String createScheduleJSON(Map<String, String> availableRecordingTime) {

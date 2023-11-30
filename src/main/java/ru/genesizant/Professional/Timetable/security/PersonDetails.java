@@ -66,5 +66,9 @@ public class PersonDetails implements UserDetails {
     public String getJwtToken() {
         return this.person.getJwtToken();
     }
+
+    public Long getId() {
+        return this.person.getId();
+    }
 }
 
