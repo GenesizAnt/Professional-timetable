@@ -9,5 +9,8 @@ import java.util.List;
 
 @Repository
 public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointments, Long> {
+
     List<DatesAppointments> findAllBySpecialistDateAppointmentsIdOrderById(long id);
+
+//    List<DatesAppointments> findAllBySpecialistDateAppointmentsOrderById(long id);
 }

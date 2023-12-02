@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,19 +30,19 @@ public class DatesAppointmentsService {
         // Создаем объект LocalDate для конца даты
         LocalDate endDateObject = LocalDate.parse(endDate);
         // Вычисляем количество дней между двумя датами
-        int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject) + 1; //ToDo есть ли решение лучше
+        int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour);
 
-        for (int i = 0; i < daysBetween; i++) {
+        for (int i = 0; i <= daysBetween; i++) {
 //            DatesAppointments datesAppointments = new DatesAppointments(id, startDateObject, createScheduleJSON(availableRecordingTime));
 //            datesAppointments.s
-            datesAppointmentsRepository.save(new DatesAppointments(personSpecialist, startDateObject, createScheduleJSON(availableRecordingTime)));
+            datesAppointmentsRepository.save(new DatesAppointments(personSpecialist, startDateObject.plusDays(i), createScheduleJSON(availableRecordingTime)));
         }
 
     }
 
-    private Map<String, String> availableRecordingTime (String startTimeWork, String endTimeWork, String timeIntervalHour) {
+    private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour) {
         LocalTime startTime = LocalTime.parse(startTimeWork);
         LocalTime endTime = LocalTime.parse(endTimeWork);
         LocalTime timeString = LocalTime.parse(timeIntervalHour);
@@ -62,13 +63,32 @@ public class DatesAppointmentsService {
         return availableScheduleTime;
     }
 
-    public Map<LocalDate, String> getCalendarFreeScheduleById(long id) {
+    public Map<LocalDate, Map<String, String>> getCalendarFreeScheduleById(long id) {
         List<DatesAppointments> allById = datesAppointmentsRepository.findAllBySpecialistDateAppointmentsIdOrderById(id);
-        Map<LocalDate, String> freeSchedule = new HashMap<>();
+        Map<LocalDate, Map<String, String>> freeSchedule = new HashMap<>();
+
         for (DatesAppointments datesAppointments : allById) {
-            freeSchedule.put(datesAppointments.getVisitDate(), datesAppointments.getScheduleTime());
+            freeSchedule.put(datesAppointments.getVisitDate(), getAvailableTime(datesAppointments.getScheduleTime()));
         }
+
+//        for (DatesAppointments datesAppointments : allById) {
+//            freeSchedule.put(datesAppointments.getVisitDate(), datesAppointments.getScheduleTime());
+//        }
         System.out.println();
+        return freeSchedule;
+    }
+
+    private Map<String, String> getAvailableTime(String scheduleTime) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> freeSchedule = null;
+
+        try {
+            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {});
+
+            System.out.println(freeSchedule);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return freeSchedule;
     }
 

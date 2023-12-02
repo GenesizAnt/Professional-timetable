@@ -9,53 +9,32 @@
 <body>
 <h1 th:text="${name} + ', здесь ты можешь посмотреть свои сводобные даты и запланировать новые'">Привет, специалист</h1>
 
-
-<!--<div class="table-responsive">-->
-<!--    <table class="table">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Дата</th>-->
-<!--            <th colspan="2">Время и Статус</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="date : dates">-->
-<!--            <td th:text="date.key"></td>-->
-<!--            <td th:each="time, status : date.value">-->
-<!--            <td th:text="time"></td>-->
-<!--            <td th:text="status"></td>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-
-
-
-
-
-<!--<div class="table-responsive">-->
-<!--    <table class="table">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Дата</th>-->
-<!--            <th colspan="2">Время и Статус</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr>-->
-<!--            <td>2023-12-01</td>-->
-<!--            <td>10:00</td>-->
-<!--            <td>Занято</td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td>2023-12-02</td>-->
-<!--            <td>14:00</td>-->
-<!--            <td>Свободно</td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dateEntry : ${dates}">
+            <td th:text="${dateEntry.key}"></td>
+            <td>
+                <div th:each="timeEntry : ${dateEntry.value}">
+                    <span th:text="${timeEntry.key}"></span><br>
+                </div>
+            </td>
+            <td>
+                <div th:each="statusEntry : ${dateEntry.value}">
+                    <span th:text="${statusEntry.value}"></span><br>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 <label for="datetime_open">Добавить конкретную дату и время:</label>
 <input type="datetime-local" id="datetime_open" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">

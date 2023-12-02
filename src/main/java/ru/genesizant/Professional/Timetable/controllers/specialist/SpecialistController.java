@@ -11,7 +11,9 @@ import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -57,9 +59,11 @@ public class SpecialistController {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-            datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//            calendarFreeSchedule
+            Map<LocalDate, Map<String, String>> dates = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
+            model.addAttribute("dates", dates);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
