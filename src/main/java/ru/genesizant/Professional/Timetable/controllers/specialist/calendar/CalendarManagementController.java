@@ -12,6 +12,7 @@ import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Controller
@@ -50,4 +51,30 @@ public class CalendarManagementController {
         }
     }
 
+    @PostMapping("/selectedDate")
+    public String handleDateSubmission(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            datesAppointmentsService.deleteVisitDate(selectedDate);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+
+//    @PostMapping("/calendar/selectedDateRange")
+//    public String handleDateSubmission(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+//
+//
+//
+//            return "redirect:/specialist/admission_calendar_view";
+//
+//        } else {
+//            return "redirect:/auth/login?error";
+//        }
+//    }
 }

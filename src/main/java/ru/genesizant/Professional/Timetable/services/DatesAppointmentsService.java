@@ -24,6 +24,10 @@ public class DatesAppointmentsService {
         this.datesAppointmentsRepository = datesAppointmentsRepository;
     }
 
+    public void deleteVisitDate(LocalDate date) {
+        datesAppointmentsRepository.deleteByVisitDate(date);
+    }
+
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
@@ -35,10 +39,6 @@ public class DatesAppointmentsService {
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour);
 
         for (int i = 0; i <= daysBetween; i++) {
-//            DatesAppointments datesAppointments = new DatesAppointments(id, startDateObject, createScheduleJSON(availableRecordingTime));
-//            datesAppointments.s
-//            DatesAppointments datesAppointments = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, createScheduleJSON(availableRecordingTime));
-//            datesAppointmentsRepository.save(datesAppointments);
 
             Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
             if (existingRecord.isPresent()) {

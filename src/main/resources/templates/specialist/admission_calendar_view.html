@@ -35,8 +35,24 @@
 <h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>
 <h2 style="text-align:center;">Клиент видит только установленные даты</h2>
 <h6>Изменить данные календаря</h6>
-<p5>Удалить дату</p5>  <br>
-<p5>Удалить диапазон дат</p5>  <br>
+<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+
+<u>Удалить дату</u>
+<form th:method="POST" th:action="@{/calendar/selectedDate}">
+    <label for="selectedDate">Выберите дату:</label>
+    <input type="date" id="selectedDate" name="selectedDate">
+    <input type="submit" value="Удалить">
+</form> <br>
+
+<u>Удалить диапазон дат</u>
+<form th:method="POST" th:action="@{/calendar/selectedDateRange}">
+    <label for="startDateRange">Начало:</label>
+    <input type="date" id="startDateRange" name="startDateRange">
+    <label for="endDateRange">Конец:</label>
+    <input type="date" id="endDateRange" name="endDateRange">
+    <input type="submit" value="Удалить">
+</form> <br>
+
 <p5>Удалить конкретное время</p5>  <br>
 <p5>Удалить диапазон времени</p5>  <br>
 <p5>Отменить доступность времени</p5>  <br>

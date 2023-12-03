@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 
 import java.time.LocalDate;
@@ -13,7 +14,10 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
 
     List<DatesAppointments> findAllBySpecialistDateAppointmentsIdOrderById(long id);
 
-    Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate startDate, long id);
+    Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate date, long id);
 
-//    List<DatesAppointments> findAllBySpecialistDateAppointmentsOrderById(long id);
+    @Transactional
+    void deleteByVisitDate(LocalDate date);
+
+    //    List<DatesAppointments> findAllBySpecialistDateAppointmentsOrderById(long id);
 }
