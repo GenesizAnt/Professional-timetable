@@ -37,7 +37,20 @@ public class DatesAppointmentsService {
         for (int i = 0; i <= daysBetween; i++) {
 //            DatesAppointments datesAppointments = new DatesAppointments(id, startDateObject, createScheduleJSON(availableRecordingTime));
 //            datesAppointments.s
-            datesAppointmentsRepository.save(new DatesAppointments(personSpecialist, startDateObject.plusDays(i), createScheduleJSON(availableRecordingTime)));
+//            DatesAppointments datesAppointments = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, createScheduleJSON(availableRecordingTime));
+//            datesAppointmentsRepository.save(datesAppointments);
+
+            Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
+            if (existingRecord.isPresent()) {
+                // обновление существующей записи
+                existingRecord.get().setScheduleTime(createScheduleJSON(availableRecordingTime));
+                datesAppointmentsRepository.save(existingRecord.get());
+            } else {
+                // создание новой записи
+                DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, createScheduleJSON(availableRecordingTime));
+                datesAppointmentsRepository.save(newRecord);
+            }
+
         }
 
     }

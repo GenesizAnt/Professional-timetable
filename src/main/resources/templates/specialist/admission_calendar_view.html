@@ -8,7 +8,40 @@
 </head>
 <body>
 <h1 th:text="${name} + ', здесь ты можешь посмотреть свои сводобные даты и запланировать новые'">Привет, специалист</h1>
-
+<br>
+<br>
+<h1 style="text-align:center;">Установи диапазон свободных дат и времени приема</h1>
+<form th:method="POST" action="/calendar/admission_calendar_update">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <label for="startDate">Дата начала доступного расписания:</label>
+    <input type="date" id="startDate" name="startDate" value="2023-11-30">
+    <br>
+    <label for="endDate">Дата конца доступного расписания:</label>
+    <input type="date" id="endDate" name="endDate" value="2023-12-02">
+    <br>
+    <label for="startTime">Начало доступного времени для приемов:</label>
+    <input type="time" id="startTime" name="startTime" value="10:00:00">
+    <br>
+    <label for="endTime">Конец доступного времени для приемов:</label>
+    <input type="time" id="endTime" name="endTime" value="18:00:00">
+    <br>
+    <label for="minInterval">Минимальный интервал между приемами:</label>
+    <input type="time" id="minInterval" name="minInterval" value="01:00:00">
+    <br>
+    <input type="submit" value="Отправить">
+</form>
+<br>
+<br>
+<h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>
+<h2 style="text-align:center;">Клиент видит только установленные даты</h2>
+<h6>Изменить данные календаря</h6>
+<p5>Удалить дату</p5>  <br>
+<p5>Удалить диапазон дат</p5>  <br>
+<p5>Удалить конкретное время</p5>  <br>
+<p5>Удалить диапазон времени</p5>  <br>
+<p5>Отменить доступность времени</p5>  <br>
+<p5>Записать клиента</p5><br>
+<p5>Очистить даты из календаря раньше: </p5><br><br>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -36,11 +69,12 @@
     </table>
 </div>
 
-<label for="datetime_open">Добавить конкретную дату и время:</label>
-<input type="datetime-local" id="datetime_open" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">
-
-<label for="datetime_close">Забронировать конкретную дату и время:</label>
-<input type="datetime-local" id="datetime_close" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">
-
 </body>
 </html>
+
+
+<!--<label for="datetime_open">Добавить конкретную дату и время:</label>-->
+<!--<input type="datetime-local" id="datetime_open" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">-->
+
+<!--<label for="datetime_close">Забронировать конкретную дату и время:</label>-->
+<!--<input type="datetime-local" id="datetime_close" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">-->

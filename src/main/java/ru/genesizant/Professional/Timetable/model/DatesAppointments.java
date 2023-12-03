@@ -24,10 +24,10 @@ public class DatesAppointments {
     private String scheduleTime;
 
 
-    public DatesAppointments(Person personSpecialist, LocalDate startDateObject, String availableRecordingTime) {
+    public DatesAppointments(LocalDate startDateObject, Person personSpecialist, String availableRecordingTime) {
         visitDate = startDateObject;
-        scheduleTime = availableRecordingTime;
         specialistDateAppointments = personSpecialist;
+        scheduleTime = availableRecordingTime;
     }
 
     public DatesAppointments() {
