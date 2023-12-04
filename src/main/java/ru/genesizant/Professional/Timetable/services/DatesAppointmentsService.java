@@ -24,10 +24,6 @@ public class DatesAppointmentsService {
         this.datesAppointmentsRepository = datesAppointmentsRepository;
     }
 
-    public void deleteVisitDate(LocalDate date) {
-        datesAppointmentsRepository.deleteByVisitDate(date);
-    }
-
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
@@ -113,5 +109,13 @@ public class DatesAppointmentsService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void deleteVisitDate(LocalDate date) {
+        datesAppointmentsRepository.deleteByVisitDate(date);
+    }
+
+    public void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange) {
+        datesAppointmentsRepository.deleteByVisitDateBetween(startDateRange, endDateRange);
     }
 }

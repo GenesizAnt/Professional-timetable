@@ -52,7 +52,7 @@ public class CalendarManagementController {
     }
 
     @PostMapping("/selectedDate")
-    public String handleDateSubmission(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
+    public String selectedDate(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             datesAppointmentsService.deleteVisitDate(selectedDate);
@@ -65,16 +65,18 @@ public class CalendarManagementController {
     }
 
 
-//    @PostMapping("/calendar/selectedDateRange")
-//    public String handleDateSubmission(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
-//        if (jwtUtil.isValidJWTAndSession(request)) {
-//
-//
-//
-//            return "redirect:/specialist/admission_calendar_view";
-//
-//        } else {
-//            return "redirect:/auth/login?error";
-//        }
-//    }
+    @PostMapping("/selectedDateRange")
+    public String selectedDateRange(HttpServletRequest request,
+                                    @RequestParam("startDateRange") LocalDate startDateRange,
+                                    @RequestParam("endDateRange") LocalDate endDateRange) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
 }
