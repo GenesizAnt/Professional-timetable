@@ -55,14 +55,24 @@
 
 <u>Удалить доступность конкретного времени</u>
 <form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">
-    <label for="date">Дата:</label>
-    <input type="date" id="date" name="date">
+    <label for="dateOne">Дата:</label>
+    <input type="date" id="dateOne" name="dateOne">
     <label for="selectedTimeAdmission">Время:</label>
     <input type="time" id="selectedTimeAdmission" name="selectedTimeAdmission" value="">
     <input type="submit" value="Удалить">
 </form> <br>
 
-<p5>Удалить диапазон времени</p5>  <br>
+<p5>Удалить диапазон времени</p5>
+<form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">
+    <label for="dateRange">Дата:</label>
+    <input type="date" id="dateRange" name="dateRange">
+    <label for="startTimeAdmission">Время:</label>
+    <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">
+    <label for="endTimeAdmission">Время:</label>
+    <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">
+    <input type="submit" value="Удалить">
+</form> <br>
+
 <p5>Отменить доступность времени</p5>  <br>
 <p5>Записать клиента</p5><br>
 <p5>Очистить даты из календаря раньше: </p5><br><br>

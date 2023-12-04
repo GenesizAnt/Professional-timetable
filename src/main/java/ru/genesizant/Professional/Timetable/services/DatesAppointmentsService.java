@@ -136,4 +136,37 @@ public class DatesAppointmentsService {
             //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
         }
     }
+
+    public void deleteTimeRangeAdmission(LocalDate dateOne, String startTimeAdmission, String endTimeAdmission) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(dateOne);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
+            if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
+
+                List<String> keysToRemove = new ArrayList<>();
+
+                for (Map.Entry<String, String> entry : time.entrySet()) {
+                    String key = entry.getKey();
+                    if (isTimeInRange(key, startTimeAdmission, endTimeAdmission)) {
+                        keysToRemove.add(key);
+                    }
+                }
+
+                for (String key : keysToRemove) {
+                    time.remove(key);
+                }
+
+                visitDate.get().setScheduleTime(getScheduleJSON(time));
+                datesAppointmentsRepository.save(visitDate.get());
+            } else {
+                //ToDo вернуть ошибку про несуществующее время. Мб сделать через @Valid?
+            }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
+    }
+
+    private boolean isTimeInRange(String time, String startTimeAdmission, String endTimeAdmission) {
+        return time.compareTo(startTimeAdmission) >= 0 && time.compareTo(endTimeAdmission) <= 0;
+    }
 }

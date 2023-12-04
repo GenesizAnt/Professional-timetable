@@ -41,8 +41,7 @@ public class CalendarManagementController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
-            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(),startDate, endDate, startTime, endTime, minInterval); //ToDo будет ли ошибка если ввести даты или время наоборот
-
+            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval); //ToDo будет ли ошибка если ввести даты или время наоборот
 
 
             return "redirect:/specialist/admission_calendar_view";
@@ -69,8 +68,8 @@ public class CalendarManagementController {
 
     @PostMapping("/dateRangeFormDelete")
     public String selectedDateRangeFormDelete(HttpServletRequest request,
-                                    @RequestParam("startDateRange") LocalDate startDateRange,
-                                    @RequestParam("endDateRange") LocalDate endDateRange) {
+                                              @RequestParam("startDateRange") LocalDate startDateRange,
+                                              @RequestParam("endDateRange") LocalDate endDateRange) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
@@ -84,11 +83,27 @@ public class CalendarManagementController {
 
     @PostMapping("/timeAdmissionFormDelete")
     public String selectedTimeAdmissionFormDelete(HttpServletRequest request,
-                                    @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
-                                    @RequestParam("date") LocalDate date) {
+                                                  @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
+                                                  @RequestParam("dateOne") LocalDate dateOne) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-            datesAppointmentsService.deleteTimeAdmission(date, selectedTimeAdmission);
+            datesAppointmentsService.deleteTimeAdmission(dateOne, selectedTimeAdmission);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+    @PostMapping("/timeAdmissionRangeFormDelete")
+    public String selectedTimeAdmissionRangeFormDelete(HttpServletRequest request,
+                                                       @RequestParam("startTimeAdmission") String startTimeAdmission,
+                                                       @RequestParam("endTimeAdmission") String endTimeAdmission,
+                                                       @RequestParam("dateRange") LocalDate dateOne) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            datesAppointmentsService.deleteTimeRangeAdmission(dateOne, startTimeAdmission, endTimeAdmission);
 
             return "redirect:/specialist/admission_calendar_view";
 
