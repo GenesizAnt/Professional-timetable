@@ -41,7 +41,9 @@ public class CalendarManagementController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
-            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(),startDate, endDate, startTime, endTime, minInterval);
+            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(),startDate, endDate, startTime, endTime, minInterval); //ToDo будет ли ошибка если ввести даты или время наоборот
+
+
 
             return "redirect:/specialist/admission_calendar_view";
 
@@ -51,8 +53,8 @@ public class CalendarManagementController {
         }
     }
 
-    @PostMapping("/selectedDate")
-    public String selectedDate(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
+    @PostMapping("/dateFormDelete")
+    public String selectedDateFormDelete(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             datesAppointmentsService.deleteVisitDate(selectedDate);
@@ -65,13 +67,28 @@ public class CalendarManagementController {
     }
 
 
-    @PostMapping("/selectedDateRange")
-    public String selectedDateRange(HttpServletRequest request,
+    @PostMapping("/dateRangeFormDelete")
+    public String selectedDateRangeFormDelete(HttpServletRequest request,
                                     @RequestParam("startDateRange") LocalDate startDateRange,
                                     @RequestParam("endDateRange") LocalDate endDateRange) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+    @PostMapping("/timeAdmissionFormDelete")
+    public String selectedTimeAdmissionFormDelete(HttpServletRequest request,
+                                    @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
+                                    @RequestParam("date") LocalDate date) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            datesAppointmentsService.deleteTimeAdmission(date, selectedTimeAdmission);
 
             return "redirect:/specialist/admission_calendar_view";
 

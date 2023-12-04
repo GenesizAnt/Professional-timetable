@@ -38,14 +38,14 @@
 <!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
 
 <u>Удалить дату</u>
-<form th:method="POST" th:action="@{/calendar/selectedDate}">
+<form th:method="POST" th:action="@{/calendar/dateFormDelete}">
     <label for="selectedDate">Выберите дату:</label>
     <input type="date" id="selectedDate" name="selectedDate">
     <input type="submit" value="Удалить">
 </form> <br>
 
 <u>Удалить диапазон дат</u>
-<form th:method="POST" th:action="@{/calendar/selectedDateRange}">
+<form th:method="POST" th:action="@{/calendar/dateRangeFormDelete}">
     <label for="startDateRange">Начало:</label>
     <input type="date" id="startDateRange" name="startDateRange">
     <label for="endDateRange">Конец:</label>
@@ -53,7 +53,15 @@
     <input type="submit" value="Удалить">
 </form> <br>
 
-<p5>Удалить конкретное время</p5>  <br>
+<u>Удалить доступность конкретного времени</u>
+<form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">
+    <label for="date">Дата:</label>
+    <input type="date" id="date" name="date">
+    <label for="selectedTimeAdmission">Время:</label>
+    <input type="time" id="selectedTimeAdmission" name="selectedTimeAdmission" value="">
+    <input type="submit" value="Удалить">
+</form> <br>
+
 <p5>Удалить диапазон времени</p5>  <br>
 <p5>Отменить доступность времени</p5>  <br>
 <p5>Записать клиента</p5><br>

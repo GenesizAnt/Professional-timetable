@@ -39,11 +39,11 @@ public class DatesAppointmentsService {
             Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
             if (existingRecord.isPresent()) {
                 // обновление существующей записи
-                existingRecord.get().setScheduleTime(createScheduleJSON(availableRecordingTime));
+                existingRecord.get().setScheduleTime(getScheduleJSON(availableRecordingTime));
                 datesAppointmentsRepository.save(existingRecord.get());
             } else {
                 // создание новой записи
-                DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, createScheduleJSON(availableRecordingTime));
+                DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, getScheduleJSON(availableRecordingTime));
                 datesAppointmentsRepository.save(newRecord);
             }
 
@@ -51,6 +51,8 @@ public class DatesAppointmentsService {
 
     }
 
+
+    //ToDo сделать утилитный класс для методов этого сервиса?
     private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour) {
         LocalTime startTime = LocalTime.parse(startTimeWork);
         LocalTime endTime = LocalTime.parse(endTimeWork);
@@ -101,7 +103,7 @@ public class DatesAppointmentsService {
         return freeSchedule;
     }
 
-    private String createScheduleJSON(Map<String, String> availableRecordingTime) {
+    private String getScheduleJSON(Map<String, String> availableRecordingTime) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(availableRecordingTime);
@@ -112,10 +114,26 @@ public class DatesAppointmentsService {
     }
 
     public void deleteVisitDate(LocalDate date) {
-        datesAppointmentsRepository.deleteByVisitDate(date);
+        datesAppointmentsRepository.deleteByVisitDate(date); //ToDo вернуть ошибку если неверные данные
     }
 
     public void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange) {
-        datesAppointmentsRepository.deleteByVisitDateBetween(startDateRange, endDateRange);
+        datesAppointmentsRepository.deleteByVisitDateBetween(startDateRange, endDateRange); //ToDo вернуть ошибку если неверные данные
+    }
+
+    public void deleteTimeAdmission(LocalDate date, String selectedTimeAdmission) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
+            if (time.containsKey(selectedTimeAdmission)) {
+                time.remove(selectedTimeAdmission);
+                visitDate.get().setScheduleTime(getScheduleJSON(time));
+                datesAppointmentsRepository.save(visitDate.get());
+            } else {
+                //ToDo вернуть ошибку про несуществующее время. Мб сделать через @Valid?
+            }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
     }
 }
