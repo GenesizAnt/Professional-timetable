@@ -111,4 +111,29 @@ public class CalendarManagementController {
             return "redirect:/auth/login?error";
         }
     }
+
+    @PostMapping("/setTimeAvailabilityStatus")
+    public String setTimeAvailabilityStatus(HttpServletRequest request,
+                                            @RequestParam("date") String date,
+                                            @RequestParam("timeAdmission") String timeAdmission,
+                                            @RequestParam("selectedOption") String selectedOption,
+                                            Model model) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            if (selectedOption.equals("Выбрать статус")) {
+//                model.addAttribute("error", "Необходимо выбрать статус времени"); //ToDo сделать отображение ошибки
+//                return "your-error-view"; // отобразить страницу с сообщением об ошибке
+            }
+
+
+//            datesAppointmentsService.deleteTimeRangeAdmission(dateOne, startTimeAdmission, endTimeAdmission);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+
+    }
 }
