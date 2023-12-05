@@ -77,22 +77,24 @@
     <input type="submit" value="Добавить">
 </form> <br>
 
-<!--<u>Добавить диапазон времени</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">-->
-<!--    <label for="dateRange">Дата:</label>-->
-<!--    <input type="date" id="dateRange" name="dateRange">-->
-<!--    <label for="startTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">-->
-<!--    <label for="endTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">-->
-<!--<select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
-<!--    <option selected>Выбрать статус</option>-->
-<!--    <option value="AVAILABLE">Доступно</option>-->
-<!--    <option value="RESERVED">Забронировано</option>-->
-<!--    <option value="IN_QUESTION">Под вопросом</option>-->
-<!--</select>-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form> <br>-->
+<u>Добавить диапазон времени доступного для приема</u>
+<form th:method="POST" th:action="@{/calendar/addRangeTimeAvailability}">
+    <label for="dateRangeAdd">Дата:</label>
+    <input type="date" id="dateRangeAdd" name="dateRangeAdd">
+    <label for="startAddTimeAdmission">Время:</label>
+    <input type="time" id="startAddTimeAdmission" name="startAddTimeAdmission" value="">
+    <label for="endAddTimeAdmission">Время:</label>
+    <input type="time" id="endAddTimeAdmission" name="endAddTimeAdmission" value="">
+    <label for="minIntervalAdd">Минимальный интервал между приемами:</label>
+    <input type="time" id="minIntervalAdd" name="minIntervalAdd" value="01:00:00">
+<select class="form-select custom-select" aria-label="Default select example" name="selectedOption" required>
+    <option selected>Выбрать статус</option>
+    <option value="AVAILABLE">Доступно</option>
+    <option value="RESERVED">Забронировано</option>
+    <option value="IN_QUESTION">Под вопросом</option>
+</select>
+    <input type="submit" value="Добавить">
+</form> <br>
 
 <u>Удалить время доступное для приема</u>
 <form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">

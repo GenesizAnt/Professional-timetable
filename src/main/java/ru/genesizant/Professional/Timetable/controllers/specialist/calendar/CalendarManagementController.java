@@ -41,7 +41,7 @@ public class CalendarManagementController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
-            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval); //ToDo будет ли ошибка если ввести даты или время наоборот
+            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE); //ToDo будет ли ошибка если ввести даты или время наоборот
 
 
             return "redirect:/specialist/admission_calendar_view";
@@ -184,6 +184,29 @@ public class CalendarManagementController {
             }
 
             datesAppointmentsService.addTimeAvailability(date, timeAvailability, status);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+    @PostMapping("/addRangeTimeAvailability")
+    public String addRangeTimeAvailability(HttpServletRequest request,
+                                      @RequestParam("startAddTimeAdmission") String startTimeAvailability,
+                                      @RequestParam("endAddTimeAdmission") String endTimeAvailability,
+                                      @RequestParam("minIntervalAdd") String intervalHour,
+                                      @RequestParam("dateRangeAdd") LocalDate date,
+                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            if (status == null) {
+//                model.addAttribute("error", "Необходимо выбрать статус времени"); //ToDo сделать отображение ошибки
+//                return "your-error-view"; // отобразить страницу с сообщением об ошибке
+            }
+
+            datesAppointmentsService.addRangeTimeAvailability(date, startTimeAvailability, endTimeAvailability, intervalHour, status);
 
             return "redirect:/specialist/admission_calendar_view";
 

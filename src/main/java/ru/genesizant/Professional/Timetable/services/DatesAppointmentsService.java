@@ -27,7 +27,7 @@ public class DatesAppointmentsService {
         this.datesAppointmentsRepository = datesAppointmentsRepository;
     }
 
-    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour) {
+    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
         // Создаем объект LocalDate для конца даты
@@ -35,7 +35,7 @@ public class DatesAppointmentsService {
         // Вычисляем количество дней между двумя датами
         int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
-        Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour);
+        Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour, status);
 
         for (int i = 0; i <= daysBetween; i++) {
 
@@ -56,7 +56,7 @@ public class DatesAppointmentsService {
 
 
     //ToDo сделать утилитный класс для методов этого сервиса?
-    private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour) {
+    private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         LocalTime startTime = LocalTime.parse(startTimeWork);
         LocalTime endTime = LocalTime.parse(endTimeWork);
         LocalTime timeString = LocalTime.parse(timeIntervalHour);
@@ -72,7 +72,7 @@ public class DatesAppointmentsService {
         String[] timeArray = timeList.toArray(new String[0]);
         Map<String, String> availableScheduleTime = new HashMap<>();
         for (String time : timeArray) {
-            availableScheduleTime.put(time, AVAILABLE.getStatus());
+            availableScheduleTime.put(time, status.getStatus());
         }
         return availableScheduleTime;
     }
@@ -232,6 +232,18 @@ public class DatesAppointmentsService {
             } else {
                 //ToDo вернуть ошибку про существующее время. Мб сделать через @Valid?
             }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
+    }
+
+    public void addRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, String intervalHour, StatusAdmissionTime status) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime()); //ToDo сделать проверку на добавление доступного диапазона времени
+            time.putAll(availableRecordingTime(startTimeAvailability, endTimeAvailability, intervalHour, status));
+            visitDate.get().setScheduleTime(getScheduleJSON(time));
+            datesAppointmentsRepository.save(visitDate.get());
         } else {
             //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
         }
