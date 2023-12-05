@@ -43,7 +43,8 @@
 <h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>
 <h2 style="text-align:center;">Клиент видит только установленные даты</h2>
 <h6>Изменить данные календаря</h6>
-<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+
+<p5>Записать клиента</p5><br>
 
 <u>Удалить дату</u>
 <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
@@ -61,7 +62,39 @@
     <input type="submit" value="Удалить">
 </form> <br>
 
-<u>Удалить доступность конкретного времени</u>
+<u>Добавить время доступное для приема</u>
+<form th:method="POST" th:action="@{/calendar/addTimeAvailability}">
+    <label for="dateAddTime">Дата:</label>
+    <input type="date" id="dateAddTime" name="dateAddTime">
+    <label for="timeAvailability">Время:</label>
+    <input type="time" id="timeAvailability" name="timeAvailability" value="">
+    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">
+        <option selected>Выбрать статус</option>
+        <option value="AVAILABLE">Доступно</option>
+        <option value="RESERVED">Забронировано</option>
+        <option value="IN_QUESTION">Под вопросом</option>
+    </select>
+    <input type="submit" value="Добавить">
+</form> <br>
+
+<!--<u>Добавить диапазон времени</u>-->
+<!--<form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">-->
+<!--    <label for="dateRange">Дата:</label>-->
+<!--    <input type="date" id="dateRange" name="dateRange">-->
+<!--    <label for="startTimeAdmission">Время:</label>-->
+<!--    <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">-->
+<!--    <label for="endTimeAdmission">Время:</label>-->
+<!--    <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">-->
+<!--<select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
+<!--    <option selected>Выбрать статус</option>-->
+<!--    <option value="AVAILABLE">Доступно</option>-->
+<!--    <option value="RESERVED">Забронировано</option>-->
+<!--    <option value="IN_QUESTION">Под вопросом</option>-->
+<!--</select>-->
+<!--    <input type="submit" value="Удалить">-->
+<!--</form> <br>-->
+
+<u>Удалить время доступное для приема</u>
 <form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">
     <label for="dateOne">Дата:</label>
     <input type="date" id="dateOne" name="dateOne">
@@ -70,7 +103,7 @@
     <input type="submit" value="Удалить">
 </form> <br>
 
-<u>Удалить диапазон времени</u>
+<u>Удалить диапазон времени доступного для приема</u>
 <form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">
     <label for="dateRange">Дата:</label>
     <input type="date" id="dateRange" name="dateRange">
@@ -97,22 +130,29 @@
 </form> <br>
 
 <u>Установить статус доступности для диапазона времени</u>
-<!--<form th:method="POST" th:action="@{/calendar/setTimeAvailabilityStatus}">-->
-<!--    <label for="date">Дата:</label>-->
-<!--    <input type="date" id="date" name="date">-->
-<!--    <label for="selectedTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="timeAdmission" name="timeAdmission" value="">-->
-<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
-<!--        <option selected>Выбрать статус</option>-->
-<!--        <option value="1">Доступно</option>-->
-<!--        <option value="2">Забронировано</option>-->
-<!--        <option value="3">Под вопросом</option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Установить">-->
-<!--</form> <br>-->
+<form th:method="POST" th:action="@{/calendar/setRangeTimeAvailabilityStatus}">
+    <label for="dateForTime">Дата:</label>
+    <input type="date" id="dateForTime" name="date">
+    <label for="selectedStartTimeAdmission">Начало:</label>
+    <input type="time" id="selectedStartTimeAdmission" name="startStartAdmission" value="">
+    <label for="selectedEndTimeAdmission">Конец:</label>
+    <input type="time" id="selectedEndTimeAdmission" name="endStartAdmission" value="">
+    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">
+        <option selected>Выбрать статус</option>
+        <option value="AVAILABLE">Доступно</option>
+        <option value="RESERVED">Забронировано</option>
+        <option value="IN_QUESTION">Под вопросом</option>
+    </select>
+    <input type="submit" value="Установить">
+</form> <br>
 
-<p5>Записать клиента</p5><br>
-<p5>Очистить даты из календаря раньше: </p5><br><br>
+<u>Очистить даты из календаря раньше: </u>
+<form th:method="POST" th:action="@{/calendar/dateBeforeClear}">
+    <label for="selectedDateBeforeClear">Выберите дату:</label>
+    <input type="date" id="selectedDateBeforeClear" name="selectedDateBeforeClear">
+    <input type="submit" value="Удалить">
+</form> <br><br>
+
 <div class="table-responsive">
     <table class="table">
         <thead>

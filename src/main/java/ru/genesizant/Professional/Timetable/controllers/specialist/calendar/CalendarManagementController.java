@@ -118,7 +118,6 @@ public class CalendarManagementController {
                                             @RequestParam("timeAdmission") String timeAdmission,
                                             @RequestParam("selectedOption") StatusAdmissionTime status,
                                             Model model) {
-
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             if (status == null) {
@@ -133,6 +132,63 @@ public class CalendarManagementController {
         } else {
             return "redirect:/auth/login?error";
         }
+    }
 
+
+    @PostMapping("/setRangeTimeAvailabilityStatus")
+    public String setRangeTimeAvailabilityStatus(HttpServletRequest request,
+                                                 @RequestParam("date") LocalDate date,
+                                                 @RequestParam("startStartAdmission") String startStartAdmission,
+                                                 @RequestParam("endStartAdmission") String endStartAdmission,
+                                                 @RequestParam("selectedOption") StatusAdmissionTime status,
+                                                 Model model) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            if (status == null) {
+//                model.addAttribute("error", "Необходимо выбрать статус времени"); //ToDo сделать отображение ошибки
+//                return "your-error-view"; // отобразить страницу с сообщением об ошибке
+            }
+
+            datesAppointmentsService.setStatusRangeTimeAdmission(date, startStartAdmission, endStartAdmission, status);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+    @PostMapping("/dateBeforeClear")
+    public String dateBeforeClear(HttpServletRequest request, @RequestParam("selectedDateBeforeClear") LocalDate date) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            datesAppointmentsService.clearDateVisitBefore(date);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
+    }
+
+    @PostMapping("/addTimeAvailability")
+    public String addTimeAvailability(HttpServletRequest request,
+                                      @RequestParam("timeAvailability") String timeAvailability,
+                                      @RequestParam("dateAddTime") LocalDate date,
+                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            if (status == null) {
+//                model.addAttribute("error", "Необходимо выбрать статус времени"); //ToDo сделать отображение ошибки
+//                return "your-error-view"; // отобразить страницу с сообщением об ошибке
+            }
+
+            datesAppointmentsService.addTimeAvailability(date, timeAvailability, status);
+
+            return "redirect:/specialist/admission_calendar_view";
+
+        } else {
+            return "redirect:/auth/login?error";
+        }
     }
 }

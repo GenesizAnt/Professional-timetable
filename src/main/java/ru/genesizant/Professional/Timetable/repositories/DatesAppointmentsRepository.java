@@ -22,6 +22,9 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
     @Transactional
     void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange);
 
+    @Transactional
+    void deleteByVisitDateBefore(LocalDate date);
+
     Optional<DatesAppointments> findByVisitDate(LocalDate date);
 
 }

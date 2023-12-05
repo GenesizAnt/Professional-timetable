@@ -97,7 +97,8 @@ public class DatesAppointmentsService {
         Map<String, String> freeSchedule = null;
 
         try {
-            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {});
+            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {
+            });
 
             System.out.println(freeSchedule);
         } catch (Exception e) {
@@ -146,16 +147,9 @@ public class DatesAppointmentsService {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
 
-                List<String> keysToRemove = new ArrayList<>();
+                List<String> timeAdmissionToRemove = getListTimeAdmission(startTimeAdmission, endTimeAdmission, time);
 
-                for (Map.Entry<String, String> entry : time.entrySet()) {
-                    String key = entry.getKey();
-                    if (isTimeInRange(key, startTimeAdmission, endTimeAdmission)) {
-                        keysToRemove.add(key);
-                    }
-                }
-
-                for (String key : keysToRemove) {
+                for (String key : timeAdmissionToRemove) {
                     time.remove(key);
                 }
 
@@ -187,6 +181,59 @@ public class DatesAppointmentsService {
         } else {
             //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
         }
+    }
 
+    public void setStatusRangeTimeAdmission(LocalDate date, String startTimeAdmission, String endTimeStartAdmission, StatusAdmissionTime status) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
+            if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeStartAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
+
+                List<String> timeAdmissionToChangeStatus = getListTimeAdmission(startTimeAdmission, endTimeStartAdmission, time);
+
+                for (String key : timeAdmissionToChangeStatus) {
+                    time.put(key, status.getStatus());
+                }
+
+                visitDate.get().setScheduleTime(getScheduleJSON(time));
+                datesAppointmentsRepository.save(visitDate.get());
+
+            } else {
+                //ToDo вернуть ошибку про несуществующее время. Мб сделать через @Valid?
+            }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
+    }
+
+    private List<String> getListTimeAdmission(String startTimeAdmission, String endTimeStartAdmission, Map<String, String> time) {
+        List<String> listTimeAdmission = new ArrayList<>();
+        for (Map.Entry<String, String> entry : time.entrySet()) {
+            String key = entry.getKey();
+            if (isTimeInRange(key, startTimeAdmission, endTimeStartAdmission)) {
+                listTimeAdmission.add(key);
+            }
+        }
+        return listTimeAdmission;
+    }
+
+    public void clearDateVisitBefore(LocalDate date) {
+        datesAppointmentsRepository.deleteByVisitDateBefore(date);
+    }
+
+    public void addTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
+            if (!time.containsKey(timeAvailability)) {
+                time.put(timeAvailability, status.getStatus());
+                visitDate.get().setScheduleTime(getScheduleJSON(time));
+                datesAppointmentsRepository.save(visitDate.get());
+            } else {
+                //ToDo вернуть ошибку про существующее время. Мб сделать через @Valid?
+            }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
     }
 }
