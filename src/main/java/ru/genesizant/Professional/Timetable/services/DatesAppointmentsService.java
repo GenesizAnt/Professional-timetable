@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.DatesAppointmentsRepository;
@@ -13,6 +14,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.AVAILABLE;
 
 @Service
 public class DatesAppointmentsService {
@@ -69,7 +72,7 @@ public class DatesAppointmentsService {
         String[] timeArray = timeList.toArray(new String[0]);
         Map<String, String> availableScheduleTime = new HashMap<>();
         for (String time : timeArray) {
-            availableScheduleTime.put(time, "доступно"); //ToDo Сделать энам состояние для расписания. Свободен занят под вопросом
+            availableScheduleTime.put(time, AVAILABLE.getStatus());
         }
         return availableScheduleTime;
     }
@@ -137,8 +140,8 @@ public class DatesAppointmentsService {
         }
     }
 
-    public void deleteTimeRangeAdmission(LocalDate dateOne, String startTimeAdmission, String endTimeAdmission) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(dateOne);
+    public void deleteTimeRangeAdmission(LocalDate date, String startTimeAdmission, String endTimeAdmission) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
@@ -168,5 +171,22 @@ public class DatesAppointmentsService {
 
     private boolean isTimeInRange(String time, String startTimeAdmission, String endTimeAdmission) {
         return time.compareTo(startTimeAdmission) >= 0 && time.compareTo(endTimeAdmission) <= 0;
+    }
+
+    public void setStatusTimeAdmission(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+        if (visitDate.isPresent()) {
+            Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
+            if (time.containsKey(timeAdmission)) {
+                time.put(timeAdmission, status.getStatus());
+                visitDate.get().setScheduleTime(getScheduleJSON(time));
+                datesAppointmentsRepository.save(visitDate.get());
+            } else {
+                //ToDo вернуть ошибку про несуществующее время. Мб сделать через @Valid?
+            }
+        } else {
+            //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
+        }
+
     }
 }

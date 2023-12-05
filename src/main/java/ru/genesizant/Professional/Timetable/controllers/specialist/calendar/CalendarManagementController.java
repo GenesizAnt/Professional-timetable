@@ -114,20 +114,19 @@ public class CalendarManagementController {
 
     @PostMapping("/setTimeAvailabilityStatus")
     public String setTimeAvailabilityStatus(HttpServletRequest request,
-                                            @RequestParam("date") String date,
+                                            @RequestParam("date") LocalDate date,
                                             @RequestParam("timeAdmission") String timeAdmission,
-                                            @RequestParam("selectedOption") String selectedOption,
+                                            @RequestParam("selectedOption") StatusAdmissionTime status,
                                             Model model) {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-            if (selectedOption.equals("Выбрать статус")) {
+            if (status == null) {
 //                model.addAttribute("error", "Необходимо выбрать статус времени"); //ToDo сделать отображение ошибки
 //                return "your-error-view"; // отобразить страницу с сообщением об ошибке
             }
 
-
-//            datesAppointmentsService.deleteTimeRangeAdmission(dateOne, startTimeAdmission, endTimeAdmission);
+            datesAppointmentsService.setStatusTimeAdmission(date, timeAdmission, status);
 
             return "redirect:/specialist/admission_calendar_view";
 

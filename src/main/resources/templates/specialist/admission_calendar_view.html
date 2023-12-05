@@ -89,12 +89,27 @@
     <input type="time" id="timeAdmission" name="timeAdmission" value="">
     <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">
         <option selected>Выбрать статус</option>
-        <option value="1">Доступно</option>
-        <option value="2">Забронировано</option>
-        <option value="3">Под вопросом</option>
+        <option value="AVAILABLE">Доступно</option>
+        <option value="RESERVED">Забронировано</option>
+        <option value="IN_QUESTION">Под вопросом</option>
     </select>
     <input type="submit" value="Установить">
 </form> <br>
+
+<u>Установить статус доступности для диапазона времени</u>
+<!--<form th:method="POST" th:action="@{/calendar/setTimeAvailabilityStatus}">-->
+<!--    <label for="date">Дата:</label>-->
+<!--    <input type="date" id="date" name="date">-->
+<!--    <label for="selectedTimeAdmission">Время:</label>-->
+<!--    <input type="time" id="timeAdmission" name="timeAdmission" value="">-->
+<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
+<!--        <option selected>Выбрать статус</option>-->
+<!--        <option value="1">Доступно</option>-->
+<!--        <option value="2">Забронировано</option>-->
+<!--        <option value="3">Под вопросом</option>-->
+<!--    </select>-->
+<!--    <input type="submit" value="Установить">-->
+<!--</form> <br>-->
 
 <p5>Записать клиента</p5><br>
 <p5>Очистить даты из календаря раньше: </p5><br><br>
