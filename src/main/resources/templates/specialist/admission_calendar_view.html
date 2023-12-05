@@ -13,6 +13,7 @@
             font-weight: bold;
         }
     </style>
+
 </head>
 <body>
 <h1 th:text="${name} + ', здесь ты можешь посмотреть свои сводобные даты и запланировать новые'">Привет, специалист</h1>
@@ -42,9 +43,12 @@
 <br>
 <h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>
 <h2 style="text-align:center;">Клиент видит только установленные даты</h2>
-<h6>Изменить данные календаря</h6>
+<h6>Изменить данные календаря</h6><br>
 
-<p5>Записать клиента</p5><br>
+<b>Записать клиента</b>
+<a th:href="@{/enroll/enroll_page}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a><br><br>
+<!--<button type="button" class="btn btn-success btn-sm" onclick="window.location.href='/specialist/enroll_client'">Перейти</button><br>-->
+<!--<td><a th:href="@{'/visitors/specialist/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>-->
 
 <u>Удалить дату</u>
 <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
