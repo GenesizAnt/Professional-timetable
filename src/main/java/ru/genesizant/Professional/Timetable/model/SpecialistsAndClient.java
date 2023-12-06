@@ -1,0 +1,53 @@
+package ru.genesizant.Professional.Timetable.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
+
+@Entity
+@Table(name = "specialistsandclient")
+public class SpecialistsAndClient {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "specialistId", referencedColumnName = "id")
+    private Person specialistList;
+
+    @ManyToOne
+    @JoinColumn(name = "visitorId", referencedColumnName = "id")
+    private Person visitorList;
+
+    public SpecialistsAndClient() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Person getSpecialistList() {
+        return specialistList;
+    }
+
+    public void setSpecialistList(Person specialistList) {
+        this.specialistList = specialistList;
+    }
+
+    public Person getVisitorList() {
+        return visitorList;
+    }
+
+    public void setVisitorList(Person visitorList) {
+        this.visitorList = visitorList;
+    }
+}

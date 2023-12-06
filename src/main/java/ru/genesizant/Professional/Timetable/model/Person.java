@@ -72,7 +72,48 @@ public class Person {
     @OneToMany(mappedBy = "specialistDateAppointments")
     private List<DatesAppointments> datesAppointmentsList;
 
+    @OneToMany(mappedBy = "specialistList")
+    private List<SpecialistsAndClient> specialistSpecialistsAndClientList;
+
+    @OneToMany(mappedBy = "visitorList")
+    private List<SpecialistsAndClient> visitorSpecialistsAndClientList;
+
+    @OneToMany(mappedBy = "specialistUnregisteredPerson")
+    private List<UnregisteredPerson> specialistUnregisteredPersonList;
+
     public Person() {
+    }
+
+    public List<UnregisteredPerson> getSpecialistUnregisteredPersonList() {
+        return specialistUnregisteredPersonList;
+    }
+
+    public void setSpecialistUnregisteredPersonList(List<UnregisteredPerson> specialistUnregisteredPersonList) {
+        this.specialistUnregisteredPersonList = specialistUnregisteredPersonList;
+    }
+
+    public List<DatesAppointments> getDatesAppointmentsList() {
+        return datesAppointmentsList;
+    }
+
+    public void setDatesAppointmentsList(List<DatesAppointments> datesAppointmentsList) {
+        this.datesAppointmentsList = datesAppointmentsList;
+    }
+
+    public List<SpecialistsAndClient> getSpecialistSpecialistsAndClientList() {
+        return specialistSpecialistsAndClientList;
+    }
+
+    public void setSpecialistSpecialistsAndClientList(List<SpecialistsAndClient> specialistSpecialistsAndClientList) {
+        this.specialistSpecialistsAndClientList = specialistSpecialistsAndClientList;
+    }
+
+    public List<SpecialistsAndClient> getVisitorSpecialistsAndClientList() {
+        return visitorSpecialistsAndClientList;
+    }
+
+    public void setVisitorSpecialistsAndClientList(List<SpecialistsAndClient> visitorSpecialistsAndClientList) {
+        this.visitorSpecialistsAndClientList = visitorSpecialistsAndClientList;
     }
 
     public List<SpecialistNotes> getSpecialistNotesList() {

@@ -36,7 +36,7 @@ public class EnrollClientController {
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
     }
-
+    
     @GetMapping("/enroll_page")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
