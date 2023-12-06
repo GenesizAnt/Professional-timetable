@@ -17,11 +17,11 @@ public class SpecialistsAndClient {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "specialistId", referencedColumnName = "id")
+    @JoinColumn(name = "specialistid", referencedColumnName = "id")
     private Person specialistList;
 
     @ManyToOne
-    @JoinColumn(name = "visitorId", referencedColumnName = "id")
+    @JoinColumn(name = "visitorid", referencedColumnName = "id")
     private Person visitorList;
 
     public SpecialistsAndClient() {

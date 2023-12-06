@@ -16,6 +16,24 @@
 <h1 th:text="${name} + ', здесь ты можешь управлять записями клиентов'">Привет, специалист</h1>
 
 <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
+<u>Список закрепленных за специалистом клинетов</u>
+<form th:method="POST" th:action="@{/calendar/dateFormDelete}">
+    <select class="form-select" aria-label="Select Client" name="clientId">
+        <option value="">Выбери клиента для записи</option>
+        <option th:each="client : ${clientsBySpecialist}"
+                th:value="${client.id}"
+                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name</option>
+    </select>
+    <input type="submit" value="Выбрать">
+</form> <br>
+
+<!--<select class="form-select" aria-label="Select Client" name="clientId">-->
+<!--    <option value="">Выбери клиента для записи</option>-->
+<!--    <option th:each="client : ${clientsBySpecialist}"-->
+<!--            th:value="${client.id}"-->
+<!--            th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name</option>-->
+<!--</select>-->
+
 
 <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
@@ -24,7 +42,6 @@
 <!--Выбор времени и даты для регистрации клиента-->
 
 <!--Отображение календаря-->
-
 <div class="table-responsive">
     <table class="table">
         <thead>

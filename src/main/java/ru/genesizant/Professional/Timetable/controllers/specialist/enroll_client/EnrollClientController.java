@@ -2,24 +2,22 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_clien
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime;
+import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,18 +27,32 @@ public class EnrollClientController {
     private final JWTUtil jwtUtil;
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
+    private final SpecialistsAndClientService specialistsAndClientService;
 
     @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService) {
+    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
+        this.specialistsAndClientService = specialistsAndClientService;
     }
-    
+
     @GetMapping("/enroll_page")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
+//            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
+            List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
+            model.addAttribute("clientsBySpecialist", clientsBySpecialist);
+            //ToDo форма не закончена сделать контролер для приема выбранного клиента
+
+//            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
+//            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
+//            <!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
+
+//            <!--Выбор времени и даты для регистрации клиента-->
+
+//            <!--Отображение календаря-->
             Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
             // Создаем новую Map для хранения отсортированных значений
