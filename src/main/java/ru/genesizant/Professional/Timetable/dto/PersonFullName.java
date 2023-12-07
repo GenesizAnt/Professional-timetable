@@ -45,4 +45,9 @@ public class PersonFullName {
     public void setPatronymic(String patronymic) {
         this.patronymic = patronymic;
     }
+
+    @Override
+    public String toString() {
+        return username + ' ' + surname + ' ' + patronymic;
+    }
 }
