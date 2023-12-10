@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.RESERVED;
 
@@ -96,10 +97,26 @@ public class DatesAppointmentsService {
             freeSchedule.put(datesAppointments.getVisitDate(), getAvailableTime(datesAppointments.getScheduleTime()));
         }
 
-//        for (DatesAppointments datesAppointments : allById) {
-//            freeSchedule.put(datesAppointments.getVisitDate(), datesAppointments.getScheduleTime());
-//        }
-        return freeSchedule;
+//        Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+
+        // Создаем новую Map для хранения отсортированных значений
+        Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+
+        // Сортировка значений внутренней Map и вставка их в отсортированную Map
+        freeSchedule.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
+            Map<String, String> sortedInnerMap = value.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+            datesNoSortedDate.put(key, sortedInnerMap);
+        });
+
+        // Сортировка ключей Map и вставка их в отсортированную Map
+        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesNoSortedDate.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+
+        return sortedFreeSchedule;
     }
 
     //Получить расписание в формате Map<String, String>

@@ -59,26 +59,27 @@ public class EnrollClientController {
 //            <!--Выбор времени и даты для регистрации клиента-->
 
 //            <!--Отображение календаря-->
-            Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
-            // Создаем новую Map для хранения отсортированных значений
-            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+//            // Создаем новую Map для хранения отсортированных значений
+//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+//
+//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
+//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
+//                Map<String, String> sortedInnerMap = value.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByKey())
+//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+//                datesNoSortedDate.put(key, sortedInnerMap);
+//            });
+//
+//            // Сортировка ключей Map и вставка их в отсортированную Map
+//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
+//                    .sorted(Map.Entry.comparingByKey())
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 
-            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-                Map<String, String> sortedInnerMap = value.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-                datesNoSortedDate.put(key, sortedInnerMap);
-            });
-
-            // Сортировка ключей Map и вставка их в отсортированную Map
-            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("dates", sortedDates);
+            model.addAttribute("dates", sortedFreeSchedule);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -113,26 +114,31 @@ public class EnrollClientController {
 //            <!--Выбор времени и даты для регистрации клиента-->
 
 //            <!--Отображение календаря-->
-            Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
-            // Создаем новую Map для хранения отсортированных значений
-            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
-            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-                Map<String, String> sortedInnerMap = value.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-                datesNoSortedDate.put(key, sortedInnerMap);
-            });
 
-            // Сортировка ключей Map и вставка их в отсортированную Map
-            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+//            // Создаем новую Map для хранения отсортированных значений
+//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+//
+//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
+//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
+//                Map<String, String> sortedInnerMap = value.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByKey())
+//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+//                datesNoSortedDate.put(key, sortedInnerMap);
+//            });
+//
+//            // Сортировка ключей Map и вставка их в отсортированную Map
+//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
+//                    .sorted(Map.Entry.comparingByKey())
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("dates", sortedDates);
+            model.addAttribute("dates", sortedFreeSchedule);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -171,26 +177,31 @@ public class EnrollClientController {
 //            <!--Выбор времени и даты для регистрации клиента-->
 
 //            <!--Отображение календаря-->
-            Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
-            // Создаем новую Map для хранения отсортированных значений
-            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
 
-            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-                Map<String, String> sortedInnerMap = value.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-                datesNoSortedDate.put(key, sortedInnerMap);
-            });
 
-            // Сортировка ключей Map и вставка их в отсортированную Map
-            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+//            // Создаем новую Map для хранения отсортированных значений
+//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+//
+//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
+//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
+//                Map<String, String> sortedInnerMap = value.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByKey())
+//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+//                datesNoSortedDate.put(key, sortedInnerMap);
+//            });
+//
+//            // Сортировка ключей Map и вставка их в отсортированную Map
+//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
+//                    .sorted(Map.Entry.comparingByKey())
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("dates", sortedDates);
+            model.addAttribute("dates", sortedFreeSchedule);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
