@@ -34,6 +34,7 @@ public class DatesAppointmentsService {
         this.objectMapper = objectMapper;
     }
 
+    //Добавить в БД доступные даты и время на будущее
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
@@ -42,6 +43,7 @@ public class DatesAppointmentsService {
         // Вычисляем количество дней между двумя датами
         int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
+        //Получить расписание в формате "Время":"Статус"
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour, status);
 
         for (int i = 0; i <= daysBetween; i++) {
@@ -63,6 +65,7 @@ public class DatesAppointmentsService {
 
 
     //ToDo сделать утилитный класс для методов этого сервиса?
+    //Получить возможное расписание на день "с" "по" с определенным интервалом в формате "Время":"Статус"
     private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         LocalTime startTime = LocalTime.parse(startTimeWork);
         LocalTime endTime = LocalTime.parse(endTimeWork);
@@ -84,6 +87,7 @@ public class DatesAppointmentsService {
         return availableScheduleTime;
     }
 
+    //Получить расписание (даты и вермя) по ИД спеца и установить статус
     public Map<LocalDate, Map<String, String>> getCalendarFreeScheduleById(long id) {
         List<DatesAppointments> allById = datesAppointmentsRepository.findAllBySpecialistDateAppointmentsIdOrderById(id);
         Map<LocalDate, Map<String, String>> freeSchedule = new HashMap<>();
@@ -95,10 +99,10 @@ public class DatesAppointmentsService {
 //        for (DatesAppointments datesAppointments : allById) {
 //            freeSchedule.put(datesAppointments.getVisitDate(), datesAppointments.getScheduleTime());
 //        }
-        System.out.println();
         return freeSchedule;
     }
 
+    //Получить расписание в формате Map<String, String>
     private Map<String, String> getAvailableTime(String scheduleTime) {
 
         Map<String, String> freeSchedule = new HashMap<>();
@@ -139,13 +143,13 @@ public class DatesAppointmentsService {
 //        return freeSchedule;
     }
 
+    //получить из формата Map<String, String> расписание в JSON формате
     private String getScheduleJSON(Map<String, String> availableRecordingTime) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(availableRecordingTime);
+            return objectMapper.writeValueAsString(availableRecordingTime);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return null; //ToDo решить как убрать возврат нулл
         }
     }
 
@@ -281,6 +285,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Записать(обозначить как забронированное время) Клиента на прием
     public void enrollVisitorNewAppointments(LocalDateTime meeting, PersonFullName personFullName, Long specialistId) {
 
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);

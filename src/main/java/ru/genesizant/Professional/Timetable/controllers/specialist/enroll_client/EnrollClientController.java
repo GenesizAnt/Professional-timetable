@@ -41,6 +41,8 @@ public class EnrollClientController {
         this.modelMapper = modelMapper;
     }
 
+    //Отображение страницы для Записи Клиента
+    //передает на Вью - Имя спеца, Список зарег и незарег пользователей, Календарь
     @GetMapping("/enroll_page")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -88,6 +90,7 @@ public class EnrollClientController {
     }
 
 
+    //Выбор и отображение Клиента для записи
     @PostMapping("/customerForRecording")
     public String customerForRecording(Model model, HttpServletRequest request,
                                        @RequestParam("clientFullName") String clientId) {
@@ -141,6 +144,7 @@ public class EnrollClientController {
     }
 
 
+    //Запись клиента на выбранную дату
     @PostMapping("/newDatesAppointments")
     public String newDatesAppointments(Model model, HttpServletRequest request,
                                        @RequestParam("meeting") LocalDateTime meeting,
@@ -154,6 +158,7 @@ public class EnrollClientController {
             //ToDo сделать Валид для проверки что время не забронированно
             PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
+            //ToDo сделать добавление в БД Таблица Приемы
 
 //            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
 //            model.addAttribute("selectedCustomerFullName", personFullName);

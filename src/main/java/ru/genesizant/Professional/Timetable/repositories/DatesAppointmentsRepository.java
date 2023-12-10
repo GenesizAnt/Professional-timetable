@@ -12,8 +12,10 @@ import java.util.Optional;
 @Repository
 public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointments, Long> {
 
+    //Получить расписание (даты и вермя) по ИД спеца
     List<DatesAppointments> findAllBySpecialistDateAppointmentsIdOrderById(long id);
 
+    //Получить Конкретную дату и конкретного Спеца
     Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate date, long id);
 
     @Transactional

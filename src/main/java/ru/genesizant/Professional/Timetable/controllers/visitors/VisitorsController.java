@@ -27,6 +27,7 @@ public class VisitorsController {
         this.personService = personService;
     }
 
+    //отображение списка специалистов на выбор для клиента
     @GetMapping("/start_menu_visitor") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getStartMenu(Model model, HttpServletRequest request) {
 
@@ -81,6 +82,7 @@ public class VisitorsController {
 //        return "visitors/start_menu_visitor";
     }
 
+    //отображение меню конкретного специалиста для клиента (запись, даты и пр.)
     @GetMapping("/specialist_choose/{id}") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getSpecialistMenu(Model model, HttpServletRequest request, @PathVariable String id) {
 

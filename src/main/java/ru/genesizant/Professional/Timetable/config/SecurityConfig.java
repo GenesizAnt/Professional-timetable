@@ -52,9 +52,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));//ToDo разобраться правильно ли так писать и может перестает работать форма регистрации, если стоит STATELESS не сохраняет сессию на сервере
 
-
-//        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return httpSecurity.build();
     }
 

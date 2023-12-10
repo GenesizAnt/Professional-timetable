@@ -32,6 +32,7 @@ public class SpecialistController {
         this.datesAppointmentsService = datesAppointmentsService;
     }
 
+    //Отображение меню специалиста, что он может делать
     @GetMapping("/start_menu_specialist")
     public String getStartMenu(Model model, HttpServletRequest request) {
 
@@ -54,6 +55,7 @@ public class SpecialistController {
         return "specialist/start_menu_specialist";
     }
 
+    //Отображение календаря для специалиста
     @GetMapping("/admission_calendar_view")
     public String addAdmissionCalendarView(Model model, HttpServletRequest request) {
 

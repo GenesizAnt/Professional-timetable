@@ -30,6 +30,7 @@ public class CalendarManagementController {
         this.datesAppointmentsService = datesAppointmentsService;
     }
 
+    //прием формы для автоматического заполнение календаря на будущий период
     @PostMapping("/admission_calendar_update")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request,
                                              @RequestParam("startDate") String startDate,
@@ -52,6 +53,7 @@ public class CalendarManagementController {
         }
     }
 
+    //удалить полный День из календаря доступных для выбора дат
     @PostMapping("/dateFormDelete")
     public String selectedDateFormDelete(HttpServletRequest request, @RequestParam("selectedDate") LocalDate selectedDate) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -66,6 +68,7 @@ public class CalendarManagementController {
     }
 
 
+    //удалить Диапазон Дней из календаря доступных для выбора дат
     @PostMapping("/dateRangeFormDelete")
     public String selectedDateRangeFormDelete(HttpServletRequest request,
                                               @RequestParam("startDateRange") LocalDate startDateRange,
@@ -81,6 +84,7 @@ public class CalendarManagementController {
         }
     }
 
+    //удалить конкретное Время из календаря доступное для выбора
     @PostMapping("/timeAdmissionFormDelete")
     public String selectedTimeAdmissionFormDelete(HttpServletRequest request,
                                                   @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
@@ -96,6 +100,7 @@ public class CalendarManagementController {
         }
     }
 
+    //удалить Диапазон Времени из календаря доступного для выбора
     @PostMapping("/timeAdmissionRangeFormDelete")
     public String selectedTimeAdmissionRangeFormDelete(HttpServletRequest request,
                                                        @RequestParam("startTimeAdmission") String startTimeAdmission,
@@ -112,6 +117,7 @@ public class CalendarManagementController {
         }
     }
 
+    //изменить статус доступности конкретного Времени из календаря доступного для выбора
     @PostMapping("/setTimeAvailabilityStatus")
     public String setTimeAvailabilityStatus(HttpServletRequest request,
                                             @RequestParam("date") LocalDate date,
@@ -135,6 +141,7 @@ public class CalendarManagementController {
     }
 
 
+    //изменить статус доступности Диапазона Времени из календаря доступного для выбора
     @PostMapping("/setRangeTimeAvailabilityStatus")
     public String setRangeTimeAvailabilityStatus(HttpServletRequest request,
                                                  @RequestParam("date") LocalDate date,
@@ -158,6 +165,7 @@ public class CalendarManagementController {
         }
     }
 
+    //Удалить все Даты из календаря до указанной даты
     @PostMapping("/dateBeforeClear")
     public String dateBeforeClear(HttpServletRequest request, @RequestParam("selectedDateBeforeClear") LocalDate date) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -171,6 +179,7 @@ public class CalendarManagementController {
         }
     }
 
+    //Добавить в календарь конкретное время, дату и статус доступное для приема
     @PostMapping("/addTimeAvailability")
     public String addTimeAvailability(HttpServletRequest request,
                                       @RequestParam("timeAvailability") String timeAvailability,
@@ -192,6 +201,7 @@ public class CalendarManagementController {
         }
     }
 
+    //Добавить в календарь Диапазон времени, дату и статус доступное для приема
     @PostMapping("/addRangeTimeAvailability")
     public String addRangeTimeAvailability(HttpServletRequest request,
                                       @RequestParam("startAddTimeAdmission") String startTimeAvailability,
