@@ -28,6 +28,7 @@
     <input type="submit" value="Выбрать">
 </form> <br>
 
+<!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 <u>Список закрепленных за специалистом клиентов НЕЗАРЕГИСТРИРОВАННЫХ</u>
 <form th:method="POST" th:action="@{/enroll/customerForRecording}">
     <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED" />
@@ -40,6 +41,19 @@
     <input type="submit" value="Выбрать">
 </form> <br>
 
+<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>
+<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">
+    <div class="input-group">
+        <span class="input-group-text">Укажите ФИО</span>
+        <input type="text" aria-label="username" name="username" class="form-control">
+        <input type="text" aria-label="surname" name="surname" class="form-control">
+        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">
+        <input type="submit" value="Добавить">
+    </div>
+</form> <br>
+
+
+<!--отображение выбранного для записи клиента-->
 <div class="container px-4">
     <div class="row gx-5">
         <div class="col">
@@ -60,7 +74,6 @@
     <input type="submit">
 </form>
 
-<!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
 <!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
 

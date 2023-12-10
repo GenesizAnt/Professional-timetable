@@ -153,10 +153,43 @@ public class EnrollClientController {
                 datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
             }
 
-//            registered
-//                    unregistered
-
             //ToDo сделать добавление в БД Таблица Приемы
+
+//            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
+//            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
+//            <!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
+
+//            <!--Выбор времени и даты для регистрации клиента-->
+
+//            <!--Отображение календаря-->
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+
+            model.addAttribute("name", request.getSession().getAttribute("name"));
+            model.addAttribute("dates", sortedFreeSchedule);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+        return "specialist/enroll_client_view";
+    }
+
+
+    @PostMapping("/newUnregisteredPerson")
+    public String newUnregisteredPerson(Model model, HttpServletRequest request,
+                                        @RequestParam("username") String username,
+                                        @RequestParam("surname") String surname,
+                                        @RequestParam("patronymic") String patronymic) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+//            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
+            List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
+            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
+            model.addAttribute("clientsBySpecialist", clientsBySpecialist);
+            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
+
+            unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById((long) request.getSession().getAttribute("id")).get());
+
 
 //            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 //            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->

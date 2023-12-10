@@ -26,4 +26,13 @@ public class UnregisteredPersonService {
     public Optional<UnregisteredPerson> findById(Long id) {
         return unregisteredPersonRepository.findById(id);
     }
+
+    public void addNewUnregisteredPerson(String username, String surname, String patronymic, Person specialist) {
+        UnregisteredPerson newUnregisteredPerson = new UnregisteredPerson();
+        newUnregisteredPerson.setUsername(username);
+        newUnregisteredPerson.setSurname(surname);
+        newUnregisteredPerson.setPatronymic(patronymic);
+        newUnregisteredPerson.setSpecialistUnregisteredPerson(specialist);
+        unregisteredPersonRepository.save(newUnregisteredPerson);
+    }
 }
