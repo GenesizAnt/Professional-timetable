@@ -1,30 +1,37 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime;
+import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.DatesAppointmentsRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.AVAILABLE;
+import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.RESERVED;
 
 @Service
 public class DatesAppointmentsService {
 
     private final DatesAppointmentsRepository datesAppointmentsRepository;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public DatesAppointmentsService(DatesAppointmentsRepository datesAppointmentsRepository) {
+    public DatesAppointmentsService(DatesAppointmentsRepository datesAppointmentsRepository, ObjectMapper objectMapper) {
         this.datesAppointmentsRepository = datesAppointmentsRepository;
+        this.objectMapper = objectMapper;
     }
 
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
@@ -93,18 +100,43 @@ public class DatesAppointmentsService {
     }
 
     private Map<String, String> getAvailableTime(String scheduleTime) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> freeSchedule = null;
 
+        Map<String, String> freeSchedule = new HashMap<>();
         try {
-            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {
-            });
+            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {});
 
-            System.out.println(freeSchedule);
+            for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (value instanceof String) {
+                    freeSchedule.put(key, (String) value);
+                } else if (value instanceof Map) {
+                    // Если значение является объектом, получаем его в виде JSON-строки
+                    String nestedValue = objectMapper.writeValueAsString(value);
+                    freeSchedule.put(key, nestedValue);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return freeSchedule;
+
+
+
+        //РАБОТАЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕТ!!!!!!!!!!!!!
+//        ObjectMapper mapper = new ObjectMapper();
+//        Map<String, String> freeSchedule = null;
+//
+//        try {
+//            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {
+//            });
+//
+//            System.out.println(freeSchedule);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return freeSchedule;
     }
 
     private String getScheduleJSON(Map<String, String> availableRecordingTime) {
@@ -248,4 +280,36 @@ public class DatesAppointmentsService {
             //ToDo вернуть ошибку про несуществующую дату. Мб сделать через @Valid?
         }
     }
+
+    public void enrollVisitorNewAppointments(LocalDateTime meeting, PersonFullName personFullName, Long specialistId) {
+
+        Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
+
+        if (datesAppointments.isPresent()) {
+            String scheduleTime = datesAppointments.get().getScheduleTime();
+            try {
+                // Преобразование JSON-строки в объект JsonNode
+                JsonNode jsonNode = objectMapper.readTree(scheduleTime);
+
+                // создаем новый объект ObjectNode для замены значения
+                ObjectNode objectNode = objectMapper.createObjectNode();
+
+                objectNode.put(RESERVED.getStatus(), personFullName.toString());
+
+                // заменяем значение в объекте JsonNode
+                ((ObjectNode) jsonNode).set(String.valueOf(meeting.toLocalTime()), objectNode);
+
+                // преобразуем объект JsonNode обратно в строку JSON
+                String updatedScheduleTime = objectMapper.writeValueAsString(jsonNode);
+
+                datesAppointments.get().setScheduleTime(updatedScheduleTime);
+
+                datesAppointmentsRepository.save(datesAppointments.get());
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }

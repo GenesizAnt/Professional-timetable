@@ -151,9 +151,9 @@ public class EnrollClientController {
             List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
             model.addAttribute("clientsBySpecialist", clientsBySpecialist);
 
-            LocalDateTime localDate = meeting;
-            String personFullName = selectedCustomerId;
-            System.out.println();
+            //ToDo сделать Валид для проверки что время не забронированно
+            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
 
 //            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
 //            model.addAttribute("selectedCustomerFullName", personFullName);
