@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "UnregisteredPerson")
+@Table(name = "unregisteredperson")
 public class UnregisteredPerson {
 
     @Id
@@ -28,7 +28,7 @@ public class UnregisteredPerson {
     private String patronymic;
 
     @ManyToOne
-    @JoinColumn(name = "specialistId", referencedColumnName = "id")
+    @JoinColumn(name = "specialistid", referencedColumnName = "id")
     private Person specialistUnregisteredPerson;
 
     public UnregisteredPerson() {

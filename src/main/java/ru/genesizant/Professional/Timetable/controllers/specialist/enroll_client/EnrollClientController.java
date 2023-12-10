@@ -10,17 +10,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
+import ru.genesizant.Professional.Timetable.services.UnregisteredPersonService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client.StatusRegisteredPerson.REGISTERED;
+import static ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client.StatusRegisteredPerson.UNREGISTERED;
 
 @Controller
 @RequestMapping("/enroll")
@@ -31,14 +34,16 @@ public class EnrollClientController {
     private final DatesAppointmentsService datesAppointmentsService;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final ModelMapper modelMapper;
+    private final UnregisteredPersonService unregisteredPersonService;
 
     @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper) {
+    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.specialistsAndClientService = specialistsAndClientService;
         this.modelMapper = modelMapper;
+        this.unregisteredPersonService = unregisteredPersonService;
     }
 
     //Отображение страницы для Записи Клиента
@@ -49,8 +54,9 @@ public class EnrollClientController {
 
 //            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
             List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
+            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
             model.addAttribute("clientsBySpecialist", clientsBySpecialist);
-            //ToDo форма не закончена сделать контролер для приема выбранного клиента
+            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
 
 //            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 //            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
@@ -60,22 +66,6 @@ public class EnrollClientController {
 
 //            <!--Отображение календаря-->
             Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-
-//            // Создаем новую Map для хранения отсортированных значений
-//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
-//
-//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-//                Map<String, String> sortedInnerMap = value.entrySet().stream()
-//                        .sorted(Map.Entry.comparingByKey())
-//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-//                datesNoSortedDate.put(key, sortedInnerMap);
-//            });
-//
-//            // Сортировка ключей Map и вставка их в отсортированную Map
-//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-//                    .sorted(Map.Entry.comparingByKey())
-//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
@@ -94,17 +84,27 @@ public class EnrollClientController {
     //Выбор и отображение Клиента для записи
     @PostMapping("/customerForRecording")
     public String customerForRecording(Model model, HttpServletRequest request,
-                                       @RequestParam("clientFullName") String clientId) {
+                                       @RequestParam("clientFullName") String clientId,
+                                       @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
 //            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
             List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
-
+            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
             model.addAttribute("clientsBySpecialist", clientsBySpecialist);
-            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
+            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
 
-            model.addAttribute("selectedCustomerFullName", personFullName);
-            model.addAttribute("selectedCustomerId", personFullName.getId());
+            if (registeredStatus.equals(REGISTERED)) {
+                PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
+                model.addAttribute("selectedCustomerFullName", personFullNameRegistered);
+                model.addAttribute("selectedCustomerId", personFullNameRegistered.getId());
+                model.addAttribute("registeredStatus", REGISTERED);
+            } else if (registeredStatus.equals(UNREGISTERED)) {
+                PersonFullName personFullNameUnregistered = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(clientId)), PersonFullName.class);
+                model.addAttribute("selectedCustomerFullName", personFullNameUnregistered);
+                model.addAttribute("selectedCustomerId", personFullNameUnregistered.getId());
+                model.addAttribute("registeredStatus", UNREGISTERED);
+            }
 
 
 //            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
@@ -116,26 +116,6 @@ public class EnrollClientController {
 //            <!--Отображение календаря-->
 
             Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-
-
-
-//            // Создаем новую Map для хранения отсортированных значений
-//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
-//
-//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-//                Map<String, String> sortedInnerMap = value.entrySet().stream()
-//                        .sorted(Map.Entry.comparingByKey())
-//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-//                datesNoSortedDate.put(key, sortedInnerMap);
-//            });
-//
-//            // Сортировка ключей Map и вставка их в отсортированную Map
-//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-//                    .sorted(Map.Entry.comparingByKey())
-//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-
-
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
             model.addAttribute("dates", sortedFreeSchedule);
@@ -154,21 +134,29 @@ public class EnrollClientController {
     @PostMapping("/newDatesAppointments")
     public String newDatesAppointments(Model model, HttpServletRequest request,
                                        @RequestParam("meeting") LocalDateTime meeting,
-                                       @RequestParam("selectedCustomerId") String selectedCustomerId) {
+                                       @RequestParam("selectedCustomerId") String selectedCustomerId,
+                                       @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
 //            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
             List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
+            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
             model.addAttribute("clientsBySpecialist", clientsBySpecialist);
+            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
 
             //ToDo сделать Валид для проверки что время не забронированно
-            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
-            //ToDo сделать добавление в БД Таблица Приемы
+            if (registeredStatus.equals(REGISTERED)) {
+                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
+            } else if (registeredStatus.equals(UNREGISTERED)) {
+                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
+            }
 
-//            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
-//            model.addAttribute("selectedCustomerFullName", personFullName);
-//
+//            registered
+//                    unregistered
+
+            //ToDo сделать добавление в БД Таблица Приемы
 
 //            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
 //            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
@@ -178,27 +166,6 @@ public class EnrollClientController {
 
 //            <!--Отображение календаря-->
             Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-
-
-
-
-//            // Создаем новую Map для хранения отсортированных значений
-//            Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
-//
-//            // Сортировка значений внутренней Map и вставка их в отсортированную Map
-//            datesNotSorted.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
-//                Map<String, String> sortedInnerMap = value.entrySet().stream()
-//                        .sorted(Map.Entry.comparingByKey())
-//                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-//                datesNoSortedDate.put(key, sortedInnerMap);
-//            });
-//
-//            // Сортировка ключей Map и вставка их в отсортированную Map
-//            Map<LocalDate, Map<String, String>> sortedDates = datesNoSortedDate.entrySet().stream()
-//                    .sorted(Map.Entry.comparingByKey())
-//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-
-
 
             model.addAttribute("name", request.getSession().getAttribute("name"));
             model.addAttribute("dates", sortedFreeSchedule);

@@ -16,8 +16,9 @@
 <h1 th:text="${name} + ', здесь ты можешь управлять записями клиентов'">Привет, специалист</h1>
 
 <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
-<u>Список закрепленных за специалистом клинетов</u>
+<u>Список закрепленных за специалистом клиентов</u>
 <form th:method="POST" th:action="@{/enroll/customerForRecording}">
+    <input type="hidden" th:name="registeredStatus" th:value="REGISTERED" />
     <select class="form-select" aria-label="Select Client" name="clientFullName">
         <option value="">Выбери клиента для записи</option>
         <option th:each="client : ${clientsBySpecialist}"
@@ -27,8 +28,17 @@
     <input type="submit" value="Выбрать">
 </form> <br>
 
-<!--th:value="${client.id}"-->
-<!--th:value="${client.username + ' ' + client.surname + ' ' + client.patronymic}"-->
+<u>Список закрепленных за специалистом клиентов НЕЗАРЕГИСТРИРОВАННЫХ</u>
+<form th:method="POST" th:action="@{/enroll/customerForRecording}">
+    <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED" />
+    <select class="form-select" aria-label="Select Client" name="clientFullName">
+        <option value="">Выбери клиента для записи</option>
+        <option th:each="client : ${unregisteredBySpecialist}"
+                th:value="${client.id}"
+                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name</option>
+    </select>
+    <input type="submit" value="Выбрать">
+</form> <br>
 
 <div class="container px-4">
     <div class="row gx-5">
@@ -44,6 +54,7 @@
 <form th:method="POST" th:action="@{/enroll/newDatesAppointments}">
     <!--                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />-->
     <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}" />
+    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}" />
     <label for="meeting">Выберите дату и время для встречи:</label>
     <input type="datetime-local" id="meeting" name="meeting">
     <input type="submit">

@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 
+import java.util.List;
+
 @Repository
 public interface UnregisteredPersonRepository extends JpaRepository<UnregisteredPerson, Long> {
+
+    List<UnregisteredPerson> findAllBySpecialistUnregisteredPersonIdOrderById(Long id);
 }
