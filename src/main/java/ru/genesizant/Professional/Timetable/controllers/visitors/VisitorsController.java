@@ -141,4 +141,38 @@ public class VisitorsController {
 
         return "visitors/specialist_choose";
     }
+
+    @PostMapping("/cancelling_booking")
+    public String setCancellingBooking(Model model, HttpServletRequest request,
+                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                        @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+            if (datesAppointmentsService.isCheckAvailableCancellingBooking(meetingCancel, personFullNameRegistered.toString(), Long.valueOf(selectedSpecialistId))) {
+
+                datesAppointmentsService.cancellingBookingAppointments(meetingCancel, Long.valueOf(selectedSpecialistId));
+
+            } else {
+                model.addAttribute("notAvailable", "НЕЛЬЗЯ ОТМЕНИТЬ ЧУЖУЮ ЗАПИСЬ!");
+            }
+
+
+            Optional<Person> specialist = personService.findById(Long.valueOf(selectedSpecialistId));
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(selectedSpecialistId), personFullNameRegistered.toString());
+
+            model.addAttribute("specialist", specialist.get().getUsername());
+            model.addAttribute("dates", sortedFreeSchedule);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
+        return "visitors/specialist_choose";
+//        return "redirect:/visitors/specialist_choose/" + selectedSpecialistId;
+    }
 }

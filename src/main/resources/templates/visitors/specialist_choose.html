@@ -16,6 +16,9 @@
         .action-item button {
             margin-left: 50px;
         }
+        .red-text {
+            color: red;
+        }
     </style>
 
 </head>
@@ -46,8 +49,16 @@
     <input type="submit" value="Записаться">
 </form> <br>
 
-<u>Ваши записи у специалиста</u>
+<u>Выберете время отмены Вашей записи</u>
+<form th:method="POST" th:action="@{/visitors/cancelling_booking}">
+    <input type="hidden" th:name="selectedSpecialistId" th:value="${selectedSpecialistId}" />
+    <label for="meeting">Выберите дату и время отмены записи:</label>
+    <input type="datetime-local" id="meetingCancel" name="meetingCancel">
+    <input type="submit" value="Отменить">
+</form>
+<td class="red-text" th:text="${notAvailable != null} ? ${notAvailable} : ''">Нет доступа</td>
 
+<br>
 <u>Даты время доступные для записи</u>
 <div class="table-responsive">
     <table class="table">

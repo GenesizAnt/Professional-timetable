@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.AVAILABLE;
 import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.RESERVED;
 
 @Service
@@ -390,4 +391,53 @@ public class DatesAppointmentsService {
         }
     }
 
+    public void cancellingBookingAppointments(LocalDateTime meeting, Long specialistId) {
+
+        Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
+
+        if (datesAppointments.isPresent()) {
+            String scheduleTime = datesAppointments.get().getScheduleTime();
+            try {
+                // Преобразование JSON-строки в объект JsonNode
+                JsonNode jsonNode = objectMapper.readTree(scheduleTime);
+
+//                ObjectNode objectNode = objectMapper.createObjectNode();
+//
+//                objectNode.put(String.valueOf(meeting.toLocalTime()), AVAILABLE.getStatus());
+
+                ((ObjectNode) jsonNode).remove(String.valueOf(meeting.toLocalTime()));
+
+                ((ObjectNode) jsonNode).put(String.valueOf(meeting.toLocalTime()), AVAILABLE.getStatus());
+
+                // преобразуем объект JsonNode обратно в строку JSON
+                String updatedScheduleTime = objectMapper.writeValueAsString(jsonNode);
+
+                datesAppointments.get().setScheduleTime(updatedScheduleTime);
+
+                datesAppointmentsRepository.save(datesAppointments.get());
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public boolean isCheckAvailableCancellingBooking(LocalDateTime meeting, String personFullNameRegistered, Long specialistId) {
+
+        Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
+
+        if (datesAppointments.isPresent()) {
+            String scheduleTime = datesAppointments.get().getScheduleTime();
+            try {
+                // Преобразование JSON-строки в объект JsonNode
+                JsonNode jsonNode = objectMapper.readTree(scheduleTime);
+
+                return jsonNode.get(String.valueOf(meeting.toLocalTime())).get(RESERVED.getStatus()).asText().equals(personFullNameRegistered);
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
 }
