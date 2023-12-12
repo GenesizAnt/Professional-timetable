@@ -76,5 +76,10 @@ public class TestController {
         return "all";
     }
 
+    @GetMapping("/development")
+    public String developmentInfo() {
+        return "development_page";
+    }
+
 
 }

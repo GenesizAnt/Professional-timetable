@@ -209,4 +209,6 @@ public class EnrollClientController {
         }
         return "specialist/enroll_client_view";
     }
+
+    //ToDo сделать форму для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов
 }

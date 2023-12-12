@@ -24,10 +24,9 @@
     </tr>
     </thead>
     <tbody>
-    <!--/*@thymesVar id="specialists" type="ru.genesizant.Professional.Timetable.controllers.visitors.VisitorsController"*/-->
     <tr th:each="specialist, iterStat : ${specialists}">
         <th scope="row" th:text="${iterStat.index + 1}">1</th>
-        <td><a th:href="@{'/visitors/specialist/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>
+        <td><a th:href="@{'/visitors/specialist_choose/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>
         <td th:text="${specialist.surname}"></td>
         <td th:text="${specialist.email}"></td>
     </tr>

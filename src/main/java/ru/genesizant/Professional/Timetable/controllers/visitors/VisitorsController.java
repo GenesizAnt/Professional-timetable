@@ -1,17 +1,21 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -20,11 +24,15 @@ public class VisitorsController {
 
     private final JWTUtil jwtUtil;
     private final PersonService personService;
+    private final DatesAppointmentsService datesAppointmentsService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
+        this.datesAppointmentsService = datesAppointmentsService;
+        this.modelMapper = modelMapper;
     }
 
     //отображение списка специалистов на выбор для клиента
@@ -89,15 +97,46 @@ public class VisitorsController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             Optional<Person> specialist = personService.findById(Long.valueOf(id));
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(id), personFullNameRegistered.toString());
 
 //            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
 //            model.addAttribute("name", request.getSession().getAttribute("name"));
             model.addAttribute("specialist", specialist.get().getUsername());
+            model.addAttribute("selectedSpecialistId", specialist.get().getId());
+            model.addAttribute("dates", sortedFreeSchedule);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
             return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+        }
+
+        return "visitors/specialist_choose";
+    }
+
+    @PostMapping("/appointment_booking")
+    public String setAppointmentBooking(Model model, HttpServletRequest request,
+                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                        @RequestParam("meeting") LocalDateTime meeting) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
+
+            Optional<Person> specialist = personService.findById(Long.valueOf(selectedSpecialistId));
+            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(selectedSpecialistId), personFullNameRegistered.toString());
+
+            model.addAttribute("specialist", specialist.get().getUsername());
+            model.addAttribute("dates", sortedFreeSchedule);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
         }
 
         return "visitors/specialist_choose";

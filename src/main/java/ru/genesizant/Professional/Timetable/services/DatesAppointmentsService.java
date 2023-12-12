@@ -103,7 +103,7 @@ public class DatesAppointmentsService {
         Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
 
         // Сортировка значений внутренней Map и вставка их в отсортированную Map
-        freeSchedule.forEach((key, value) -> { //ToDo Эти сортировки должен делать класс Сервиса!!!!
+        freeSchedule.forEach((key, value) -> {
             Map<String, String> sortedInnerMap = value.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
@@ -124,7 +124,8 @@ public class DatesAppointmentsService {
 
         Map<String, String> freeSchedule = new HashMap<>();
         try {
-            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {});
+            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {
+            });
 
             for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
                 String key = entry.getKey();
@@ -135,30 +136,85 @@ public class DatesAppointmentsService {
                 } else if (value instanceof Map) {
                     // Если значение является объектом, получаем его в виде JSON-строки
                     String nestedValue = objectMapper.writeValueAsString(value);
-                    freeSchedule.put(key, nestedValue);
+                    JsonNode jsonNodeInput = objectMapper.readTree(nestedValue);
+                    String inputName = RESERVED.getStatus() + " : " + jsonNodeInput.get(RESERVED.getStatus()).asText();
+                    freeSchedule.put(key, inputName);
+//                    freeSchedule.put(key, nestedValue);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return freeSchedule;
-
-
-
-        //РАБОТАЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕТ!!!!!!!!!!!!!
-//        ObjectMapper mapper = new ObjectMapper();
-//        Map<String, String> freeSchedule = null;
-//
-//        try {
-//            freeSchedule = mapper.readValue(scheduleTime, new TypeReference<>() {
-//            });
-//
-//            System.out.println(freeSchedule);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return freeSchedule;
     }
+
+    //Получить расписание (даты и вермя) по ИД спеца и установить статус ДЛЯ КЛИЕНТА
+    //ToDo как убрать дублирующий код с предыдущим
+    public Map<LocalDate, Map<String, String>> getCalendarFreeScheduleForVisitor(long id, String personFullNameRegistered) {
+        List<DatesAppointments> allById = datesAppointmentsRepository.findAllBySpecialistDateAppointmentsIdOrderById(id);
+        Map<LocalDate, Map<String, String>> freeSchedule = new HashMap<>();
+
+        for (DatesAppointments datesAppointments : allById) {
+            freeSchedule.put(datesAppointments.getVisitDate(), getAvailableTimeForVisitor(datesAppointments.getScheduleTime(), personFullNameRegistered));
+        }
+
+//        Map<LocalDate, Map<String, String>> datesNotSorted = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+
+        // Создаем новую Map для хранения отсортированных значений
+        Map<LocalDate, Map<String, String>> datesNoSortedDate = new LinkedHashMap<>();
+
+        // Сортировка значений внутренней Map и вставка их в отсортированную Map
+        freeSchedule.forEach((key, value) -> {
+            Map<String, String> sortedInnerMap = value.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+            datesNoSortedDate.put(key, sortedInnerMap);
+        });
+
+        // Сортировка ключей Map и вставка их в отсортированную Map
+        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesNoSortedDate.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+
+        return sortedFreeSchedule;
+    }
+
+    //Получить расписание в формате Map<String, String>
+    private Map<String, String> getAvailableTimeForVisitor(String scheduleTime, String personFullNameRegistered) {
+
+        Map<String, String> freeSchedule = new HashMap<>();
+        try {
+            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {
+            });
+
+            for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (value instanceof String) {
+                    freeSchedule.put(key, (String) value);
+                } else if (value instanceof Map) {
+                    // Если значение является объектом, получаем его в виде JSON-строки
+                    String nestedValue = objectMapper.writeValueAsString(value);
+                    JsonNode jsonNode = objectMapper.readTree(nestedValue);
+                    String nestedValueName = jsonNode.get(RESERVED.getStatus()).asText();
+                    String nestedValueStatus = jsonNode.fieldNames().next();
+                    if (nestedValueName.equals(personFullNameRegistered)) {
+//                        JsonNode jsonNodeInput = objectMapper.readTree(nestedValue);
+                        String inputName = RESERVED.getStatus() + " : " + jsonNode.get(RESERVED.getStatus()).asText();
+                        freeSchedule.put(key, inputName);
+                    } else {
+                        freeSchedule.put(key, nestedValueStatus);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return freeSchedule;
+    }
+
 
     //получить из формата Map<String, String> расписание в JSON формате
     private String getScheduleJSON(Map<String, String> availableRecordingTime) {
