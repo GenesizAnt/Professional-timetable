@@ -11,6 +11,7 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,13 +27,15 @@ public class VisitorsController {
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
     private final ModelMapper modelMapper;
+    private final SpecialistsAndClientService specialistsAndClientService;
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.modelMapper = modelMapper;
+        this.specialistsAndClientService = specialistsAndClientService;
     }
 
     //отображение списка специалистов на выбор для клиента
@@ -162,6 +165,29 @@ public class VisitorsController {
 
         return "visitors/specialist_choose";
     }
+
+    @GetMapping("/assigned_specialist/{id}")
+    public String appointSpecialist(Model model, HttpServletRequest request, @PathVariable String id) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+            specialistsAndClientService.appointSpecialist(personFullNameRegistered.getId(), Long.valueOf(id));
+
+            model.addAttribute("selectedSpecialistId", id);
+            displayPage(model, id, personFullNameRegistered);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+        }
+
+        return "visitors/specialist_choose";
+    }
+
+    //ToDo добавить отображение отметки "Закреплен ли сейчас посетитель за специалистом или нет"
 
     private void displayPage(Model model, @PathVariable String id, PersonFullName personFullNameRegistered) {
         Optional<Person> specialist = personService.findById(Long.valueOf(id));

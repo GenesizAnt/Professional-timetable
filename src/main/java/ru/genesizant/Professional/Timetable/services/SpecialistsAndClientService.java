@@ -38,4 +38,11 @@ public class SpecialistsAndClientService {
         }
         return clientsBySpecialist;
     }
+
+    public void appointSpecialist(Long visitorId, Long specialistId) {
+        SpecialistsAndClient newAppointSpecialist = new SpecialistsAndClient();
+        newAppointSpecialist.setVisitorList(personService.findById(visitorId).get());
+        newAppointSpecialist.setSpecialistList(personService.findById(specialistId).get());
+        specialistsAndClientRepository.save(newAppointSpecialist);
+    }
 }
