@@ -96,17 +96,11 @@ public class VisitorsController {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-            Optional<Person> specialist = personService.findById(Long.valueOf(id));
             PersonFullName personFullNameRegistered =
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
-            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(id), personFullNameRegistered.toString());
-
-//            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
-//            model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("specialist", specialist.get().getUsername());
-            model.addAttribute("selectedSpecialistId", specialist.get().getId());
-            model.addAttribute("dates", sortedFreeSchedule);
+            model.addAttribute("selectedSpecialistId", id);
+            displayPage(model, id, personFullNameRegistered);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -128,11 +122,8 @@ public class VisitorsController {
 
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
 
-            Optional<Person> specialist = personService.findById(Long.valueOf(selectedSpecialistId));
-            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(selectedSpecialistId), personFullNameRegistered.toString());
-
-            model.addAttribute("specialist", specialist.get().getUsername());
-            model.addAttribute("dates", sortedFreeSchedule);
+            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
+            displayPage(model, selectedSpecialistId, personFullNameRegistered);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -155,17 +146,14 @@ public class VisitorsController {
             if (datesAppointmentsService.isCheckAvailableCancellingBooking(meetingCancel, personFullNameRegistered.toString(), Long.valueOf(selectedSpecialistId))) {
 
                 datesAppointmentsService.cancellingBookingAppointments(meetingCancel, Long.valueOf(selectedSpecialistId));
+                model.addAttribute("selectedSpecialistId", selectedSpecialistId); //ToDo нормально ли добавлять атрибут каждый раз???
 
             } else {
                 model.addAttribute("notAvailable", "НЕЛЬЗЯ ОТМЕНИТЬ ЧУЖУЮ ЗАПИСЬ!");
             }
 
 
-            Optional<Person> specialist = personService.findById(Long.valueOf(selectedSpecialistId));
-            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(selectedSpecialistId), personFullNameRegistered.toString());
-
-            model.addAttribute("specialist", specialist.get().getUsername());
-            model.addAttribute("dates", sortedFreeSchedule);
+            displayPage(model, selectedSpecialistId, personFullNameRegistered);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -173,6 +161,13 @@ public class VisitorsController {
         }
 
         return "visitors/specialist_choose";
-//        return "redirect:/visitors/specialist_choose/" + selectedSpecialistId;
+    }
+
+    private void displayPage(Model model, @PathVariable String id, PersonFullName personFullNameRegistered) {
+        Optional<Person> specialist = personService.findById(Long.valueOf(id));
+        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(id), personFullNameRegistered.toString());
+
+        model.addAttribute("specialist", specialist.get().getUsername());
+        model.addAttribute("dates", sortedFreeSchedule);
     }
 }
