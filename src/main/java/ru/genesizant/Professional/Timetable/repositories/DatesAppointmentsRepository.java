@@ -29,4 +29,5 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
 
     Optional<DatesAppointments> findByVisitDate(LocalDate date);
 
+    List<DatesAppointments> findAllVisitDatesBySpecialistDateAppointmentsId(Long id);
 }

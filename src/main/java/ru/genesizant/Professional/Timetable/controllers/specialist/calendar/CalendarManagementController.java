@@ -42,7 +42,13 @@ public class CalendarManagementController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
-            datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE); //ToDo будет ли ошибка если ввести даты или время наоборот
+
+            if (datesAppointmentsService.isBetweenSavedDate(startDate, endDate, personSpecialist.get().getId())) {
+                //ToDo добавить отображение ошибки - нельзя добавить к уже существующим данным
+            } else {
+                datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE); //ToDo будет ли ошибка если ввести даты или время наоборот
+            }
+
 
 
             return "redirect:/specialist/admission_calendar_view";

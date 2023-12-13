@@ -440,4 +440,18 @@ public class DatesAppointmentsService {
         }
         return false;
     }
+
+    public boolean isBetweenSavedDate(String startDate, String endDate, Long id) {
+        List<DatesAppointments> allVisitDatesBySpecialistId = datesAppointmentsRepository.findAllVisitDatesBySpecialistDateAppointmentsId(id);
+        LocalDate startDateObject = LocalDate.parse(startDate);
+        LocalDate endDateObject = LocalDate.parse(endDate);
+        for (DatesAppointments datesAppointments : allVisitDatesBySpecialistId) {
+            LocalDate date = datesAppointments.getVisitDate();
+            if (date.isEqual(startDateObject) || date.isEqual(endDateObject)
+                    || (date.isAfter(startDateObject) && date.isBefore(endDateObject))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
