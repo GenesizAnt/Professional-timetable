@@ -10,6 +10,7 @@ import ru.genesizant.Professional.Timetable.repositories.SpecialistsAndClientRep
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SpecialistsAndClientService {
@@ -44,5 +45,9 @@ public class SpecialistsAndClientService {
         newAppointSpecialist.setVisitorList(personService.findById(visitorId).get());
         newAppointSpecialist.setSpecialistList(personService.findById(specialistId).get());
         specialistsAndClientRepository.save(newAppointSpecialist);
+    }
+
+    public Optional<SpecialistsAndClient> assignedToSpecialist(Person idSpecialist, Person idVisitor) {
+        return specialistsAndClientRepository.findBySpecialistListAndAndVisitorList(idSpecialist, idVisitor);
     }
 }

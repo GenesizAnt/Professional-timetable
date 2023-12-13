@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
@@ -103,7 +104,7 @@ public class VisitorsController {
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
             model.addAttribute("selectedSpecialistId", id);
-            displayPage(model, id, personFullNameRegistered);
+            displayPage(model, id, personFullNameRegistered, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -126,7 +127,7 @@ public class VisitorsController {
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
 
             model.addAttribute("selectedSpecialistId", selectedSpecialistId);
-            displayPage(model, selectedSpecialistId, personFullNameRegistered);
+            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -156,7 +157,7 @@ public class VisitorsController {
             }
 
 
-            displayPage(model, selectedSpecialistId, personFullNameRegistered);
+            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -177,7 +178,7 @@ public class VisitorsController {
             specialistsAndClientService.appointSpecialist(personFullNameRegistered.getId(), Long.valueOf(id));
 
             model.addAttribute("selectedSpecialistId", id);
-            displayPage(model, id, personFullNameRegistered);
+            displayPage(model, id, personFullNameRegistered, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -189,10 +190,15 @@ public class VisitorsController {
 
     //ToDo добавить отображение отметки "Закреплен ли сейчас посетитель за специалистом или нет"
 
-    private void displayPage(Model model, @PathVariable String id, PersonFullName personFullNameRegistered) {
+    private void displayPage(Model model, @PathVariable String id, PersonFullName personFullNameRegistered, HttpServletRequest request) {
         Optional<Person> specialist = personService.findById(Long.valueOf(id));
+        Optional<Person> visitor = personService.findById((Long) request.getSession().getAttribute("id"));
         Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(id), personFullNameRegistered.toString());
 
+        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.assignedToSpecialist(specialist.get(), visitor.get());
+        if (assignedToSpecialist.isPresent()) {
+            model.addAttribute("assignedToSpecialist", assignedToSpecialist);
+        }
         model.addAttribute("specialist", specialist.get().getUsername());
         model.addAttribute("dates", sortedFreeSchedule);
     }

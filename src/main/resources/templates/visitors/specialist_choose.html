@@ -26,12 +26,51 @@
 <h1 th:text="'Меню по выбранному специалисту - ' + ${specialist}">Меню по специалисту</h1>
 
 <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-<div class="action-item" style="line-height:3">
-    <span>Закрепиться за специалистом</span>
-<!--    <button type="button" class="btn btn-info" onclick="window.location.href='/visitors/assigned_specialist'">Перейти</button>-->
-    <a th:href="@{'/visitors/assigned_specialist/' + ${selectedSpecialistId}}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a><br><br>
 
+
+
+
+<!--<div class="action-item" style="line-height:3">-->
+<!--    <span>Закрепиться за специалистом</span>-->
+<!--&lt;!&ndash;    <button type="button" class="btn btn-info" onclick="window.location.href='/visitors/assigned_specialist'">Перейти</button>&ndash;&gt;-->
+<!--    <a th:href="@{'/visitors/assigned_specialist/' + ${selectedSpecialistId}}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a><br><br>-->
+<!--</div>-->
+
+<!--<div class="container px-4">-->
+<!--    <div class="row gx-5">-->
+<!--        <div class="col">-->
+<!--            <div class="p-3 border bg-light">-->
+<!--                <tr>-->
+<!--                    <td th:text="${assignedToSpecialist != null} ? 'Закреплен за специалистом - Да' : 'Закреплен за специалистом - Нет'">Выбери клиента для записи</td>-->
+<!--                </tr>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<div class="container">
+    <div class="row align-items-start">
+        <div class="col" style="line-height:3">
+            <span>Закрепиться за специалистом</span>
+            <a th:href="@{'/visitors/assigned_specialist/' + ${selectedSpecialistId}}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+        </div>
+        <div class="col">
+            <div class="p-3 border bg-light">
+                <tr>
+                    <td th:text="${assignedToSpecialist != null} ? 'Закреплен за специалистом - Да' : 'Закреплен за специалистом - Нет'">Закреплен за специалистом</td>
+                </tr>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+
+
+
+
+
 <div class="action-item" style="line-height:3">
     <span>Отправить письмо специалисту</span>
     <button type="button" class="btn btn-info" onclick="window.location.href='/development'">Перейти</button>
