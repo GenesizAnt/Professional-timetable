@@ -8,6 +8,24 @@
 </head>
 <body>
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+<ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" th:href="@{/development}">Мой профиль</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/visitors/start_menu_visitor}">Выбор специалиста</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/development}">Мои визиты</a>
+    </li>
+    <li class="nav-item">
+        <form th:method="POST" th:action="@{/logout}">
+            <input type="submit" class="btn btn-secondary" value="Выход">
+        </form>
+    </li>
+</ul><br>
+
 <!--/*@thymesVar id="email" type="ru.genesizant.Professional.Timetable.dto.PersonDTO"*/-->
 <h1 th:text="'Привет, ' + ${name}">Привет, пользователь</h1>
 

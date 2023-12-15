@@ -31,6 +31,26 @@
 <!--<br><br><br><br><br><br><br><br><br>-->
 
 
+<ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" th:href="@{/enroll/enroll_page}">Меню специалиста</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/enroll/enroll_page}">Запись клиента</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/specialist/admission_calendar_view}">Управление календарем</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/visitors/start_menu_visitor}">Выбор специалиста</a>
+    </li>
+    <li class="nav-item">
+        <form th:method="POST" th:action="@{/logout}">
+            <input type="submit" class="btn btn-secondary" value="Выход">
+        </form>
+    </li>
+</ul><br>
+
 
 <!--/*@thymesVar id="email" type="ru.genesizant.Professional.Timetable.dto.PersonDTO"*/-->
 <h1 th:text="'Привет, специалист ' + ${name}">Привет, специалист</h1>

@@ -23,6 +23,23 @@
 
 </head>
 <body>
+<ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" th:href="@{/development}">Мой профиль</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/visitors/start_menu_visitor}">Выбор специалиста</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/development}">Мои визиты</a>
+    </li>
+    <li class="nav-item">
+        <form th:method="POST" th:action="@{/logout}">
+            <input type="submit" class="btn btn-secondary" value="Выход">
+        </form>
+    </li>
+</ul><br>
+
 <h1 th:text="'Меню по выбранному специалисту - ' + ${specialist}">Меню по специалисту</h1>
 
 <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
