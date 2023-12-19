@@ -1,9 +1,14 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +16,12 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final ModelMapper modelMapper;
 
-    public PersonService(PersonRepository personRepository) {
+    @Autowired
+    public PersonService(PersonRepository personRepository, ModelMapper modelMapper) {
         this.personRepository = personRepository;
+        this.modelMapper = modelMapper;
     }
 
     public Optional<Person> loadUserByEmail(String email)  {
@@ -32,5 +40,26 @@ public class PersonService {
 
     public Optional<Person> findById(Long id) {
         return personRepository.findById(id);
+    }
+
+    public List<PersonFullName> findAllPersonFullName() {
+        List<PersonFullName> allUsers = new ArrayList<>();
+        List<Person> allPerson = personRepository.findAll();
+        for (Person person : allPerson) {
+            allUsers.add(
+                    modelMapper.map(personRepository.findById(person.getId()), PersonFullName.class)
+            );
+
+        }
+        return allUsers;
+    }
+
+    public void setNewRoleForUser(Long clientId, String selectedRole) {
+        Optional<Person> person = personRepository.findById(clientId);
+        if (person.isPresent()) {
+            Person newRolePerson = person.get();
+            newRolePerson.setRole(selectedRole);
+            personRepository.save(newRolePerson);
+        }
     }
 }

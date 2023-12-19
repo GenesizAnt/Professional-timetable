@@ -8,17 +8,28 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.security.PersonDetails;
+import ru.genesizant.Professional.Timetable.services.PersonService;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class TestController {
 
     private final JWTUtil jwtUtil;
+    private final PersonService personService;
 
     @Autowired
-    public TestController(JWTUtil jwtUtil) {
+    public TestController(JWTUtil jwtUtil, PersonService personService) {
         this.jwtUtil = jwtUtil;
+        this.personService = personService;
     }
 
     @GetMapping("/hello")
@@ -67,7 +78,40 @@ public class TestController {
     }
 
     @GetMapping("/super")
-    public String showUserInfo() {
+    public String showUserInfo(Model model, HttpServletRequest request) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            List<PersonFullName> users = personService.findAllPersonFullName();
+
+            model.addAttribute("users", users);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
+        return "super";
+    }
+
+    @PostMapping("/superChoose")
+    public String superChoose(Model model, HttpServletRequest request,
+                               @RequestParam("clientId") String clientId,
+                               @RequestParam("role") String selectedRole) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            List<PersonFullName> users = personService.findAllPersonFullName();
+
+            model.addAttribute("users", users);
+
+            personService.setNewRoleForUser(Long.valueOf(clientId), selectedRole);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
         return "super";
     }
 

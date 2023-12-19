@@ -99,7 +99,7 @@ public class AuthController {
                 return "redirect:/specialist/start_menu_specialist";
             }
             case "ROLE_SUPER" -> {
-                return "redirect:/all"; //ToDo сделать страницу для суперпользователя
+                return "redirect:/super"; //ToDo сделать страницу для суперпользователя
             }
             default -> {
                 return "redirect:/auth/login?error";

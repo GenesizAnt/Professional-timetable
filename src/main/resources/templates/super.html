@@ -9,6 +9,24 @@
 <body>
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <h1>Super</h1>
+
+<u>Установка ролей пользователей приложения</u>
+<form th:method="POST" th:action="@{/superChoose}">
+    <select class="form-select" aria-label="Select Client" name="clientId">
+        <option value="">Выбери клиента для записи</option>
+        <option th:each="client : ${users}"
+                th:value="${client.id}"
+                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name</option>
+    </select>
+    <select class="form-select" multiple aria-label="multiple select example" name="role">
+        <option selected>Выбери роль для установки</option>
+        <option value="ROLE_USER">ROLE_USER</option>
+        <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+    </select>
+    <input type="submit" value="Выбрать">
+</form> <br>
+
+
 <form th:method="POST" action="/logout">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <input type="submit" value="logout">
