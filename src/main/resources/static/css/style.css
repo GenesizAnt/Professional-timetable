@@ -1,9 +1,10 @@
 :root {
     --color1: #7792ef;
     --color2: #CB916F;
-    --color3: #00AAFF;
+    --color3: #037ab2;
     --color4: #F1F1F1;
     --color5: #e7ef7a;
+    --color6: #198754;
 }
 
 html {
@@ -36,11 +37,19 @@ header, section, footer {
     padding: 25px 0;
 }
 
+div, button {
+    padding: 2px 0;
+}
+
+/*button {*/
+/*    padding: 2px 0;*/
+/*}*/
+
 .nav-pills {
     --bs-nav-pills-border-radius: var(--bs-border-radius);
     font-weight: 500;
     --bs-nav-pills-link-active-color: #fff;
-    --bs-nav-pills-link-active-bg: #0d6efd;
+    --bs-nav-pills-link-active-bg: var(--color3);
 }
 
 /*header {*/
@@ -59,16 +68,37 @@ header, footer {
 }
 
 .btn-info {
-    /*display: block;*/
     max-width: 200px;
-    /*margin: 0 auto;*/
-    /*padding: 8px 30px;*/
     right: 0;
     left: auto;
     color: var(--bs-white);
     background-color: var(--color3);
 }
 .btn-info:hover {
+    color: var(--bs-white);
+    background-color: var(--color1);
+}
+
+.btn-enroll {
+    /*max-width: 200px;*/
+    /*right: 0;*/
+    /*left: auto;*/
+    color: var(--bs-white);
+    background-color: var(--color6);
+}
+.btn-enroll:hover {
+    color: var(--bs-white);
+    background-color: var(--color1);
+}
+
+.btn-list {
+    /*max-width: 200px;*/
+    /*right: 0;*/
+    /*left: auto;*/
+    color: var(--bs-white);
+    background-color: var(--color3);
+}
+.btn-list:hover {
     color: var(--bs-white);
     background-color: var(--color1);
 }
