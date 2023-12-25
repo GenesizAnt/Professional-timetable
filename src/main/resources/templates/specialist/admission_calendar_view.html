@@ -71,7 +71,6 @@
         </div>
     </div>
 </header>
-<br>
 
 <!--<h1 th:text="${name} + ', здесь ты можешь посмотреть свои сводобные даты и запланировать новые'">Привет, специалист</h1>-->
 <!--<br>-->
@@ -81,55 +80,119 @@
             <div class="col-12">
                 <h3 class="text-center color1 mb-5" >Клиент видит только установленные даты</h3>
             </div>
-            <div class="col-12">
+            <div class="col-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
-                <h5 class="text-center">Установи диапазон свободных дат и времени приема</h5>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal" data-bs-target="#addAvailableTime">
+                    <h6 class="text-center">Создать личное расписание</h6>
+                </button>
+                <div class="modal fade" id="addAvailableTime" tabindex="-1" aria-labelledby="addAvailableTimeLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="addAvailableTimeLabel">Установи диапазон свободных дат и времени приема</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/calendar/admission_calendar_update}">
+                                    <label for="startDate">Дата начала доступного расписания:</label>
+                                    <input type="date" id="startDate" name="startDate" value="2023-11-30">
+                                    <label for="endDate">Дата конца доступного расписания:</label>
+                                    <input type="date" id="endDate" name="endDate" value="2023-12-02">
+                                    <label for="startTime">Начало доступного времени для приемов:</label>
+                                    <input type="time" id="startTime" name="startTime" value="10:00:00">
+                                    <label for="endTime">Конец доступного времени для приемов:</label>
+                                    <input type="time" id="endTime" name="endTime" value="18:00:00">
+                                    <label for="minInterval">Минимальный интервал между приемами:</label>
+                                    <input type="time" id="minInterval" name="minInterval" value="01:00:00">
+                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Отправить</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="line"></div>
             </div>
         </div>
         <div class="row">
-            <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
-                <h5 class="text-center">Удалить дату</h5>
+            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-square-xmark"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal" data-bs-target="#deleteDate">
+                    <h6 class="text-center">Удалить дату</h6>
+                </button>
+                <div class="modal fade" id="deleteDate" tabindex="-1" aria-labelledby="deleteDateLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="deleteDateLabel">Выбери дату для удаления</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
+                                    <label for="selectedDate">Выберите дату:</label>
+                                    <input type="date" id="selectedDate" name="selectedDate">
+                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Удалить</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="line"></div>
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-delete-left"></i></div>
                 <h5 class="text-center">Удалить диапазон дат</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-person-circle-plus"></i></div>
                 <h5 class="text-center">Добавить время доступное для приема</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-address-book"></i></div>
                 <h5 class="text-center">Добавить диапазон времени доступного для приема</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-eraser"></i></div>
                 <h5 class="text-center">Удалить время доступное для приема</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-house-lock"></i></div>
                 <h5 class="text-center">Удалить диапазон времени доступного для приема</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-regular fa-calendar-check"></i></div>
                 <h5 class="text-center">Установить статус доступности времени</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-plane-circle-check"></i></div>
                 <h5 class="text-center">Установить статус доступности для диапазона времени</h5>
                 <div class="line"></div>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="itd_circle"><i class="fa-solid fa-trash"></i></div>
                 <h5 class="text-center">Очистить даты из календаря раньше:</h5>
                 <div class="line"></div>
             </div>
@@ -141,6 +204,7 @@
 
 
 
+<!-- значок ручки <i class="fa-solid fa-pen-nib"></i>-->
 
 
 
@@ -151,44 +215,43 @@
 
 
 
-
-<h1 style="text-align:center;">Установи диапазон свободных дат и времени приема</h1>
-<form th:method="POST" action="/calendar/admission_calendar_update">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <label for="startDate">Дата начала доступного расписания:</label>
-    <input type="date" id="startDate" name="startDate" value="2023-11-30">
-    <br>
-    <label for="endDate">Дата конца доступного расписания:</label>
-    <input type="date" id="endDate" name="endDate" value="2023-12-02">
-    <br>
-    <label for="startTime">Начало доступного времени для приемов:</label>
-    <input type="time" id="startTime" name="startTime" value="10:00:00">
-    <br>
-    <label for="endTime">Конец доступного времени для приемов:</label>
-    <input type="time" id="endTime" name="endTime" value="18:00:00">
-    <br>
-    <label for="minInterval">Минимальный интервал между приемами:</label>
-    <input type="time" id="minInterval" name="minInterval" value="01:00:00">
-    <br>
-    <input type="submit" value="Отправить">
-</form>
-<br>
-<br>
-<h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>
-<h2 style="text-align:center;">Клиент видит только установленные даты</h2>
-<h6>Изменить данные календаря</h6><br>
+<!--<h1 style="text-align:center;">Установи диапазон свободных дат и времени приема</h1>-->
+<!--<form th:method="POST" action="/calendar/admission_calendar_update">-->
+<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+<!--    <label for="startDate">Дата начала доступного расписания:</label>-->
+<!--    <input type="date" id="startDate" name="startDate" value="2023-11-30">-->
+<!--    <br>-->
+<!--    <label for="endDate">Дата конца доступного расписания:</label>-->
+<!--    <input type="date" id="endDate" name="endDate" value="2023-12-02">-->
+<!--    <br>-->
+<!--    <label for="startTime">Начало доступного времени для приемов:</label>-->
+<!--    <input type="time" id="startTime" name="startTime" value="10:00:00">-->
+<!--    <br>-->
+<!--    <label for="endTime">Конец доступного времени для приемов:</label>-->
+<!--    <input type="time" id="endTime" name="endTime" value="18:00:00">-->
+<!--    <br>-->
+<!--    <label for="minInterval">Минимальный интервал между приемами:</label>-->
+<!--    <input type="time" id="minInterval" name="minInterval" value="01:00:00">-->
+<!--    <br>-->
+<!--    <input type="submit" value="Отправить">-->
+<!--</form>-->
+<!--<br>-->
+<!--<br>-->
+<!--<h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>-->
+<!--<h2 style="text-align:center;">Клиент видит только установленные даты</h2>-->
+<!--<h6>Изменить данные календаря</h6><br>-->
 
 <b>Управление записями клиентов</b>
 <a th:href="@{/enroll/enroll_page}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a><br><br>
 <!--<button type="button" class="btn btn-success btn-sm" onclick="window.location.href='/specialist/enroll_client'">Перейти</button><br>-->
 <!--<td><a th:href="@{'/visitors/specialist/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>-->
 
-<u>Удалить дату</u>
-<form th:method="POST" th:action="@{/calendar/dateFormDelete}">
-    <label for="selectedDate">Выберите дату:</label>
-    <input type="date" id="selectedDate" name="selectedDate">
-    <input type="submit" value="Удалить">
-</form> <br>
+<!--<u>Удалить дату</u>-->
+<!--<form th:method="POST" th:action="@{/calendar/dateFormDelete}">-->
+<!--    <label for="selectedDate">Выберите дату:</label>-->
+<!--    <input type="date" id="selectedDate" name="selectedDate">-->
+<!--    <input type="submit" value="Удалить">-->
+<!--</form> <br>-->
 
 <u>Удалить диапазон дат</u>
 <form th:method="POST" th:action="@{/calendar/dateRangeFormDelete}">
@@ -319,6 +382,19 @@
     </table>
 </div>
 
+<footer id="footer">
+    <div class="container">
+        <div class="row align-items-end">
+            <div class="col-md-12 text-center text-white">
+                <ul class="list-unstyled">
+                    <a href="https://t.me/GenesizAnt"> <i>Написать в Telegram</i> <i class="fa-brands fa-telegram"></i></a>
+                    <a href="https://t.me/cod_cat"> <i>Подписаться на Telegram-канал разработчика</i> <i class="fa-brands fa-telegram"></i></a>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
 <script>
     $(document).ready(function() {
         $('table').DataTable({
@@ -340,7 +416,6 @@
         });
     });
 </script>
-
 </body>
 </html>
 

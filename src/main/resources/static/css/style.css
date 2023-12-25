@@ -5,6 +5,7 @@
     --color4: #F1F1F1;
     --color5: #e7ef7a;
     --color6: #198754;
+    --color7: #f67522;
 }
 
 html {
@@ -102,6 +103,7 @@ footer a {
     background-color: var(--color1);
 }
 
+/* управление календарем */
 .color1 {
     color: var(--color1);
 }
@@ -113,4 +115,28 @@ footer a {
 }
 .bg2 {
     background-color: var(--color3);
+}
+
+.about {
+    background-color: #eee;
+}
+.about i {
+    font-size: 25px;
+    color: var(--color7);
+}
+.itd_circle {
+    margin: 0 auto 15px;
+    width: 70px;
+    height: 70px;
+    border: 3px solid var(--color7);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.line {
+    width: 100px;
+    height: 3px;
+    background-color: var(--color3);
+    margin: 15px auto 30px;
 }
