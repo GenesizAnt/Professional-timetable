@@ -32,9 +32,9 @@
     <li class="nav-item">
         <a class="nav-link" th:href="@{/specialist/admission_calendar_view}">Управление календарем</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" th:href="@{/visitors/start_menu_visitor}">Выбор специалиста</a>
-    </li>
+<!--    <li class="nav-item">-->
+<!--        <a class="nav-link" th:href="@{/visitors/start_menu_visitor}">Выбор специалиста</a>-->
+<!--    </li>-->
     <li class="nav-item">
         <form th:method="POST" th:action="@{/logout}">
             <input type="submit" class="btn btn-secondary" value="Выход">
@@ -55,68 +55,80 @@
 <br>
 
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Записать клиента</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Записать клиента</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <a th:href="@{/enroll/enroll_page}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <a th:href="@{/enroll/enroll_page}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Календарь приема клиентов</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Календарь приема клиентов</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <a th:href="@{/specialist/admission_calendar_view}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <a th:href="@{/specialist/admission_calendar_view}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Заметки специалиста</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Заметки специалиста</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <!--    onclick="window.location.href='/specialist/specialist_notes'"-->
+                <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <!--    onclick="window.location.href='/specialist/specialist_notes'"-->
-            <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Создать услуги</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Создать услуги</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <!--    onclick="window.location.href='/specialist/create_services'"-->
+                <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <!--    onclick="window.location.href='/specialist/create_services'"-->
-            <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Выставить счет</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Выставить счет</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <!--    onclick="window.location.href='/specialist/invoice_billing'"-->
+                <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <!--    onclick="window.location.href='/specialist/invoice_billing'"-->
-            <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 <div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-3">
-            <p class="h6">Написать письмо клиенту</p>
+    <section>
+        <div class="row align-items-center">
+            <div class="col-6 col-sm-3">
+                <p class="h6">Написать письмо клиенту</p>
+            </div>
+            <div class="col-6 col-sm-3">
+                <!--    onclick="window.location.href='/specialist/send_mail'"-->
+                <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
+            </div>
         </div>
-        <div class="col-6 col-sm-3">
-            <!--    onclick="window.location.href='/specialist/send_mail'"-->
-            <a th:href="@{/development}" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true">Перейти</a>
-        </div>
-    </div>
+    </section>
 </div>
 
 
@@ -161,8 +173,16 @@
 <!--</div>-->
 
 <footer id="footer">
-
+        <div class="container">
+            <div class="row align-items-end">
+                <div class="col-md-12 text-center text-white">
+                    <ul class="list-unstyled">
+                        <a href="https://t.me/GenesizAnt"> <i>Написать в Telegram</i> <i class="fa-brands fa-telegram"></i></a>
+                        <a href="https://t.me/cod_cat"> <i>Подписаться на Telegram-канал разработчика</i> <i class="fa-brands fa-telegram"></i></a>
+                    </ul>
+                </div>
+            </div>
+        </div>
 </footer>
-
 </body>
 </html>

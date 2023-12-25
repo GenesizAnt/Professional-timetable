@@ -33,17 +33,13 @@ a:hover {
     color: var(--color3);
 }
 
-header, section, footer {
+header {
     padding: 25px 0;
 }
 
-div, button {
-    padding: 2px 0;
+section, button {
+    padding: 3px 0;
 }
-
-/*button {*/
-/*    padding: 2px 0;*/
-/*}*/
 
 .nav-pills {
     --bs-nav-pills-border-radius: var(--bs-border-radius);
@@ -52,19 +48,22 @@ div, button {
     --bs-nav-pills-link-active-bg: var(--color3);
 }
 
-/*header {*/
-/*    padding: 200px 0;*/
-/*}*/
-
 header, footer {
     background: linear-gradient(to right, var(--color1),var(--color2));
 }
 
-#footer {
+footer {
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
+}
+
+footer a {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 15px;
+    color: #fff;
 }
 
 .btn-info {
@@ -101,4 +100,17 @@ header, footer {
 .btn-list:hover {
     color: var(--bs-white);
     background-color: var(--color1);
+}
+
+.color1 {
+    color: var(--color1);
+}
+.color2 {
+    color: var(--color3);
+}
+.bg1 {
+    background-color: var(--color1);
+}
+.bg2 {
+    background-color: var(--color3);
 }

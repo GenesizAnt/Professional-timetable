@@ -18,10 +18,10 @@
     <link rel="stylesheet" href="/css/style.css">
 
 
-    <!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-    <!--    <script type="text/javascript" charset="utf8"-->
-    <!--            src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
-    <!--    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" charset="utf8"
+                src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
 </head>
 <body>
@@ -113,20 +113,12 @@
                 <form th:method="POST" th:action="@{/enroll/customerForRecording}">
                     <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>
                     <select class="form-select" size="10" aria-label="Select Client" name="clientFullName">
+                        <option value="">Выбери клиента для записи</option>
                         <option th:each="client : ${unregisteredBySpecialist}"
                                 th:value="${client.id}"
                                 th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name
                         </option>
                     </select>
-<!--                    <select class="form-select" aria-label="Select Client" name="clientFullName">-->
-<!--                        <option value="">Выбери клиента для записи</option>-->
-<!--                        <option th:each="client : ${unregisteredBySpecialist}"-->
-<!--                                th:value="${client.id}"-->
-<!--                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client-->
-<!--                            Full Name-->
-<!--                        </option>-->
-<!--                    </select>-->
-<!--                    -->
                     <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1" role="button">Выбрать</button>
                 </form>
             </div>
