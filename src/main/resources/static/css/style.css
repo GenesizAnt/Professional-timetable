@@ -135,8 +135,36 @@ footer a {
     align-items: center;
 }
 .line {
-    width: 100px;
+    width: 150px;
     height: 3px;
     background-color: var(--color3);
     margin: 15px auto 30px;
+}
+
+/* управление записью клиентами */
+.forwhom h5 {
+    padding: 30px;
+    border: 3px solid var(--color3);
+}
+.forwhom {
+    background-color: #eee;
+}
+.chooseclient i {
+    font-size: 25px;
+    color: var(--color7);
+}
+.chooseclient {
+    background-color: #eee;
+}
+.managementlient i {
+    font-size: 25px;
+    color: var(--color7);
+}
+.managementlient {
+    background-color: #eee;
+}
+.input-group-text {
+    display: inline-block;
+    width: 150px;
+    text-align: center;
 }

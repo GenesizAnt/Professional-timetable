@@ -18,10 +18,10 @@
     <link rel="stylesheet" href="/css/style.css">
 
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" charset="utf8"
-                src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
 </head>
 <body>
@@ -42,93 +42,356 @@
         </form>
     </li>
 </ul>
-<br>
 
 <header>
     <div class="container">
-        <div class="row">
+        <div class="row text-center text-white">
             <div class="col-12">
-                <h1 class="text-center text-white" th:text="${name} + ', здесь ты можешь управлять записями клиентов'">Привет, специалист</h1>
+                <h1 class="text-center text-white" th:text="${name} + ', здесь ты можешь управлять записями клиентов'">
+                    Привет, специалист</h1>
             </div>
         </div>
     </div>
 </header>
-<br>
+
+<section class="chooseclient">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center color1 mb-5">Выбери клиента, а затем запиши или отмени прием</h3>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12 text-center">
+                    <div class="itd_circle"><i class="fa-solid fa-person"></i></div>
+                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                            data-bs-target="#listAssigned">
+                        <h6 class="text-center">Выбери закрепленного клиента для записи</h6>
+                    </button>
+                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success text-white">
+                                    <h5 class="modal-title" id="listAssignedLabel">Список закрепленных за специалистом
+                                        клиентов</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:method="POST" th:action="@{/enroll/customerForRecording}">
+                                        <input type="hidden" th:name="registeredStatus" th:value="REGISTERED"/>
+                                        <select class="form-select" aria-label="Select Client" name="clientFullName">
+                                            <option value="">Выбери клиента для записи</option>
+                                            <option th:each="client : ${clientsBySpecialist}"
+                                                    th:value="${client.id}"
+                                                    th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">
+                                                Client
+                                                Full Name
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"
+                                                role="button">Выбрать
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <div class="col-md-6 col-sm-12 text-center">
+                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>
+                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                            data-bs-target="#listUnregistered">
+                        <h6 class="text-center">Выбери не зарегистрированного клиента для записи</h6>
+                    </button>
+                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success text-white">
+                                    <h5 class="modal-title" id="listUnregisteredLabel">Список НЕ ЗАРЕГИСТРИРОВАННЫХ
+                                        клиентов</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:method="POST" th:action="@{/enroll/customerForRecording}">
+                                        <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>
+                                        <select class="form-select" size="10" aria-label="Select Client"
+                                                name="clientFullName">
+                                            <option value="">Выбери клиента для записи</option>
+                                            <option th:each="client : ${unregisteredBySpecialist}"
+                                                    th:value="${client.id}"
+                                                    th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">
+                                                Client
+                                                Full Name
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                                role="button">Выбрать
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="forwhom">
+    <div class="container">
+        <div class="row mb-5">
+            <h5 class="text-center">
+                <td th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Выбери клиента для записи'"
+                    class="custom-text">
+                    Выбери клиента для записи
+                </td>
+            </h5>
+        </div>
+    </div>
+</section>
 
 
-<div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-6">
-            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal" data-bs-target="#listAssigned">
-                Выбери закрепленного клиента для записи
-            </button>
+<section class="managementlient">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-person-circle-check"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                        data-bs-target="#appointment">
+                    <h6 class="text-center">Запись</h6>
+                </button>
+                <div class="modal fade" id="appointment" tabindex="-1" aria-labelledby="appointmentLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="appointmentLabel">Выберите дату и время для записи</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/enroll/newDatesAppointments}">
+                                    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>
+                                    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>
+                                    <div class="col-12">
+                                        <input type="datetime-local" id="meeting" name="meeting">
+                                    </div>
+                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                            role="button">Записать
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
+            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-person-circle-xmark"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                        data-bs-target="#appointmentClose">
+                    <h6 class="text-center">Отменить запись</h6>
+                </button>
+                <div class="modal fade" id="appointmentClose" tabindex="-1" aria-labelledby="appointmentCloseLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="appointmentCloseLabel">Выберите дату и время для отмены
+                                    записи</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/enroll/cancellingBooking}">
+                                    <div class="col-12">
+                                        <input type="datetime-local" id="meetingCancel" name="meetingCancel">
+                                    </div>
+                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                            role="button">Отменить запись
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
+            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-person-circle-exclamation"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                        data-bs-target="#addUnregisteredPerson">
+                    <h6 class="text-center">Добавить НЕ ЗАРЕГИСТРИРОВАННОГО клиента</h6>
+                </button>
+                <div class="modal fade" id="addUnregisteredPerson" tabindex="-1" aria-labelledby="addUnregisteredPersonLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="addUnregisteredPersonLabel">Внесите данные клиента</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">
+                                    <div class="input-group">
+                                        <span class="input-group-text text-center">Имя</span>
+                                        <input type="text" aria-label="username" name="username" class="form-control">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text text-center">Фамилия</span>
+                                        <input type="text" aria-label="surname" name="surname" class="form-control">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text text-center">Отчество</span>
+                                        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">
+                                    </div>
+                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                            role="button">Добавить
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
         </div>
     </div>
-</div>
-<div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="listAssignedLabel">Список закрепленных за специалистом клиентов</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form th:method="POST" th:action="@{/enroll/customerForRecording}">
-                    <input type="hidden" th:name="registeredStatus" th:value="REGISTERED"/>
-                    <select class="form-select" aria-label="Select Client" name="clientFullName">
-                        <option value="">Выбери клиента для записи</option>
-                        <option th:each="client : ${clientsBySpecialist}"
-                                th:value="${client.id}"
-                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client
-                            Full Name
-                        </option>
-                    </select>
-                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Выбрать</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 
-<div class="container">
-    <div class="row align-items-center">
-        <div class="col-6 col-sm-6">
-            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal" data-bs-target="#listUnregistered">
-                Выбери не зарегистрированного клиента для записи
-            </button>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="listUnregisteredLabel">Список НЕ ЗАРЕГИСТРИРОВАННЫХ клиентов</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form th:method="POST" th:action="@{/enroll/customerForRecording}">
-                    <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>
-                    <select class="form-select" size="10" aria-label="Select Client" name="clientFullName">
-                        <option value="">Выбери клиента для записи</option>
-                        <option th:each="client : ${unregisteredBySpecialist}"
-                                th:value="${client.id}"
-                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name
-                        </option>
-                    </select>
-                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1" role="button">Выбрать</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<br>
+
+<!--<u>Запись</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/newDatesAppointments}">-->
+<!--    &lt;!&ndash;                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />&ndash;&gt;-->
+<!--    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>-->
+<!--    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>-->
+<!--    <label for="meeting">Выберите дату и время:</label>-->
+<!--    <input type="datetime-local" id="meeting" name="meeting">-->
+<!--    <input type="submit">-->
+<!--</form>-->
+<!--<br>-->
+
+<!--<u>Отмена записи</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/cancellingBooking}">-->
+<!--    <label for="meeting">Выберите дату и время:</label>-->
+<!--    <input type="datetime-local" id="meetingCancel" name="meetingCancel">-->
+<!--    <input type="submit" value="Отменить">-->
+<!--</form>-->
+<!--<br>-->
+<!--<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">-->
+<!--    <div class="input-group">-->
+<!--        <span class="input-group-text">Укажите ФИО</span>-->
+<!--        <input type="text" aria-label="username" name="username" class="form-control">-->
+<!--        <input type="text" aria-label="surname" name="surname" class="form-control">-->
+<!--        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">-->
+<!--        <input type="submit" value="Добавить">-->
+<!--    </div>-->
+<!--</form>-->
+<!--<br>-->
+
+
+<!--<div class="container">-->
+<!--    <div class="row align-items-center">-->
+<!--        <div class="col-6 col-sm-6">-->
+<!--            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                    data-bs-target="#listAssigned">-->
+<!--                Выбери закрепленного клиента для записи-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header bg-success text-white">-->
+<!--                <h5 class="modal-title" id="listAssignedLabel">Список закрепленных за специалистом клиентов</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
+<!--                    <input type="hidden" th:name="registeredStatus" th:value="REGISTERED"/>-->
+<!--                    <select class="form-select" aria-label="Select Client" name="clientFullName">-->
+<!--                        <option value="">Выбери клиента для записи</option>-->
+<!--                        <option th:each="client : ${clientsBySpecialist}"-->
+<!--                                th:value="${client.id}"-->
+<!--                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client-->
+<!--                            Full Name-->
+<!--                        </option>-->
+<!--                    </select>-->
+<!--                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Выбрать</button>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div class="container">-->
+<!--    <div class="row align-items-center">-->
+<!--        <div class="col-6 col-sm-6">-->
+<!--            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                    data-bs-target="#listUnregistered">-->
+<!--                Выбери не зарегистрированного клиента для записи-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header bg-success text-white">-->
+<!--                <h5 class="modal-title" id="listUnregisteredLabel">Список НЕ ЗАРЕГИСТРИРОВАННЫХ клиентов</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
+<!--                    <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>-->
+<!--                    <select class="form-select" size="10" aria-label="Select Client" name="clientFullName">-->
+<!--                        <option value="">Выбери клиента для записи</option>-->
+<!--                        <option th:each="client : ${unregisteredBySpecialist}"-->
+<!--                                th:value="${client.id}"-->
+<!--                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client-->
+<!--                            Full Name-->
+<!--                        </option>-->
+<!--                    </select>-->
+<!--                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1" role="button">Выбрать-->
+<!--                    </button>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<br>-->
 
 <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
 <!--<u>Список закрепленных за специалистом клиентов</u>-->
@@ -160,50 +423,50 @@
 <!--</form>-->
 <!--<br>-->
 
-<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>
-<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">
-    <div class="input-group">
-        <span class="input-group-text">Укажите ФИО</span>
-        <input type="text" aria-label="username" name="username" class="form-control">
-        <input type="text" aria-label="surname" name="surname" class="form-control">
-        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">
-        <input type="submit" value="Добавить">
-    </div>
-</form>
-<br>
+<!--<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">-->
+<!--    <div class="input-group">-->
+<!--        <span class="input-group-text">Укажите ФИО</span>-->
+<!--        <input type="text" aria-label="username" name="username" class="form-control">-->
+<!--        <input type="text" aria-label="surname" name="surname" class="form-control">-->
+<!--        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">-->
+<!--        <input type="submit" value="Добавить">-->
+<!--    </div>-->
+<!--</form>-->
+<!--<br>-->
 
-<!--отображение выбранного для записи клиента-->
-<div class="container px-4">
-    <div class="row gx-5">
-        <div class="col">
-            <div class="p-3 border bg-light">
-                <tr>
-                    <td th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Выбери клиента для записи'">
-                        Выбери клиента для записи
-                    </td>
-                </tr>
-            </div>
-        </div>
-    </div>
-</div>
-<u>Запись</u>
-<form th:method="POST" th:action="@{/enroll/newDatesAppointments}">
-    <!--                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />-->
-    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>
-    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>
-    <label for="meeting">Выберите дату и время:</label>
-    <input type="datetime-local" id="meeting" name="meeting">
-    <input type="submit">
-</form>
-<br>
+<!--&lt;!&ndash;отображение выбранного для записи клиента&ndash;&gt;-->
+<!--<div class="container px-4">-->
+<!--    <div class="row gx-5">-->
+<!--        <div class="col">-->
+<!--            <div class="p-3 border bg-light">-->
+<!--                <tr>-->
+<!--                    <td th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Выбери клиента для записи'">-->
+<!--                        Выбери клиента для записи-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<u>Запись</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/newDatesAppointments}">-->
+<!--    &lt;!&ndash;                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />&ndash;&gt;-->
+<!--    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>-->
+<!--    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>-->
+<!--    <label for="meeting">Выберите дату и время:</label>-->
+<!--    <input type="datetime-local" id="meeting" name="meeting">-->
+<!--    <input type="submit">-->
+<!--</form>-->
+<!--<br>-->
 
-<u>Отмена записи</u>
-<form th:method="POST" th:action="@{/enroll/cancellingBooking}">
-    <label for="meeting">Выберите дату и время:</label>
-    <input type="datetime-local" id="meetingCancel" name="meetingCancel">
-    <input type="submit" value="Отменить">
-</form>
-<br>
+<!--<u>Отмена записи</u>-->
+<!--<form th:method="POST" th:action="@{/enroll/cancellingBooking}">-->
+<!--    <label for="meeting">Выберите дату и время:</label>-->
+<!--    <input type="datetime-local" id="meetingCancel" name="meetingCancel">-->
+<!--    <input type="submit" value="Отменить">-->
+<!--</form>-->
+<!--<br>-->
 
 <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
 <!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
