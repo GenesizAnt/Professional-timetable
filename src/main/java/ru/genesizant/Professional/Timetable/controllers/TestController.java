@@ -1,21 +1,29 @@
 package ru.genesizant.Professional.Timetable.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.security.PersonDetails;
+import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +33,15 @@ public class TestController {
 
     private final JWTUtil jwtUtil;
     private final PersonService personService;
+    private final DatesAppointmentsService datesAppointmentsService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public TestController(JWTUtil jwtUtil, PersonService personService) {
+    public TestController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
+        this.datesAppointmentsService = datesAppointmentsService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/hello")
@@ -120,10 +132,35 @@ public class TestController {
         return "all";
     }
 
+    @GetMapping("/calendar")
+    public String calendar(Model model) {
+        Map<LocalDate, Map<String, String>> calendarData = datesAppointmentsService.getCalendarFreeScheduleById(45);
+
+        String json = null;
+        try {
+            json = objectMapper.writeValueAsString(calendarData);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("calendarData", json);
+
+        return "calendar";
+    }
+
     @GetMapping("/development")
     public String developmentInfo() {
         return "development_page";
     }
 
-
+    @GetMapping("/img/{imageName}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getImagevv(@PathVariable String imageName) throws IOException {
+        ClassPathResource imgFile = new ClassPathResource("static/img/" + imageName);
+        byte[] bytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentLength(imgFile.contentLength());
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    }
 }

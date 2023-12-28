@@ -54,10 +54,16 @@ header, footer {
 }
 
 footer {
-    position: fixed;
+    display: flex;
+    flex-direction: column;
+    /*position: fixed;*/
     left: 0;
     bottom: 0;
     width: 100%;
+}
+
+#footer {
+    margin-top: auto;
 }
 
 footer a {
