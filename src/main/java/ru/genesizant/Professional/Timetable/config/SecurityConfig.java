@@ -66,7 +66,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //этот код может не работать
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

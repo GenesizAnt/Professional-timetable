@@ -136,24 +136,14 @@ public class EnrollClientController {
                                         @RequestParam("patronymic") String patronymic) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
-//            <!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
-            List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
-            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
-            model.addAttribute("clientsBySpecialist", clientsBySpecialist);
-            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
-
             unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById((long) request.getSession().getAttribute("id")).get());
 
-
-//            <!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
-//            <!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
-//            <!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
-
-//            <!--Выбор времени и даты для регистрации клиента-->
-
-//            <!--Отображение календаря-->
+            List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
+            List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
             Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
 
+            model.addAttribute("clientsBySpecialist", clientsBySpecialist);
+            model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
             model.addAttribute("name", request.getSession().getAttribute("name"));
             model.addAttribute("dates", sortedFreeSchedule);
 

@@ -153,14 +153,14 @@ public class TestController {
         return "development_page";
     }
 
-    @GetMapping("/img/{imageName}")
-    @ResponseBody
-    public ResponseEntity<byte[]> getImagevv(@PathVariable String imageName) throws IOException {
-        ClassPathResource imgFile = new ClassPathResource("static/img/" + imageName);
-        byte[] bytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        headers.setContentLength(imgFile.contentLength());
-        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
-    }
+//    @GetMapping("/img/{imageName}")
+//    @ResponseBody
+//    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
+//        ClassPathResource imgFile = new ClassPathResource("static/img/" + imageName);
+//        byte[] bytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.IMAGE_JPEG);
+//        headers.setContentLength(imgFile.contentLength());
+//        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+//    }
 }
