@@ -12,6 +12,8 @@ import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -30,7 +32,7 @@ public class CalendarManagementController {
         this.datesAppointmentsService = datesAppointmentsService;
     }
 
-    //прием формы для автоматического заполнение календаря на будущий период
+    // форма для автоматического заполнения календаря на будущий период
     @PostMapping("/admission_calendar_update")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request,
                                              @RequestParam("startDate") String startDate,
@@ -38,25 +40,53 @@ public class CalendarManagementController {
                                              @RequestParam("startTime") String startTime,
                                              @RequestParam("endTime") String endTime,
                                              @RequestParam("minInterval") String minInterval) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        }
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
+        Optional<Person> personSpecialist = getLoggedInPerson(request);
 
-            Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
-
+        if (personSpecialist.isPresent()) {
             if (datesAppointmentsService.isBetweenSavedDate(startDate, endDate, personSpecialist.get().getId())) {
                 //ToDo добавить отображение ошибки - нельзя добавить к уже существующим данным
             } else {
-                datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE); //ToDo будет ли ошибка если ввести даты или время наоборот
+                datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE);
+                return "redirect:/specialist/admission_calendar_view";
             }
-
-
-
-            return "redirect:/specialist/admission_calendar_view";
-
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+//            return encodeError();
         }
+
+        return "redirect:/auth/login?error";
+
+
+
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+//
+//            Optional<Person> personSpecialist = personService.findById((long) request.getSession().getAttribute("id"));
+//
+//            if (datesAppointmentsService.isBetweenSavedDate(startDate, endDate, personSpecialist.get().getId())) {
+//                //ToDo добавить отображение ошибки - нельзя добавить к уже существующим данным
+//            } else {
+//                datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(), startDate, endDate, startTime, endTime, minInterval, StatusAdmissionTime.AVAILABLE); //ToDo будет ли ошибка если ввести даты или время наоборот
+//            }
+//
+//
+//            return "redirect:/specialist/admission_calendar_view";
+//
+//        } else {
+//            model.addAttribute("error", "Упс! Пора перелогиниться!");
+//            return "redirect:/auth/login?error";
+//        }
+    }
+
+    private Optional<Person> getLoggedInPerson(HttpServletRequest request) {
+        return Optional.ofNullable((Long) request.getSession().getAttribute("id"))
+                .flatMap(personService::findById);
+    }
+
+    private String encodeError(String error) {
+        return "redirect:/enroll/enroll_page?error=" + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 
     //удалить полный День из календаря доступных для выбора дат
@@ -210,11 +240,11 @@ public class CalendarManagementController {
     //Добавить в календарь Диапазон времени, дату и статус доступное для приема
     @PostMapping("/addRangeTimeAvailability")
     public String addRangeTimeAvailability(HttpServletRequest request,
-                                      @RequestParam("startAddTimeAdmission") String startTimeAvailability,
-                                      @RequestParam("endAddTimeAdmission") String endTimeAvailability,
-                                      @RequestParam("minIntervalAdd") String intervalHour,
-                                      @RequestParam("dateRangeAdd") LocalDate date,
-                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
+                                           @RequestParam("startAddTimeAdmission") String startTimeAvailability,
+                                           @RequestParam("endAddTimeAdmission") String endTimeAvailability,
+                                           @RequestParam("minIntervalAdd") String intervalHour,
+                                           @RequestParam("dateRangeAdd") LocalDate date,
+                                           @RequestParam("selectedOption") StatusAdmissionTime status) {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             if (status == null) {
@@ -230,4 +260,8 @@ public class CalendarManagementController {
             return "redirect:/auth/login?error";
         }
     }
+
+
+
+
 }

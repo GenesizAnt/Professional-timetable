@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -26,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client.StatusRegisteredPerson.REGISTERED;
-import static ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client.StatusRegisteredPerson.UNREGISTERED;
+import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson.REGISTERED;
+import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson.UNREGISTERED;
 
 @Controller
 @RequestMapping("/enroll")
@@ -53,7 +54,7 @@ public class EnrollClientController {
     //Отображение страницы для Записи Клиента
     //передает на Вью - Имя спеца, Список зарег и незарег пользователей, Календарь
     @GetMapping("/enroll_page")
-    public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) {
+    public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) { //ToDo showEnrollPage
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             displayPage(model, request);
@@ -66,79 +67,73 @@ public class EnrollClientController {
         return "specialist/enroll_client_view";
     }
 
-
     //Выбор и отображение Клиента для записи
     @PostMapping("/customerForRecording")
-    public String customerForRecording(Model model, HttpServletRequest request,
-                                       @RequestParam("clientFullName") String clientId,
+    public String customerForRecording(Model model, HttpServletRequest request, //ToDo chooseCustomerForRecording
+                                       @RequestParam("clientFullName") Optional<@NotNull String> clientId,
                                        @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        }
 
-            if (registeredStatus.equals(REGISTERED)) {
-                PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(Long.valueOf(clientId)), PersonFullName.class);
-                model.addAttribute("selectedCustomerFullName", personFullNameRegistered);
-                model.addAttribute("selectedCustomerId", personFullNameRegistered.getId());
-                model.addAttribute("registeredStatus", REGISTERED);
-            } else if (registeredStatus.equals(UNREGISTERED)) {
-                PersonFullName personFullNameUnregistered = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(clientId)), PersonFullName.class);
-                model.addAttribute("selectedCustomerFullName", personFullNameUnregistered);
-                model.addAttribute("selectedCustomerId", personFullNameUnregistered.getId());
-                model.addAttribute("registeredStatus", UNREGISTERED);
-            }
+        if (clientId.isPresent() && !clientId.get().equals("")) {
 
+            handleCustomerSelection(model, clientId, registeredStatus);
             displayPage(model, request);
 
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+            return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
-
         return "specialist/enroll_client_view";
     }
 
     //Специалист создает незарегистрированного пользователя
     @PostMapping("/newUnregisteredPerson")
-    public String newUnregisteredPerson(Model model, HttpServletRequest request,
+    public String newUnregisteredPerson(Model model, HttpServletRequest request, //ToDo addNewUnregisteredPerson
                                         @RequestParam("username") String username,
                                         @RequestParam("surname") String surname,
                                         @RequestParam("patronymic") String patronymic) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById((long) request.getSession().getAttribute("id")).get());
-
-            displayPage(model, request);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
         }
+
+        if (isValidPersonInformation(username, surname, patronymic)) {
+            unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById((long) request.getSession().getAttribute("id")).get());
+            displayPage(model, request);
+        } else {
+            return encodeError("Чтобы создать незарегистрированного в приложении клиента нужно указать ФИО полностью");
+        }
+
         return "specialist/enroll_client_view";
     }
 
     //Запись клиента на выбранную дату
     @PostMapping("/newDatesAppointments")
     public String newDatesAppointments(Model model, HttpServletRequest request,
-                                       @RequestParam("meeting") LocalDateTime meeting,
+                                       @RequestParam("meeting") Optional<LocalDateTime> meeting,
                                        @RequestParam("selectedCustomerId") String selectedCustomerId,
-                                       @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
+                                       @RequestParam("registeredStatus") Optional<StatusRegisteredPerson> registeredStatus) {
         if (jwtUtil.isValidJWTAndSession(request)) {
+            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        }
 
+        if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus)) {
             //ToDo сделать Валид для проверки что время не забронированно
-            if (registeredStatus.equals(REGISTERED)) {
+
+            if (registeredStatus.get().equals(REGISTERED)) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
-            } else if (registeredStatus.equals(UNREGISTERED)) {
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"));
+            } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"));
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"));
             }
             //ToDo сделать добавление в БД Таблица Приемы
-
             displayPage(model, request);
 
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login";
+            return encodeError("Для записи нужно выбрать клиента, время и дату записи");
         }
+
         return "specialist/enroll_client_view";
     }
 
@@ -147,17 +142,14 @@ public class EnrollClientController {
     public String cancellingBooking(Model model, HttpServletRequest request,
                                     @RequestParam("meetingCancel") Optional<@NotNull LocalDateTime> meetingCancel) {
         if (jwtUtil.isValidJWTAndSession(request)) {
-
-            if (meetingCancel.isPresent()) {
-                datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
-                displayPage(model, request);
-            } else {
-                String error = "Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема";
-                return "redirect:/enroll/enroll_page?error=" + URLEncoder.encode(error, StandardCharsets.UTF_8);
-            }
-
-        } else {
             return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        }
+
+        if (meetingCancel.isPresent()) {
+            datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
+            displayPage(model, request);
+        } else {
+            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
 
         return "specialist/enroll_client_view";
@@ -173,6 +165,33 @@ public class EnrollClientController {
         model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
         model.addAttribute("name", request.getSession().getAttribute("name"));
         model.addAttribute("dates", sortedFreeSchedule);
+    }
+
+    private void handleCustomerSelection(Model model, Optional<@NotNull String> clientId, StatusRegisteredPerson registeredStatus) {
+        if (registeredStatus.equals(REGISTERED)) {
+            PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(Long.valueOf(clientId.get())), PersonFullName.class);
+            model.addAttribute("selectedCustomerFullName", personFullNameRegistered);
+            model.addAttribute("selectedCustomerId", personFullNameRegistered.getId());
+            model.addAttribute("registeredStatus", REGISTERED);
+        } else if (registeredStatus.equals(UNREGISTERED)) {
+            PersonFullName personFullNameUnregistered = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(clientId.get())), PersonFullName.class);
+            model.addAttribute("selectedCustomerFullName", personFullNameUnregistered);
+            model.addAttribute("selectedCustomerId", personFullNameUnregistered.getId());
+            model.addAttribute("registeredStatus", UNREGISTERED);
+        }
+    }
+
+    private String encodeError(String error) {
+        return "redirect:/enroll/enroll_page?error=" + URLEncoder.encode(error, StandardCharsets.UTF_8);
+    }
+
+    private boolean isValidPersonInformation(String username, String surname, String patronymic) {
+        return !username.isEmpty() && !surname.isEmpty() && !patronymic.isEmpty();
+    }
+
+    private boolean isValidMeetingRequestParameters(Optional<LocalDateTime> meeting, String selectedCustomerId, Optional<StatusRegisteredPerson> registeredStatus) {
+//        if (meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent())
+        return meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent();
     }
 
     //ToDo сделать форму для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов

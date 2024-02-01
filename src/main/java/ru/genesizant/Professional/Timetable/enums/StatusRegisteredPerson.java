@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client;
+package ru.genesizant.Professional.Timetable.enums;
 
 public enum StatusRegisteredPerson {
 
