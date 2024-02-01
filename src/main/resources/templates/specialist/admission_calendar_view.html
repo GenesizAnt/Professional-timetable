@@ -54,7 +54,7 @@
         <a class="nav-link" th:href="@{/enroll/enroll_page}">Запись клиента</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/specialist/admission_calendar_view}">Управление календарем</a>
+        <a class="nav-link" th:href="@{/calendar/admission_calendar_view}">Управление календарем</a>
     </li>
     <li class="nav-item">
         <form th:method="POST" th:action="@{/logout}">
@@ -80,6 +80,9 @@
         <div class="row">
             <div class="col-12">
                 <h3 class="text-center color1 mb-5">Клиент видит только установленные даты</h3>
+            </div>
+            <div class="text-center" th:if="${param.error}">
+                <span style="color:red" th:text="${param.error}"></span>
             </div>
             <div class="col-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-calendar-check"></i></div>

@@ -56,22 +56,22 @@ public class SpecialistController {
     }
 
     //Отображение календаря для специалиста
-    @GetMapping("/admission_calendar_view")
-    public String addAdmissionCalendarView(Model model, HttpServletRequest request) {
-
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-
-            model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("dates", sortedFreeSchedule);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
-        }
-
-        return "specialist/admission_calendar_view";
-    }
+//    @GetMapping("/admission_calendar_view")
+//    public String addAdmissionCalendarView(Model model, HttpServletRequest request) {
+//
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+//
+//            Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//
+//            model.addAttribute("name", request.getSession().getAttribute("name"));
+//            model.addAttribute("dates", sortedFreeSchedule);
+//
+//        } else {
+//            model.addAttribute("error", "Упс! Пора перелогиниться!");
+//            return "redirect:/auth/login?error";
+//        }
+//
+//        return "specialist/admission_calendar_view";
+//    }
 
 }
