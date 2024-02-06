@@ -39,60 +39,19 @@ public class VisitorsController {
         this.specialistsAndClientService = specialistsAndClientService;
     }
 
-    //отображение списка специалистов на выбор для клиента
-    @GetMapping("/start_menu_visitor") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
-    public String getStartMenu(Model model, HttpServletRequest request) {
+    //ToDo в разделе Мой профиль - добавить окно с выбором специалистов за которыми закреплен клиент, чтобы клиент мог переключаться между ними (специалистами)
 
-        //ToDo добавить навигационный бар https://getbootstrap.com/docs/5.0/components/navbar/
+    //отображение меню специалиста за которым закреплен клиент
+    @GetMapping("/my_specialist_menu") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
+    public String getMySpecialistMenu(Model model, HttpServletRequest request) {
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-//            нужно добавить в html страницу отображение карточки, при этом количество карточек может меняться <div class="card" style="width: 18rem;">
-//  <img src="..." class="card-img-top" alt="...">
-//  <div class="card-body">
-//    <h5 class="card-title">Card title</h5>
-//    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-//                    <a href="#" class="btn btn-primary">Go somewhere</a>
-//  </div>
-//</div> как сделать такую html страницу с разным количеством отображения карточек
+        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
+        model.addAttribute("name", person.get().getUsername());
 
 
-
-
-//            String jwtToken = (String) request.getSession().getAttribute("jwtToken");
-//            String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
-//            Optional<Person> visitor = personRepository.findByEmail(email);
-//            model.addAttribute("name", visitor.get().getUsername());
-
-            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
-            model.addAttribute("name", request.getSession().getAttribute("name"));
-            model.addAttribute("specialists", specialists);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
-        }
-
-        return "visitors/start_menu_visitor";
-
-//        HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
-//
-//        if (session != null) {
-//            String jwtToken = (String) session.getAttribute("jwtToken");
-//            if (jwtToken != null) {
-//                try {
-//                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
-//                    Optional<Person> visitor = personRepository.findByEmail(email);
-//                    model.addAttribute("name", visitor.get().getUsername());
-//
-//                } catch (Exception e) {
-//                    model.addAttribute("error", "Упс! Пора перелогиниться!");
-//                    return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
-//                }
-//            }
-//        }
-//        return "visitors/start_menu_visitor";
+        return "visitors/my_specialist_menu";
     }
+
 
     //отображение меню конкретного специалиста для клиента (запись, даты и пр.)
     @GetMapping("/specialist_choose/{id}") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
@@ -203,3 +162,67 @@ public class VisitorsController {
         model.addAttribute("dates", sortedFreeSchedule);
     }
 }
+
+
+
+
+
+
+
+
+
+
+//отображение списка специалистов на выбор для клиента
+//    @GetMapping("/start_menu_visitor") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
+//    public String getStartMenu(Model model, HttpServletRequest request) {
+//
+//        //ToDo добавить навигационный бар https://getbootstrap.com/docs/5.0/components/navbar/
+//
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+//
+////            нужно добавить в html страницу отображение карточки, при этом количество карточек может меняться <div class="card" style="width: 18rem;">
+////  <img src="..." class="card-img-top" alt="...">
+////  <div class="card-body">
+////    <h5 class="card-title">Card title</h5>
+////    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+////                    <a href="#" class="btn btn-primary">Go somewhere</a>
+////  </div>
+////</div> как сделать такую html страницу с разным количеством отображения карточек
+//
+//
+//
+//
+////            String jwtToken = (String) request.getSession().getAttribute("jwtToken");
+////            String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+////            Optional<Person> visitor = personRepository.findByEmail(email);
+////            model.addAttribute("name", visitor.get().getUsername());
+//
+//            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
+//            model.addAttribute("name", request.getSession().getAttribute("name"));
+//            model.addAttribute("specialists", specialists);
+//
+//        } else {
+//            model.addAttribute("error", "Упс! Пора перелогиниться!");
+//            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+//        }
+//
+//        return "visitors/start_menu_visitor";
+//
+////        HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
+////
+////        if (session != null) {
+////            String jwtToken = (String) session.getAttribute("jwtToken");
+////            if (jwtToken != null) {
+////                try {
+////                    String email = jwtUtil.validateTokenAndRetrieveClaim(jwtToken);
+////                    Optional<Person> visitor = personRepository.findByEmail(email);
+////                    model.addAttribute("name", visitor.get().getUsername());
+////
+////                } catch (Exception e) {
+////                    model.addAttribute("error", "Упс! Пора перелогиниться!");
+////                    return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+////                }
+////            }
+////        }
+////        return "visitors/start_menu_visitor";
+//    }

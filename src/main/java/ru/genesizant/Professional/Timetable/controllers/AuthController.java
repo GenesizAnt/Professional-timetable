@@ -93,7 +93,7 @@ public class AuthController {
 
         switch (personDetails.getRole()) {
             case "ROLE_USER" -> {
-                return "redirect:/visitors/start_menu_visitor";
+                return "redirect:/visitors/my_specialist_menu";
             }
             case "ROLE_ADMIN" -> {
                 return "redirect:/specialist/start_menu_specialist";
@@ -102,7 +102,7 @@ public class AuthController {
                 return "redirect:/super"; //ToDo сделать страницу для суперпользователя
             }
             default -> {
-                return "redirect:/auth/login?error";
+                return "redirect:/auth/login";
             }
         }
 
