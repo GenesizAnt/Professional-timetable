@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,10 @@ public class EnrollClientController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final ModelMapper modelMapper;
     private final UnregisteredPersonService unregisteredPersonService;
+    @Value("${error_login}")
+    private String ERROR_LOGIN;
+    private final String ERROR_VALIDATE_FORM = "redirect:/enroll/enroll_page?error=";
+    private final String ENROLL_VIEW_REDIRECT = "specialist/enroll_client_view";
 
     @Autowired
     public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService) {
@@ -60,11 +65,10 @@ public class EnrollClientController {
             displayPage(model, request);
 
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+            return ERROR_LOGIN;
         }
 
-        return "specialist/enroll_client_view";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Выбор и отображение Клиента для записи
@@ -73,7 +77,7 @@ public class EnrollClientController {
                                        @RequestParam("clientFullName") Optional<@NotNull String> clientId,
                                        @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
-            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+            return ERROR_LOGIN;
         }
 
         if (clientId.isPresent() && !clientId.get().equals("")) {
@@ -84,7 +88,7 @@ public class EnrollClientController {
         } else {
             return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
-        return "specialist/enroll_client_view";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Специалист создает незарегистрированного пользователя
@@ -94,7 +98,7 @@ public class EnrollClientController {
                                         @RequestParam("surname") String surname,
                                         @RequestParam("patronymic") String patronymic) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
-            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+            return ERROR_LOGIN;
         }
 
         if (isValidPersonInformation(username, surname, patronymic)) {
@@ -104,7 +108,7 @@ public class EnrollClientController {
             return encodeError("Чтобы создать незарегистрированного в приложении клиента нужно указать ФИО полностью");
         }
 
-        return "specialist/enroll_client_view";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Запись клиента на выбранную дату
@@ -113,8 +117,8 @@ public class EnrollClientController {
                                        @RequestParam("meeting") Optional<LocalDateTime> meeting,
                                        @RequestParam("selectedCustomerId") String selectedCustomerId,
                                        @RequestParam("registeredStatus") Optional<StatusRegisteredPerson> registeredStatus) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
         }
 
         if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus)) {
@@ -134,15 +138,15 @@ public class EnrollClientController {
             return encodeError("Для записи нужно выбрать клиента, время и дату записи");
         }
 
-        return "specialist/enroll_client_view";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Специалист отменяет запись ранее записанного клиента
     @PostMapping("/cancellingBooking")
     public String cancellingBooking(Model model, HttpServletRequest request,
                                     @RequestParam("meetingCancel") Optional<@NotNull LocalDateTime> meetingCancel) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-            return "redirect:/auth/login"; //ToDo добавить сообщение, что пора перелогиниться
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
         }
 
         if (meetingCancel.isPresent()) {
@@ -152,7 +156,7 @@ public class EnrollClientController {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
 
-        return "specialist/enroll_client_view";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Получение и передача данных для отображения страницы
@@ -182,7 +186,7 @@ public class EnrollClientController {
     }
 
     private String encodeError(String error) {
-        return "redirect:/enroll/enroll_page?error=" + URLEncoder.encode(error, StandardCharsets.UTF_8);
+        return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 
     private boolean isValidPersonInformation(String username, String surname, String patronymic) {
