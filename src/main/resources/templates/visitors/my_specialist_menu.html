@@ -27,7 +27,7 @@
         <a class="nav-link active" aria-current="page" th:href="@{/development}">Мой профиль</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/development}">Мои визиты</a>
+        <a class="nav-link" th:href="@{/development}">История посещений</a>
     </li>
     <li class="nav-item">
         <form th:method="POST" th:action="@{/logout}">
@@ -40,7 +40,7 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-12">
-                <h3 class="text-center text-white" th:text="'Привет, ' + ${name} + '! Это меню взаимодействия со специалистом'">
+                <h3 class="text-center text-dark" th:text="'Привет, ' + ${name} + '! Это меню взаимодействия со специалистом'">
                     Привет</h3>
             </div>
         </div>

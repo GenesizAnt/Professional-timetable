@@ -134,18 +134,18 @@ public class TestController {
 
     @GetMapping("/calendar")
     public String calendar(Model model) {
-        Map<LocalDate, Map<String, String>> calendarData = datesAppointmentsService.getCalendarFreeScheduleById(45);
+//        Map<LocalDate, Map<String, String>> calendarData = datesAppointmentsService.getCalendarFreeScheduleById(45);
+//
+//        String json = null;
+//        try {
+//            json = objectMapper.writeValueAsString(calendarData);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
+//        model.addAttribute("calendarData", json);
 
-        String json = null;
-        try {
-            json = objectMapper.writeValueAsString(calendarData);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        model.addAttribute("calendarData", json);
-
-        return "calendar";
+        return "test_calendar";
     }
 
     @GetMapping("/development")
