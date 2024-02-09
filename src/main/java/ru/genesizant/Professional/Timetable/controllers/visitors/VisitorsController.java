@@ -48,8 +48,34 @@ public class VisitorsController {
         Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
         model.addAttribute("name", person.get().getUsername());
 
+        //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
+//        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
         return "visitors/my_specialist_menu";
+    }
+
+    @PostMapping("/appointment_booking")
+    public String setAppointmentBooking(Model model, HttpServletRequest request,
+                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                        @RequestParam("meetingDataTime") LocalDateTime meeting) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
+
+            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
+            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
+        return "visitors/specialist_choose";
     }
 
 
@@ -68,29 +94,6 @@ public class VisitorsController {
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
             return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
-        }
-
-        return "visitors/specialist_choose";
-    }
-
-    @PostMapping("/appointment_booking")
-    public String setAppointmentBooking(Model model, HttpServletRequest request,
-                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
-                                        @RequestParam("meeting") LocalDateTime meeting) {
-
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            PersonFullName personFullNameRegistered =
-                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
-
-            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
-
-            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
-            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
         }
 
         return "visitors/specialist_choose";
