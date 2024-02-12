@@ -144,7 +144,9 @@ public class TestController {
 //        }
 //
 //        model.addAttribute("calendarData", json);
+        String [][] te = new String[][] {{"ГлавЗаголовок 2"}, {"Заголовок 1", "Заголовок 2"}, {"Данные 1", "Данные 2"}, {"Данные 3", "Данные 4"}};
 
+        model.addAttribute("te", te);
         return "test_calendar";
     }
 
