@@ -236,50 +236,62 @@
     </div>
 </div>
 
-<div>
-<p th:text="${te}"></p>
-</div>
-
 <script>
-    var data = $('tes');
-    // var data = [['ГлавЗаголовок 1'], ['Заголовок 1', 'Заголовок 2', 'Заголовок 3'], [['Данные 1', 'Данные 2'], ['Данные 3', 'Данные 4'], ['Данные 5', 'Данные 6']]];
+    $(document).ready(function(){
+        $.ajax({
+            url: "http://localhost:8080/calendar", // Замените на URL вашего контроллера, который возвращает массив 'te'
+            method: "GET",
+            dataType: "json",
+            success: function(data){
+                console.log("Получены данные с сервера:", data);
+                createTable(data); // Вызов функции для создания таблицы на основе полученных данных
+            },
+            error: function(error){
+                console.error("Произошла ошибка при получении данных с сервера:", error);
+            }
+        });
+    });
 
-    var table = document.createElement('table');
-    table.className = "table";
-    var tableBody = document.createElement('tbody');
+    function createTable(data) {
+        var data1 = data;
 
-    // Создаем строку заголовков
-    var tr = document.createElement('tr');
-    var th = document.createElement('th');
-    th.textContent = data[0][0];
-    th.colSpan = data[1].length;
-    tr.appendChild(th);
-    tableBody.appendChild(tr);
+        var table = document.createElement('table');
+        table.className = "table";
+        var tableBody = document.createElement('tbody');
 
-    var tr = document.createElement('tr');
-    data[1].forEach(elem => {
-        let th = document.createElement('th');
-        th.textContent = elem;
+        // Создаем строку заголовков
+        var tr = document.createElement('tr');
+        var th = document.createElement('th');
+        th.textContent = data1[0][0];
+        th.colSpan = data1[1].length;
         tr.appendChild(th);
-    }
-    );
-    tableBody.appendChild(tr);
-
-    // Создаем строки данных
-    /*for (var i = 1; i < data.length; i++) {
-        tr = document.createElement('tr');
-        var td1 = document.createElement('td');
-        var td2 = document.createElement('td');
-        td1.textContent = data[i][0];
-        td2.textContent = data[i][1];
-        tr.appendChild(td1);
-        tr.appendChild(td2);
         tableBody.appendChild(tr);
+
+        var tr = document.createElement('tr');
+        data1[1].forEach(elem => {
+                let th = document.createElement('th');
+                th.textContent = elem;
+                tr.appendChild(th);
+            }
+        );
+        tableBody.appendChild(tr);
+
+        // Создаем строки данных
+        for (var i = 2; i < data1.length; i++) {
+            tr = document.createElement('tr');
+            data1[i].forEach(elem => {
+                var td = document.createElement('td');
+                td.textContent = elem;
+                tr.appendChild(td);
+            });
+            tableBody.appendChild(tr);
+        }
+
+        table.appendChild(tableBody);
+        document.body.appendChild(table);
     }
-*/
-    table.appendChild(tableBody);
-    document.body.appendChild(table);
 </script>
 
 </body>
 </html>
+

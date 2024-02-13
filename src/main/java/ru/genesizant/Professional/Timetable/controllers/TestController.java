@@ -133,21 +133,22 @@ public class TestController {
     }
 
     @GetMapping("/calendar")
-    public String calendar(Model model) {
-//        Map<LocalDate, Map<String, String>> calendarData = datesAppointmentsService.getCalendarFreeScheduleById(45);
-//
-//        String json = null;
-//        try {
-//            json = objectMapper.writeValueAsString(calendarData);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        model.addAttribute("calendarData", json);
-        String [][] te = new String[][] {{"ГлавЗаголовок 2"}, {"Заголовок 1", "Заголовок 2"}, {"Данные 1", "Данные 2"}, {"Данные 3", "Данные 4"}};
+    public ResponseEntity<String> calendar(Model model) {
+        String[][] te = new String[][]{{"ГлавЗаголовок 2"}, {"Заголовок 1", "Заголовок 2", "Заголовок 3"}, {"Данные 1", "Данные 2", "Данные 3"}, {"Данные 4", "Данные 5", "Данные 6"}};
 
-        model.addAttribute("te", te);
-        return "test_calendar";
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(te);
+            System.out.println(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok(json);
+
+//        model.addAttribute("te", te);
+//        return "test_calendar";
     }
 
     @GetMapping("/development")
