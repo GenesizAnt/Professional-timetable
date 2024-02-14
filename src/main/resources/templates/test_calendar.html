@@ -33,6 +33,17 @@
         .table tbody td {
             border: 0;
         }
+
+        th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
     </style>
 
 </head>
@@ -106,7 +117,8 @@
                     <td>08:00</td>
                     <td>Анна</td>
                     <td>Требует подтверждения</td>
-                <tr>                <tr>
+                <tr>
+                <tr>
                     <td>08:00</td>
                     <td>Анна</td>
                     <td>Требует подтверждения</td>
@@ -123,7 +135,6 @@
         <div class="col">Выбрать дату от которой покажет 5 дней</div>
     </div>
 </div>
-
 
 
 <div class="container mt-5">
@@ -236,60 +247,46 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function(){
-        $.ajax({
-            url: "http://localhost:8080/calendar", // Замените на URL вашего контроллера, который возвращает массив 'te'
-            method: "GET",
-            dataType: "json",
-            success: function(data){
-                console.log("Получены данные с сервера:", data);
-                createTable(data); // Вызов функции для создания таблицы на основе полученных данных
-            },
-            error: function(error){
-                console.error("Произошла ошибка при получении данных с сервера:", error);
-            }
-        });
-    });
 
-    function createTable(data) {
-        var data1 = data;
+<script th:inline="javascript">
 
-        var table = document.createElement('table');
-        table.className = "table";
-        var tableBody = document.createElement('tbody');
+    var teJson = /*[[${te}]]*/ '';
+    var data = JSON.parse(teJson);
+    console.log(data)
 
-        // Создаем строку заголовков
-        var tr = document.createElement('tr');
-        var th = document.createElement('th');
-        th.textContent = data1[0][0];
-        th.colSpan = data1[1].length;
-        tr.appendChild(th);
-        tableBody.appendChild(tr);
+    var table = document.createElement('table');
+    table.className = "table";
+    var tableBody = document.createElement('tbody');
 
-        var tr = document.createElement('tr');
-        data1[1].forEach(elem => {
-                let th = document.createElement('th');
-                th.textContent = elem;
-                tr.appendChild(th);
-            }
-        );
-        tableBody.appendChild(tr);
+    // Создаем строку заголовков
+    var tr = document.createElement('tr');
+    var th = document.createElement('th');
+    th.textContent = data[0][0];
+    th.colSpan = data[1].length;
+    tr.appendChild(th);
+    tableBody.appendChild(tr);
 
-        // Создаем строки данных
-        for (var i = 2; i < data1.length; i++) {
-            tr = document.createElement('tr');
-            data1[i].forEach(elem => {
-                var td = document.createElement('td');
-                td.textContent = elem;
-                tr.appendChild(td);
-            });
-            tableBody.appendChild(tr);
+    var tr = document.createElement('tr');
+    data[1].forEach(elem => {
+            let th = document.createElement('th');
+            th.textContent = elem;
+            tr.appendChild(th);
         }
+    );
+    tableBody.appendChild(tr);
 
-        table.appendChild(tableBody);
-        document.body.appendChild(table);
+    for (var i = 2; i < data.length; i++) {
+        tr = document.createElement('tr');
+        data[i].forEach(elem => {
+            var td = document.createElement('td');
+            td.textContent = elem;
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
     }
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
 </script>
 
 </body>

@@ -1,21 +1,13 @@
 package ru.genesizant.Professional.Timetable.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
@@ -23,10 +15,7 @@ import ru.genesizant.Professional.Timetable.security.PersonDetails;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class TestController {
@@ -133,8 +122,11 @@ public class TestController {
     }
 
     @GetMapping("/calendar")
-    public ResponseEntity<String> calendar(Model model) {
-        String[][] te = new String[][]{{"ГлавЗаголовок 2"}, {"Заголовок 1", "Заголовок 2", "Заголовок 3"}, {"Данные 1", "Данные 2", "Данные 3"}, {"Данные 4", "Данные 5", "Данные 6"}};
+    public String calendar(Model model) {
+        String[][] te = new String[][]{     {"ГлавЗаголовок 2"},
+                                            {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
+                                            {"Данные 1", "Данные 2", "Данные 3"},
+                                            {"Данные 4", "Данные 5", "Данные 6"}};
 
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
@@ -145,10 +137,10 @@ public class TestController {
             e.printStackTrace();
         }
 
-        return ResponseEntity.ok(json);
+//        return ResponseEntity.ok(json);
 
-//        model.addAttribute("te", te);
-//        return "test_calendar";
+        model.addAttribute("te", json);
+        return "test_calendar";
     }
 
     @GetMapping("/development")
