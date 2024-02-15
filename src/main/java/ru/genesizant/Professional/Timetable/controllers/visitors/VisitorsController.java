@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,24 @@ public class VisitorsController {
 
         //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
 //        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
+
+        String[][] te = new String[][]{{"ГлавЗаголовок 2"},
+                {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
+                {"Данные 1", "Данные 2", "Данные 3"},
+                {"Данные 4", "Данные 5", "Данные 6"}};
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(te);
+            System.out.println(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        return ResponseEntity.ok(json);
+
+        model.addAttribute("te", json);
 
         return "visitors/my_specialist_menu";
     }

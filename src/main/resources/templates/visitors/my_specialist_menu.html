@@ -20,6 +20,31 @@
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+    <style>
+        .table thead th,
+        .table thead td,
+        .table tfoot th,
+        .table tfoot td {
+            border: 1px solid black;
+        }
+
+        .table tbody th,
+        .table tbody td {
+            border: 0;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+    </style>
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -112,10 +137,48 @@
 </section>
 
 
-<section>
 
-</section>
 
+<script th:inline="javascript">
+
+    var teJson = /*[[${te}]]*/ '';
+    var data = JSON.parse(teJson);
+    console.log(data)
+
+    var table = document.createElement('table');
+    table.className = "table";
+    var tableBody = document.createElement('tbody');
+
+    // Создаем строку заголовков
+    var tr = document.createElement('tr');
+    var th = document.createElement('th');
+    th.textContent = data[0][0];
+    th.colSpan = data[1].length;
+    tr.appendChild(th);
+    tableBody.appendChild(tr);
+
+    var tr = document.createElement('tr');
+    data[1].forEach(elem => {
+            let th = document.createElement('th');
+            th.textContent = elem;
+            tr.appendChild(th);
+        }
+    );
+    tableBody.appendChild(tr);
+
+    for (var i = 2; i < data.length; i++) {
+        tr = document.createElement('tr');
+        data[i].forEach(elem => {
+            var td = document.createElement('td');
+            td.textContent = elem;
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    }
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+</script>
 
 
 

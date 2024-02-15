@@ -125,8 +125,7 @@ public class DatesAppointmentsService {
 
         Map<String, String> freeSchedule = new HashMap<>();
         try {
-            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {
-            });
+            Map<String, Object> scheduleMap = objectMapper.readValue(scheduleTime, new TypeReference<>() {});
 
             for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
                 String key = entry.getKey();

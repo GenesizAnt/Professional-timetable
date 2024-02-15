@@ -123,23 +123,23 @@ public class TestController {
 
     @GetMapping("/calendar")
     public String calendar(Model model) {
-        String[][] te = new String[][]{     {"ГлавЗаголовок 2"},
-                                            {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
-                                            {"Данные 1", "Данные 2", "Данные 3"},
-                                            {"Данные 4", "Данные 5", "Данные 6"}};
-
-        ObjectMapper mapper = new ObjectMapper();
-        String json = null;
-        try {
-            json = mapper.writeValueAsString(te);
-            System.out.println(json);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        return ResponseEntity.ok(json);
-
-        model.addAttribute("te", json);
+//        String[][] te = new String[][]{     {"ГлавЗаголовок 2"},
+//                                            {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
+//                                            {"Данные 1", "Данные 2", "Данные 3"},
+//                                            {"Данные 4", "Данные 5", "Данные 6"}};
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        String json = null;
+//        try {
+//            json = mapper.writeValueAsString(te);
+//            System.out.println(json);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+////        return ResponseEntity.ok(json);
+//
+//        model.addAttribute("te", json);
         return "test_calendar";
     }
 
