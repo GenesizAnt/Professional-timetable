@@ -1,5 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/visitors")
@@ -72,6 +75,49 @@ public class VisitorsController {
 
         return "visitors/my_specialist_menu";
     }
+
+    public static String[][] getCalendarForClient(String namePerson, String data, String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[][] calendarForClient = new String[10][2];
+        calendarForClient[0][0] = data;
+        calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
+        int count = 2;
+
+        try {
+
+            Map<String, Object> scheduleMap = objectMapper.readValue(json, new TypeReference<>(){});
+            Map<String, Object> sortedScheduleMap = new TreeMap<>(scheduleMap);
+
+
+
+            for (Map.Entry<String, Object> entry : sortedScheduleMap.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (value instanceof Map) {
+                    Map<String, String> valueMap = (Map<String, String>) value;
+
+                    for (String statusValue : valueMap.keySet()) {
+                        if (namePerson.equals(valueMap.get(statusValue))) {
+                            calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
+                            count++;
+                        }
+                    }
+
+                } else if (value instanceof String) {
+                    if (value.equals("Доступно")) {
+                        calendarForClient[count] = new String[]{key, "", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
+                        count++; //ToDo нужно ли что то вставить вместо ""
+                    }
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return calendarForClient;
+    }
+
+
 
     @PostMapping("/appointment_booking")
     public String setAppointmentBooking(Model model, HttpServletRequest request,
