@@ -22,16 +22,21 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
     <style>
-        .table thead th,
-        .table thead td,
-        .table tfoot th,
-        .table tfoot td {
-            border: 1px solid black;
-        }
+        /*.table thead th,*/
+        /*.table thead td,*/
+        /*.table tfoot th,*/
+        /*.table tfoot td {*/
+        /*    border: 1px solid black;*/
+        /*}*/
 
-        .table tbody th,
-        .table tbody td {
-            border: 0;
+        /*.table tbody th,*/
+        /*.table tbody td {*/
+        /*    border: 0;*/
+        /*}*/
+
+        tr {
+            text-align: center;
+            vertical-align: middle;
         }
 
         th {
@@ -39,7 +44,7 @@
             vertical-align: middle;
         }
 
-        table, th, td {
+        td {
             border: 1px solid black;
             border-collapse: collapse;
             padding: 8px;
@@ -151,10 +156,19 @@
 
     // Создаем строку заголовков
     var tr = document.createElement('tr');
-    var th = document.createElement('th');
-    th.textContent = data[0][0];
-    th.colSpan = data[1].length;
-    tr.appendChild(th);
+
+    var th1 = document.createElement('th');
+    th1.textContent = data[0][0];
+    // th.colSpan = data[1].length;
+    th1.colSpan = 1;
+    tr.appendChild(th1);
+
+    var th2 = document.createElement('th');
+    th2.textContent = data[0][1];
+    // th.colSpan = data[1].length;
+    th2.colSpan = 1;
+    tr.appendChild(th2);
+
     tableBody.appendChild(tr);
 
     var tr = document.createElement('tr');

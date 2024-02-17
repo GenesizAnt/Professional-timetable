@@ -19,10 +19,8 @@ import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Controller
 @RequestMapping("/visitors")
@@ -55,68 +53,98 @@ public class VisitorsController {
         //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
 //        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
-        String[][] te = new String[][]{{"ГлавЗаголовок 2"},
-                {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
-                {"Данные 1", "Данные 2", "Данные 3"},
-                {"Данные 4", "Данные 5", "Данные 6"}};
+        Map<LocalDate, Map<String, String>> id = datesAppointmentsService.getCalendarFreeScheduleById(45);
+        Map<String, String> stringStringMap = id.get(LocalDate.of(2023, 11, 20));
+        System.out.println(stringStringMap);
+
+        String[][] calendarForClient = getCalendarForClient(person.get().getUsername(), LocalDate.of(2023, 11, 20),
+                id.get(LocalDate.of(2023, 11, 20)));
+
+        for(int i = 0; i < calendarForClient.length; i++) {
+            for(int j = 0; j < calendarForClient[i].length; j++) {
+                if(calendarForClient[i][j] != null) {
+//                    calendarForClient.d
+                    System.out.print(" [" + i + "][" + j + "]: " + calendarForClient[i][j]);
+                }
+            }
+        }
 
         ObjectMapper mapper = new ObjectMapper();
-        String json = null;
+        String jsonOld = null;
         try {
-            json = mapper.writeValueAsString(te);
-            System.out.println(json);
+            jsonOld = mapper.writeValueAsString(calendarForClient);
+            System.out.println(jsonOld);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//        return ResponseEntity.ok(json);
+        System.out.println(jsonOld);
 
-        model.addAttribute("te", json);
+
+//        String[][] te = new String[][]{{"ГлавЗаголовок 2"},
+//                {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
+//                {"Данные 1", "Данные 2", "Данные 3"},
+//                {"Данные 4", "Данные 5", "Данные 6"}};
+//
+////        ObjectMapper mapper = new ObjectMapper();
+//        String json = null;
+//        try {
+//            json = mapper.writeValueAsString(te);
+//            System.out.println(json);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+//        return ResponseEntity.ok(jsonOld);
+
+        model.addAttribute("te", jsonOld);
 
         return "visitors/my_specialist_menu";
     }
 
-    public static String[][] getCalendarForClient(String namePerson, String data, String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static String[][] getCalendarForClient(String namePerson, LocalDate data, Map<String, String> json) {
         String[][] calendarForClient = new String[10][2];
-        calendarForClient[0][0] = data;
+
+//        LocalDate dateExp = LocalDate.of(2023, 11, 21);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE", new Locale("ru"));
+        String dayOfWeekInRussian = data.format(formatter);
+        dayOfWeekInRussian = dayOfWeekInRussian.substring(0, 1).toUpperCase() + dayOfWeekInRussian.substring(1);
+
+
+        calendarForClient[0][0] = data.toString();
+        calendarForClient[0][1] = dayOfWeekInRussian;
         calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
         int count = 2;
 
-        try {
-
-            Map<String, Object> scheduleMap = objectMapper.readValue(json, new TypeReference<>(){});
-            Map<String, Object> sortedScheduleMap = new TreeMap<>(scheduleMap);
+        //            Map<String, Object> scheduleMap = objectMapper.readValue(json, new TypeReference<>(){});
+        Map<String, String> sortedScheduleMap = new TreeMap<>(json);
 
 
+        for (Map.Entry<String, String> entry : sortedScheduleMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-            for (Map.Entry<String, Object> entry : sortedScheduleMap.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-
-                if (value instanceof Map) {
-                    Map<String, String> valueMap = (Map<String, String>) value;
-
-                    for (String statusValue : valueMap.keySet()) {
-                        if (namePerson.equals(valueMap.get(statusValue))) {
-                            calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
-                            count++;
-                        }
-                    }
-
-                } else if (value instanceof String) {
-                    if (value.equals("Доступно")) {
-                        calendarForClient[count] = new String[]{key, "", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
-                        count++; //ToDo нужно ли что то вставить вместо ""
-                    }
+            if (value.contains(":")) {
+                String[] values = value.split(":");
+                String statusValue = values[0].trim();
+                String nameVal = values[1].trim();
+                if (namePerson.equals(nameVal)) {
+                    calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
+                    count++;
                 }
+//                for (String statusValue : valueMap.keySet()) {
+//                    if (namePerson.equals(valueMap.get(statusValue))) {
+//                        calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
+//                        count++;
+//                    }
+//                }
+            } else if (value.equals("Доступно")) {
+                calendarForClient[count] = new String[]{key, "---", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
+                count++; //ToDo нужно ли что то вставить вместо ""
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         }
         return calendarForClient;
     }
-
 
 
     @PostMapping("/appointment_booking")
@@ -166,8 +194,8 @@ public class VisitorsController {
 
     @PostMapping("/cancelling_booking")
     public String setCancellingBooking(Model model, HttpServletRequest request,
-                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
-                                        @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
+                                       @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                       @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
 
@@ -230,14 +258,6 @@ public class VisitorsController {
         model.addAttribute("dates", sortedFreeSchedule);
     }
 }
-
-
-
-
-
-
-
-
 
 
 //отображение списка специалистов на выбор для клиента
