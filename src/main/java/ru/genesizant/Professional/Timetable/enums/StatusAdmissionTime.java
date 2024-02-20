@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.calendar;
+package ru.genesizant.Professional.Timetable.enums;
 
 public enum StatusAdmissionTime {
     AVAILABLE("Доступно"), RESERVED("Забронировано"), IN_QUESTION("Под вопросом");

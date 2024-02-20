@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime;
+import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
@@ -21,8 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.AVAILABLE;
-import static ru.genesizant.Professional.Timetable.controllers.specialist.calendar.StatusAdmissionTime.RESERVED;
+import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.AVAILABLE;
+import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.RESERVED;
 
 @Service
 public class DatesAppointmentsService {

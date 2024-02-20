@@ -1,7 +1,5 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.enums.DayOfWeekRus;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
@@ -17,10 +16,15 @@ import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeek;
 
 @Controller
 @RequestMapping("/visitors")
@@ -31,14 +35,16 @@ public class VisitorsController {
     private final DatesAppointmentsService datesAppointmentsService;
     private final ModelMapper modelMapper;
     private final SpecialistsAndClientService specialistsAndClientService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.modelMapper = modelMapper;
         this.specialistsAndClientService = specialistsAndClientService;
+        this.objectMapper = objectMapper;
     }
 
     //ToDo в разделе Мой профиль - добавить окно с выбором специалистов за которыми закреплен клиент, чтобы клиент мог переключаться между ними (специалистами)
@@ -53,77 +59,56 @@ public class VisitorsController {
         //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
 //        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
-        Map<LocalDate, Map<String, String>> id = datesAppointmentsService.getCalendarFreeScheduleById(45);
-        Map<String, String> stringStringMap = id.get(LocalDate.of(2023, 11, 20));
-        System.out.println(stringStringMap);
+        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(45);
 
-        String[][] calendarForClient = getCalendarForClient(person.get().getUsername(), LocalDate.of(2023, 11, 20),
-                id.get(LocalDate.of(2023, 11, 20)));
+//        Map<String, String> stringStringMap = schedule.get(LocalDate.of(2023, 11, 20));
+//        System.out.println(stringStringMap);
 
-        for(int i = 0; i < calendarForClient.length; i++) {
-            for(int j = 0; j < calendarForClient[i].length; j++) {
-                if(calendarForClient[i][j] != null) {
-//                    calendarForClient.d
-                    System.out.print(" [" + i + "][" + j + "]: " + calendarForClient[i][j]);
-                }
-            }
-        }
+//        String[][] calendarForClient = getCalendarForClient(person.get().getUsername(), LocalDate.of(2023, 11, 20),
+//                schedule.get(LocalDate.of(2023, 11, 20)));
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonOld = null;
-        try {
-            jsonOld = mapper.writeValueAsString(calendarForClient);
-            System.out.println(jsonOld);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(jsonOld);
+        List<String> nearestDates = getFiveNearestDates(schedule, person.get().getFullName());
 
 
-//        String[][] te = new String[][]{{"ГлавЗаголовок 2"},
-//                {"Заголовок 1", "Заголовок 2", "Заголовок 3"},
-//                {"Данные 1", "Данные 2", "Данные 3"},
-//                {"Данные 4", "Данные 5", "Данные 6"}};
-//
-////        ObjectMapper mapper = new ObjectMapper();
-//        String json = null;
-//        try {
-//            json = mapper.writeValueAsString(te);
-//            System.out.println(json);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-//        return ResponseEntity.ok(jsonOld);
-
-        model.addAttribute("te", jsonOld);
+        model.addAttribute("day1", nearestDates.get(0));
+        model.addAttribute("day2", nearestDates.get(1));
+        model.addAttribute("day3", nearestDates.get(2));
+        model.addAttribute("day4", nearestDates.get(3));
+        model.addAttribute("day5", nearestDates.get(4));
 
         return "visitors/my_specialist_menu";
     }
 
+    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
+        List<String> fiveNearestDates = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        List<LocalDate> nearestDates = schedule.keySet().stream()
+                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date)))
+                .limit(5).toList();
+        for (LocalDate nearestDate : nearestDates) {
+            String[][] calendarForView = getCalendarForClient(personFullName, nearestDate, schedule.get(nearestDate));
+            try {
+                fiveNearestDates.add(objectMapper.writeValueAsString(calendarForView));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return fiveNearestDates;
+    }
+
     public static String[][] getCalendarForClient(String namePerson, LocalDate data, Map<String, String> json) {
         String[][] calendarForClient = new String[10][2];
-
-//        LocalDate dateExp = LocalDate.of(2023, 11, 21);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE", new Locale("ru"));
-        String dayOfWeekInRussian = data.format(formatter);
-        dayOfWeekInRussian = dayOfWeekInRussian.substring(0, 1).toUpperCase() + dayOfWeekInRussian.substring(1);
-
-
+        int count = 2;
+        String dayOfWeekInRussian = getRusDayWeek(data.getDayOfWeek().name());
         calendarForClient[0][0] = data.toString();
         calendarForClient[0][1] = dayOfWeekInRussian;
         calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
-        int count = 2;
-
-        //            Map<String, Object> scheduleMap = objectMapper.readValue(json, new TypeReference<>(){});
         Map<String, String> sortedScheduleMap = new TreeMap<>(json);
-
 
         for (Map.Entry<String, String> entry : sortedScheduleMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-
             if (value.contains(":")) {
                 String[] values = value.split(":");
                 String statusValue = values[0].trim();
@@ -132,18 +117,14 @@ public class VisitorsController {
                     calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
                     count++;
                 }
-//                for (String statusValue : valueMap.keySet()) {
-//                    if (namePerson.equals(valueMap.get(statusValue))) {
-//                        calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
-//                        count++;
-//                    }
-//                }
             } else if (value.equals("Доступно")) {
                 calendarForClient[count] = new String[]{key, "---", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
                 count++; //ToDo нужно ли что то вставить вместо ""
             }
         }
-        return calendarForClient;
+        return Arrays.stream(calendarForClient)
+                .filter(row -> Arrays.stream(row, 1, row.length).allMatch(Objects::nonNull))
+                .toArray(String[][]::new);
     }
 
 

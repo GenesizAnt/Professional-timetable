@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -276,17 +277,17 @@ public class CalendarManagementController {
     }
 
     private boolean isValidSetTimeForm(Optional<LocalDate> date, String timeAdmission, StatusAdmissionTime status) {
-        return timeAdmission.equals("") && status.getStatus().equals("") && date.isPresent();
+        return timeAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
     }
 
     private boolean isValidSetRangeTimeForm(Optional<LocalDate> date, String startStartAdmission, String endStartAdmission, StatusAdmissionTime status) {
-        return startStartAdmission.equals("") && endStartAdmission.equals("") && status.getStatus().equals("") && date.isPresent();
+        return startStartAdmission.equals("") && endStartAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
     }
 
     private boolean isValidFormAddTimeAvailability(Optional<LocalDate> date, String timeAvailability, StatusAdmissionTime status) {
-        return date.isPresent() && !timeAvailability.equals("") && status.getStatus().equals("");
+        return date.isPresent() && !timeAvailability.equals("") && !status.getStatus().equals("");
     }
     private boolean isValidFormAddRangeTimeAvailability(Optional<LocalDate> date, String startTimeAvailability, String endTimeAvailability, StatusAdmissionTime status, String intervalHour) {
-        return date.isPresent() && !startTimeAvailability.equals("") && !endTimeAvailability.equals("") && status.getStatus().equals("") && !intervalHour.equals("");
+        return date.isPresent() && !startTimeAvailability.equals("") && !endTimeAvailability.equals("") && !status.getStatus().equals("") && !intervalHour.equals("");
     }
 }

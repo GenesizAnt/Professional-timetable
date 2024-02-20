@@ -84,6 +84,10 @@ public class Person {
     public Person() {
     }
 
+    public String getFullName() {
+        return surname + " " + username + " " + patronymic;
+    }
+
     public List<UnregisteredPerson> getSpecialistUnregisteredPersonList() {
         return specialistUnregisteredPersonList;
     }

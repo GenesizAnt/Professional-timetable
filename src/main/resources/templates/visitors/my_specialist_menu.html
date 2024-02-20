@@ -37,17 +37,25 @@
         tr {
             text-align: center;
             vertical-align: middle;
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
         }
 
         th {
             text-align: center;
             vertical-align: middle;
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
         }
 
         td {
             border: 1px solid black;
             border-collapse: collapse;
             padding: 8px;
+            text-align: center;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -146,7 +154,7 @@
 
 <script th:inline="javascript">
 
-    var teJson = /*[[${te}]]*/ '';
+    var teJson = /*[[${day1}]]*/ '';
     var data = JSON.parse(teJson);
     console.log(data)
 
@@ -159,14 +167,14 @@
 
     var th1 = document.createElement('th');
     th1.textContent = data[0][0];
-    // th.colSpan = data[1].length;
     th1.colSpan = 1;
+    // th1.colSpan = 1;
     tr.appendChild(th1);
 
     var th2 = document.createElement('th');
     th2.textContent = data[0][1];
-    // th.colSpan = data[1].length;
-    th2.colSpan = 1;
+    th2.colSpan = 2;
+    // th2.colSpan = 1;
     tr.appendChild(th2);
 
     tableBody.appendChild(tr);
@@ -193,8 +201,6 @@
     table.appendChild(tableBody);
     document.body.appendChild(table);
 </script>
-
-
 
 </body>
 </html>
