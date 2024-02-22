@@ -22,13 +22,13 @@ public enum DayOfWeekRus {
 
     public static String getRusDayWeek(String engDayWeek) {
         return switch (engDayWeek.toUpperCase()) {
-            case "SUNDAY" -> "Воскресенье";
-            case "MONDAY" -> "Понедельник";
-            case "TUESDAY" -> "Вторник";
-            case "WEDNESDAY" -> "Среда";
-            case "THURSDAY" -> "Четверг";
-            case "FRIDAY" -> "Пятница";
-            case "SATURDAY" -> "Суббота";
+            case "SUNDAY" -> SUNDAY.getTitleRus();
+            case "MONDAY" -> MONDAY.getTitleRus();
+            case "TUESDAY" -> TUESDAY.getTitleRus();
+            case "WEDNESDAY" -> WEDNESDAY.getTitleRus();
+            case "THURSDAY" -> THURSDAY.getTitleRus();
+            case "FRIDAY" -> FRIDAY.getTitleRus();
+            case "SATURDAY" -> SATURDAY.getTitleRus();
             default -> "Неверное название дня недели";
         };
     }

@@ -34,6 +34,29 @@
         /*    border: 0;*/
         /*}*/
 
+        /*.table {*/
+        /*    width: 100%; !* Ширина таблицы *!*/
+        /*    table-layout: fixed; !* Фиксированная ширина столбцов *!*/
+        /*}*/
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        th:first-child, td:first-child {
+            width: 16%; /* ширина первого столбца */
+        }
+
+        th, td {
+            width: 42%; /* ширина второго и третьего столбцов */
+            text-align: center; /* выравнивание текста по центру */
+        }
+
+        th, td {
+            text-align: center; /* выравнивание текста по центру */
+        }
+
         tr {
             text-align: center;
             vertical-align: middle;
@@ -57,6 +80,16 @@
             text-align: center;
             vertical-align: middle;
         }
+
+        /*th, td:nth-child(1) {*/
+        /*    width: 10px; !* Ширина первого столбца *!*/
+        /*}*/
+
+        /*td:nth-child(2),*/
+        /*td:nth-child(3) {*/
+        /*    width: 150px; !* Ширина второго и третьего столбцов *!*/
+        /*}*/
+
     </style>
 </head>
 <body>
@@ -149,57 +182,60 @@
     </div>
 </section>
 
-
-
-
 <script th:inline="javascript">
+    function createTable(data) {
+        var table = document.createElement('table');
+        table.className = "table";
+        var tableBody = document.createElement('tbody');
 
-    var teJson = /*[[${day1}]]*/ '';
-    var data = JSON.parse(teJson);
-    console.log(data)
+        // Создаем строку заголовков
+        var tr = document.createElement('tr');
 
-    var table = document.createElement('table');
-    table.className = "table";
-    var tableBody = document.createElement('tbody');
+        var th1 = document.createElement('th');
+        th1.textContent = data[0][0];
+        th1.colSpan = 1;
+        tr.appendChild(th1);
 
-    // Создаем строку заголовков
-    var tr = document.createElement('tr');
+        var th2 = document.createElement('th');
+        th2.textContent = data[0][1];
+        th2.colSpan = 2;
+        tr.appendChild(th2);
 
-    var th1 = document.createElement('th');
-    th1.textContent = data[0][0];
-    th1.colSpan = 1;
-    // th1.colSpan = 1;
-    tr.appendChild(th1);
+        tableBody.appendChild(tr);
 
-    var th2 = document.createElement('th');
-    th2.textContent = data[0][1];
-    th2.colSpan = 2;
-    // th2.colSpan = 1;
-    tr.appendChild(th2);
-
-    tableBody.appendChild(tr);
-
-    var tr = document.createElement('tr');
-    data[1].forEach(elem => {
+        var tr = document.createElement('tr');
+        data[1].forEach(elem => {
             let th = document.createElement('th');
             th.textContent = elem;
             tr.appendChild(th);
-        }
-    );
-    tableBody.appendChild(tr);
-
-    for (var i = 2; i < data.length; i++) {
-        tr = document.createElement('tr');
-        data[i].forEach(elem => {
-            var td = document.createElement('td');
-            td.textContent = elem;
-            tr.appendChild(td);
         });
         tableBody.appendChild(tr);
+
+        for (var i = 2; i < data.length; i++) {
+            tr = document.createElement('tr');
+            data[i].forEach(elem => {
+                var td = document.createElement('td');
+                td.textContent = elem;
+                tr.appendChild(td);
+            });
+            tableBody.appendChild(tr);
+        }
+
+        table.appendChild(tableBody);
+        document.body.appendChild(table);
     }
 
-    table.appendChild(tableBody);
-    document.body.appendChild(table);
+    var data1 = JSON.parse(/*[[${day1}]]*/ '');
+    var data2 = JSON.parse(/*[[${day2}]]*/ '');
+    var data3 = JSON.parse(/*[[${day3}]]*/ '');
+    var data4 = JSON.parse(/*[[${day4}]]*/ '');
+    var data5 = JSON.parse(/*[[${day5}]]*/ '');
+
+    createTable(data1);
+    createTable(data2);
+    createTable(data3);
+    createTable(data4);
+    createTable(data5);
 </script>
 
 </body>

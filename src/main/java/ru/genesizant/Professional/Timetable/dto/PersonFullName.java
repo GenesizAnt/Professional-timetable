@@ -48,6 +48,6 @@ public class PersonFullName {
 
     @Override
     public String toString() {
-        return username + ' ' + surname + ' ' + patronymic;
+        return surname + ' ' + username + ' ' + patronymic;
     }
 }

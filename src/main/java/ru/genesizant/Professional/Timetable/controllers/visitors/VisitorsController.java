@@ -61,13 +61,7 @@ public class VisitorsController {
 
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(45);
 
-//        Map<String, String> stringStringMap = schedule.get(LocalDate.of(2023, 11, 20));
-//        System.out.println(stringStringMap);
-
-//        String[][] calendarForClient = getCalendarForClient(person.get().getUsername(), LocalDate.of(2023, 11, 20),
-//                schedule.get(LocalDate.of(2023, 11, 20)));
-
-        List<String> nearestDates = getFiveNearestDates(schedule, person.get().getFullName());
+        List<String> nearestDates = getFiveNearestDates(schedule, person.get().getFullName(), 5);
 
 
         model.addAttribute("day1", nearestDates.get(0));
@@ -79,13 +73,13 @@ public class VisitorsController {
         return "visitors/my_specialist_menu";
     }
 
-    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
+    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName, int limitDay) {
         List<String> fiveNearestDates = new ArrayList<>();
         LocalDate now = LocalDate.now();
         List<LocalDate> nearestDates = schedule.keySet().stream()
                 .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
                 .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date)))
-                .limit(5).toList();
+                .limit(limitDay).toList();
         for (LocalDate nearestDate : nearestDates) {
             String[][] calendarForView = getCalendarForClient(personFullName, nearestDate, schedule.get(nearestDate));
             try {
@@ -97,12 +91,12 @@ public class VisitorsController {
         return fiveNearestDates;
     }
 
-    public static String[][] getCalendarForClient(String namePerson, LocalDate data, Map<String, String> json) {
+    public static String[][] getCalendarForClient(String namePerson, LocalDate date, Map<String, String> json) {
         String[][] calendarForClient = new String[10][2];
         int count = 2;
-        String dayOfWeekInRussian = getRusDayWeek(data.getDayOfWeek().name());
-        calendarForClient[0][0] = data.toString();
-        calendarForClient[0][1] = dayOfWeekInRussian;
+//        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
+        calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name());
         calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
         Map<String, String> sortedScheduleMap = new TreeMap<>(json);
 

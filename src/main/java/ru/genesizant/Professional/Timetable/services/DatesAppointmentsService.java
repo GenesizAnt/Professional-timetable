@@ -21,8 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.AVAILABLE;
-import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.RESERVED;
+import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.*;
 
 @Service
 public class DatesAppointmentsService {
@@ -137,8 +136,20 @@ public class DatesAppointmentsService {
                     // Если значение является объектом, получаем его в виде JSON-строки
                     String nestedValue = objectMapper.writeValueAsString(value);
                     JsonNode jsonNodeInput = objectMapper.readTree(nestedValue);
-                    String inputName = RESERVED.getStatus() + " : " + jsonNodeInput.get(RESERVED.getStatus()).asText();
-                    freeSchedule.put(key, inputName);
+                    String fieldName = jsonNodeInput.fieldNames().next();
+                    if (fieldName.equals(RESERVED.getStatus())) {
+                        String inputName = RESERVED.getStatus() + " : " + jsonNodeInput.get(fieldName).asText();
+                        freeSchedule.put(key, inputName);
+                    } else if (fieldName.equals(CONFIRMED.getStatus())) {
+                        String inputName = CONFIRMED.getStatus() + " : " + jsonNodeInput.get(fieldName).asText();
+                        freeSchedule.put(key, inputName);
+                    } else if (fieldName.equals(NEED_CONFIRMATION.getStatus())) {
+                        String inputName = NEED_CONFIRMATION.getStatus() + " : " + jsonNodeInput.get(fieldName).asText();
+                        freeSchedule.put(key, inputName);
+                    }
+//                    if (jsonNodeInput.asToken().equals())
+//                    String inputName = RESERVED.getStatus() + " : " + jsonNodeInput.get(RESERVED.getStatus()).asText();
+//                    freeSchedule.put(key, inputName);
 //                    freeSchedule.put(key, nestedValue);
                 }
             }

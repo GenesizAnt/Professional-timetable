@@ -1,7 +1,11 @@
 package ru.genesizant.Professional.Timetable.enums;
 
 public enum StatusAdmissionTime {
-    AVAILABLE("Доступно"), RESERVED("Забронировано"), IN_QUESTION("Под вопросом");
+    AVAILABLE("Доступно"),
+    RESERVED("Забронировано"),
+    IN_QUESTION("Под вопросом"),
+    NEED_CONFIRMATION("Требует подтверждения"),
+    CONFIRMED("Запись подтверждена");
 
     private final String status;
 
