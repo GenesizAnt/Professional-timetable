@@ -121,7 +121,9 @@
     <div class="container">
         <div class="row">
             <div class="alert alert-danger text-center" role="alert" th:if="${param.error != null}">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                    <use xlink:href="#exclamation-triangle-fill"/>
+                </svg>
                 <span style="color:firebrick" th:text="${param.error}"></span>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
@@ -135,7 +137,8 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteTimeLabel">Выберете время, на которое хотите записаться</h5>
+                                <h5 class="modal-title" id="deleteTimeLabel">Выберете время, на которое хотите
+                                    записаться</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                             </div>
@@ -223,24 +226,18 @@
                 var td = document.createElement('td');
                 // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"
                 if (index === 2 && elem === "Доступно") {
-                    console.log("1")
-                    console.log(csrfToken)
                     var link = document.createElement('a');
                     link.textContent = elem;
                     link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
-                    console.log("2")
-                    link.addEventListener('click', function(event) {
+                    link.addEventListener('click', function (event) {
                         event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
 
                         var applicationFromVisitor = {
-                            // var data = {
                             specialistId: idSpecialist,
                             meetingDate: table.rows[0].cells[0].textContent,
-                            meetingTime: table.rows[ind].cells[index-2].textContent
-                            // };
+                            meetingTime: table.rows[ind].cells[index - 2].textContent
                         }; // Ваши данные для отправки на контроллер
                         // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
-                        console.log("3")
 
                         // Отправляем данные на сервер
                         fetch("/visitors/appointment_booking_table", {
@@ -253,6 +250,7 @@
                             body: JSON.stringify(applicationFromVisitor)
                         })
                             .then(response => {
+                                location.reload();
                                 // Обрабатываем ответ от сервера
                             })
                             .catch(error => {
@@ -260,7 +258,6 @@
                             });
                     });
                     td.appendChild(link);
-                    console.log("4")
                 } else {
                     // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
                     td.textContent = elem;
@@ -269,7 +266,6 @@
             });
             tableBody.appendChild(tr);
         }
-
 
         table.appendChild(tableBody);
         document.body.appendChild(table);

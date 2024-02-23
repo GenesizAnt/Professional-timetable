@@ -173,6 +173,15 @@ public class VisitorsController {
 
         return ENROLL_VIEW_REDIRECT;
     }
+//
+//    @GetMapping("/refresh")
+//    public String getRefresh(Model model, HttpServletRequest request) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+//        displayPage(model, request);
+//        return "redirect:/visitors/my_specialist_menu";
+//    }
 
     @PostMapping("/appointment_booking_form")
     public String setAppointmentBookingForm(Model model, HttpServletRequest request,
@@ -272,10 +281,11 @@ public class VisitorsController {
 
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
         List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+
+        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
         model.addAttribute("day1", nearestDates.get(0));
         model.addAttribute("day2", nearestDates.get(1));
         model.addAttribute("day3", nearestDates.get(2));
