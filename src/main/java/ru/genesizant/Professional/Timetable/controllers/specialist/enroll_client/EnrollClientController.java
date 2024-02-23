@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson;
+import ru.genesizant.Professional.Timetable.enums.StatusPerson;
+import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -28,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson.REGISTERED;
-import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredPerson.UNREGISTERED;
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
+import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
+import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
 @Controller
 @RequestMapping("/enroll")
@@ -75,7 +77,7 @@ public class EnrollClientController {
     @PostMapping("/customerForRecording")
     public String customerForRecording(Model model, HttpServletRequest request, //ToDo chooseCustomerForRecording
                                        @RequestParam("clientFullName") Optional<@NotNull String> clientId,
-                                       @RequestParam("registeredStatus") StatusRegisteredPerson registeredStatus) {
+                                       @RequestParam("registeredStatus") StatusRegisteredVisitor registeredStatus) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
@@ -116,7 +118,7 @@ public class EnrollClientController {
     public String newDatesAppointments(Model model, HttpServletRequest request,
                                        @RequestParam("meeting") Optional<LocalDateTime> meeting,
                                        @RequestParam("selectedCustomerId") String selectedCustomerId,
-                                       @RequestParam("registeredStatus") Optional<StatusRegisteredPerson> registeredStatus) {
+                                       @RequestParam("registeredStatus") Optional<StatusRegisteredVisitor> registeredStatus) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
@@ -126,10 +128,10 @@ public class EnrollClientController {
 
             if (registeredStatus.get().equals(REGISTERED)) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"));
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"));
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             }
             //ToDo сделать добавление в БД Таблица Приемы
             displayPage(model, request);
@@ -171,7 +173,7 @@ public class EnrollClientController {
         model.addAttribute("dates", sortedFreeSchedule);
     }
 
-    private void handleCustomerSelection(Model model, Optional<@NotNull String> clientId, StatusRegisteredPerson registeredStatus) {
+    private void handleCustomerSelection(Model model, Optional<@NotNull String> clientId, StatusRegisteredVisitor registeredStatus) {
         if (registeredStatus.equals(REGISTERED)) {
             PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(Long.valueOf(clientId.get())), PersonFullName.class);
             model.addAttribute("selectedCustomerFullName", personFullNameRegistered);
@@ -193,7 +195,7 @@ public class EnrollClientController {
         return !username.isEmpty() && !surname.isEmpty() && !patronymic.isEmpty();
     }
 
-    private boolean isValidMeetingRequestParameters(Optional<LocalDateTime> meeting, String selectedCustomerId, Optional<StatusRegisteredPerson> registeredStatus) {
+    private boolean isValidMeetingRequestParameters(Optional<LocalDateTime> meeting, String selectedCustomerId, Optional<StatusRegisteredVisitor> registeredStatus) {
 //        if (meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent())
         return meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent();
     }

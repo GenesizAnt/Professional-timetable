@@ -2,8 +2,10 @@ package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +18,19 @@ import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeek;
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
 @Controller
 @RequestMapping("/visitors")
@@ -36,6 +42,10 @@ public class VisitorsController {
     private final ModelMapper modelMapper;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final ObjectMapper objectMapper;
+    @Value("${error_login}")
+    private String ERROR_LOGIN;
+    private final String ERROR_VALIDATE_FORM = "redirect:/visitors/my_specialist_menu?error=";
+    private final String ENROLL_VIEW_REDIRECT = "visitors/my_specialist_menu";
 
     @Autowired
     public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, ObjectMapper objectMapper) {
@@ -53,29 +63,29 @@ public class VisitorsController {
     @GetMapping("/my_specialist_menu") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getMySpecialistMenu(Model model, HttpServletRequest request) {
 
-        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+        displayPage(model, request);
 
 
-//        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
-        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+//        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+//
+////        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
+//        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+////        model.addAttribute("fullNameClient", assignedToSpecialist.get().getVisitorList().getFullName());
+//        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+//
+//
+//        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+//
+//        List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+//
+//
+//        model.addAttribute("day1", nearestDates.get(0));
+//        model.addAttribute("day2", nearestDates.get(1));
+//        model.addAttribute("day3", nearestDates.get(2));
+//        model.addAttribute("day4", nearestDates.get(3));
+//        model.addAttribute("day5", nearestDates.get(4));
 
-
-        //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
-//        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
-
-        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(45);
-
-        List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
-
-
-        model.addAttribute("day1", nearestDates.get(0));
-        model.addAttribute("day2", nearestDates.get(1));
-        model.addAttribute("day3", nearestDates.get(2));
-        model.addAttribute("day4", nearestDates.get(3));
-        model.addAttribute("day5", nearestDates.get(4));
-
-        return "visitors/my_specialist_menu";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
@@ -129,49 +139,61 @@ public class VisitorsController {
 
     @PostMapping("/appointment_booking_table")
     public String setAppointmentBookingTable(Model model, HttpServletRequest request,
-                                             @RequestBody Map<String, String> requestData) {
+                                             @RequestBody Map<String, String> applicationFromVisitor) {
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
+        }
+
+        String specialistId = applicationFromVisitor.get("specialistId");
+        String meetingDate = applicationFromVisitor.get("meetingDate");
+        String meetingTime = applicationFromVisitor.get("meetingTime");
+
+//            String format = meetingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+
+        if (!specialistId.equals("") && !meetingDate.equals("") && !meetingTime.equals("")) {
+            LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
+            LocalDateTime meeting = date.atTime(time);
 
             PersonFullName personFullNameRegistered =
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(specialistId), VISITOR);
+            displayPage(model, request);
 
 //            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
 //
 //            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
 //            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
-
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+            return encodeError("Если Вы видите это сообщение, то произошла неизвестная ошибка");
         }
 
-        return "visitors/specialist_choose";
+        return ENROLL_VIEW_REDIRECT;
     }
 
     @PostMapping("/appointment_booking_form")
     public String setAppointmentBookingForm(Model model, HttpServletRequest request,
-                                        @RequestParam("selectedSpecialistId") String selectedSpecialistId,
-                                        @RequestParam("meetingDataTime") LocalDateTime meeting) {
+                                            @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                            @RequestParam("meetingDataTime") Optional<@NotNull LocalDateTime> meeting) {
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            PersonFullName personFullNameRegistered =
-                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
-
-
-//            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
-//
-//            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
-//            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error";
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
         }
 
-        return "visitors/specialist_choose";
+        if (meeting.isPresent()) {
+            PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(
+                    (Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullNameRegistered, Long.valueOf(selectedSpecialistId), VISITOR);
+            displayPage(model, request);
+        } else {
+            return encodeError("Для записи нужно выбрать ДАТУ и ВРЕМЯ приема");
+        }
+
+        return ENROLL_VIEW_REDIRECT;
     }
 
 
@@ -185,7 +207,8 @@ public class VisitorsController {
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
             model.addAttribute("selectedSpecialistId", id);
-            displayPage(model, id, personFullNameRegistered, request);
+
+            displayPage(model, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -215,7 +238,7 @@ public class VisitorsController {
             }
 
 
-            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
+            displayPage(model, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -236,7 +259,7 @@ public class VisitorsController {
             specialistsAndClientService.appointSpecialist(personFullNameRegistered.getId(), Long.valueOf(id));
 
             model.addAttribute("selectedSpecialistId", id);
-            displayPage(model, id, personFullNameRegistered, request);
+            displayPage(model, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
@@ -246,19 +269,22 @@ public class VisitorsController {
         return "visitors/specialist_choose";
     }
 
-    //ToDo добавить отображение отметки "Закреплен ли сейчас посетитель за специалистом или нет"
 
-    private void displayPage(Model model, @PathVariable String id, PersonFullName personFullNameRegistered, HttpServletRequest request) {
-        Optional<Person> specialist = personService.findById(Long.valueOf(id));
-        Optional<Person> visitor = personService.findById((Long) request.getSession().getAttribute("id"));
-        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleForVisitor(Long.parseLong(id), personFullNameRegistered.toString());
+    private void displayPage(Model model, HttpServletRequest request) {
+        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+        List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+        model.addAttribute("day1", nearestDates.get(0));
+        model.addAttribute("day2", nearestDates.get(1));
+        model.addAttribute("day3", nearestDates.get(2));
+        model.addAttribute("day4", nearestDates.get(3));
+        model.addAttribute("day5", nearestDates.get(4));
+    }
 
-        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.assignedToSpecialist(specialist.get(), visitor.get());
-        if (assignedToSpecialist.isPresent()) {
-            model.addAttribute("assignedToSpecialist", assignedToSpecialist);
-        }
-        model.addAttribute("specialist", specialist.get().getUsername());
-        model.addAttribute("dates", sortedFreeSchedule);
+    private String encodeError(String error) {
+        return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 }
 

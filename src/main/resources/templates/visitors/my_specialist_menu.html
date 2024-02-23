@@ -120,8 +120,9 @@
 <section class="about">
     <div class="container">
         <div class="row">
-            <div class="text-center" th:if="${param.error}">
-                <span style="color:red" th:text="${param.error}"></span>
+            <div class="alert alert-danger text-center" role="alert" th:if="${param.error != null}">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                <span style="color:firebrick" th:text="${param.error}"></span>
             </div>
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
                 <div class="itd_circle"><i class="fa-regular fa-pen-to-square"></i></div>
@@ -231,14 +232,14 @@
                     link.addEventListener('click', function(event) {
                         event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
 
-                        var requestData = {
+                        var applicationFromVisitor = {
                             // var data = {
-                                specialistId: idSpecialist,
-                                cell00: table.rows[0].cells[0].textContent,
-                                cellBefore: table.rows[ind].cells[index-2].textContent
+                            specialistId: idSpecialist,
+                            meetingDate: table.rows[0].cells[0].textContent,
+                            meetingTime: table.rows[ind].cells[index-2].textContent
                             // };
                         }; // Ваши данные для отправки на контроллер
-                        // Здесь вы можете заполнить объект requestData необходимыми данными
+                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
                         console.log("3")
 
                         // Отправляем данные на сервер
@@ -249,7 +250,7 @@
                                 'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
                                 // Здесь могут быть другие заголовки, если необходимо
                             },
-                            body: JSON.stringify(requestData)
+                            body: JSON.stringify(applicationFromVisitor)
                         })
                             .then(response => {
                                 // Обрабатываем ответ от сервера

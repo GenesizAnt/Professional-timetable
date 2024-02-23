@@ -1,6 +1,6 @@
 package ru.genesizant.Professional.Timetable.enums;
 
-public enum StatusRegisteredPerson {
+public enum StatusRegisteredVisitor {
 
     REGISTERED, UNREGISTERED
 

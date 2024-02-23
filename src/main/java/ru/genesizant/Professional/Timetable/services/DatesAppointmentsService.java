@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.DatesAppointmentsRepository;
@@ -370,7 +371,7 @@ public class DatesAppointmentsService {
     }
 
     //Записать(обозначить как забронированное время) Клиента на прием
-    public void enrollVisitorNewAppointments(LocalDateTime meeting, PersonFullName personFullName, Long specialistId) {
+    public void enrollVisitorNewAppointments(LocalDateTime meeting, PersonFullName personFullName, Long specialistId, StatusPerson statusPerson) {
 
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
 
@@ -383,7 +384,12 @@ public class DatesAppointmentsService {
                 // создаем новый объект ObjectNode для замены значения
                 ObjectNode objectNode = objectMapper.createObjectNode();
 
-                objectNode.put(RESERVED.getStatus(), personFullName.toString());
+                switch (statusPerson) {
+                    case VISITOR -> objectNode.put(NEED_CONFIRMATION.getStatus(), personFullName.toString());
+                    case SPECIALIST -> objectNode.put(CONFIRMED.getStatus(), personFullName.toString());
+                }
+
+//                objectNode.put(RESERVED.getStatus(), personFullName.toString());
 
                 // заменяем значение в объекте JsonNode
                 ((ObjectNode) jsonNode).set(String.valueOf(meeting.toLocalTime()), objectNode);
