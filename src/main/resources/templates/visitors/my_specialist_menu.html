@@ -111,7 +111,7 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-12">
-                <h1 th:text="'Привет, ' + ${name} + '! Это меню взаимодействия со специалистом'"></h1>
+                <h1 th:text="'Привет, ' + ${nameClient} + '! Это меню взаимодействия со специалистом'"></h1>
             </div>
         </div>
     </div>
@@ -139,8 +139,8 @@
                                         aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form th:method="POST" th:action="@{/visitors/appointment_booking}">
-                                    <input type="hidden" th:name="selectedSpecialistId" th:value="${selectedSpecialistId}"/>
+                                <form th:method="POST" th:action="@{/visitors/appointment_booking_form}">
+                                    <input type="hidden" th:name="selectedSpecialistId" th:value="${idSpecialist}"/>
                                     <div class="col-12">
                                         <input type="datetime-local" id="meetingDataTime" name="meetingDataTime">
                                     </div>
@@ -183,6 +183,10 @@
 </section>
 
 <script th:inline="javascript">
+
+    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');
+
     function createTable(data) {
         var table = document.createElement('table');
         table.className = "table";
@@ -213,13 +217,58 @@
 
         for (var i = 2; i < data.length; i++) {
             tr = document.createElement('tr');
-            data[i].forEach(elem => {
+            data[i].forEach((elem, index) => {
+                var ind = i;
                 var td = document.createElement('td');
-                td.textContent = elem;
+                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"
+                if (index === 2 && elem === "Доступно") {
+                    console.log("1")
+                    console.log(csrfToken)
+                    var link = document.createElement('a');
+                    link.textContent = elem;
+                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
+                    console.log("2")
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
+
+                        var requestData = {
+                            // var data = {
+                                specialistId: idSpecialist,
+                                cell00: table.rows[0].cells[0].textContent,
+                                cellBefore: table.rows[ind].cells[index-2].textContent
+                            // };
+                        }; // Ваши данные для отправки на контроллер
+                        // Здесь вы можете заполнить объект requestData необходимыми данными
+                        console.log("3")
+
+                        // Отправляем данные на сервер
+                        fetch("/visitors/appointment_booking_table", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                                // Здесь могут быть другие заголовки, если необходимо
+                            },
+                            body: JSON.stringify(requestData)
+                        })
+                            .then(response => {
+                                // Обрабатываем ответ от сервера
+                            })
+                            .catch(error => {
+                                // Обрабатываем ошибки при отправке запроса на сервер
+                            });
+                    });
+                    td.appendChild(link);
+                    console.log("4")
+                } else {
+                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
+                    td.textContent = elem;
+                }
                 tr.appendChild(td);
             });
             tableBody.appendChild(tr);
         }
+
 
         table.appendChild(tableBody);
         document.body.appendChild(table);

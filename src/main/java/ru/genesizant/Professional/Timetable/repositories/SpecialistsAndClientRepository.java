@@ -15,4 +15,8 @@ public interface SpecialistsAndClientRepository extends JpaRepository<Specialist
 
     Optional<SpecialistsAndClient> findBySpecialistListAndAndVisitorList(Person idSpecialist, Person idVisitor);
 
+//    Optional<SpecialistsAndClient> findSpecialistsAndClientByVisitorList(Person id);
+
+    Optional<SpecialistsAndClient> findByVisitorListId(Long visitorId);
+
 }

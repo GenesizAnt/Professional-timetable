@@ -53,15 +53,20 @@ public class VisitorsController {
     @GetMapping("/my_specialist_menu") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getMySpecialistMenu(Model model, HttpServletRequest request) {
 
-        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
-        model.addAttribute("name", person.get().getUsername());
+        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+
+
+//        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
+        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+
 
         //ToDo в displayPage ДОБАВИТЬ СПЕЦИАЛИСТА ИЗ БАЗЫ И КАЖДЫЙ РАЗ ЕГО ТЯНУТЬ
 //        displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(45);
 
-        List<String> nearestDates = getFiveNearestDates(schedule, person.get().getFullName(), 5);
+        List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
 
         model.addAttribute("day1", nearestDates.get(0));
@@ -73,13 +78,13 @@ public class VisitorsController {
         return "visitors/my_specialist_menu";
     }
 
-    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName, int limitDay) {
+    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
         List<String> fiveNearestDates = new ArrayList<>();
         LocalDate now = LocalDate.now();
         List<LocalDate> nearestDates = schedule.keySet().stream()
                 .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
                 .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date)))
-                .limit(limitDay).toList();
+                .limit(5).toList();
         for (LocalDate nearestDate : nearestDates) {
             String[][] calendarForView = getCalendarForClient(personFullName, nearestDate, schedule.get(nearestDate));
             try {
@@ -122,8 +127,31 @@ public class VisitorsController {
     }
 
 
-    @PostMapping("/appointment_booking")
-    public String setAppointmentBooking(Model model, HttpServletRequest request,
+    @PostMapping("/appointment_booking_table")
+    public String setAppointmentBookingTable(Model model, HttpServletRequest request,
+                                             @RequestBody Map<String, String> requestData) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            PersonFullName personFullNameRegistered =
+                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+
+
+//            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
+//
+//            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
+//            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
+
+        } else {
+            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            return "redirect:/auth/login?error";
+        }
+
+        return "visitors/specialist_choose";
+    }
+
+    @PostMapping("/appointment_booking_form")
+    public String setAppointmentBookingForm(Model model, HttpServletRequest request,
                                         @RequestParam("selectedSpecialistId") String selectedSpecialistId,
                                         @RequestParam("meetingDataTime") LocalDateTime meeting) {
 
@@ -133,10 +161,10 @@ public class VisitorsController {
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
 
-            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
-
-            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
-            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
+//            datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId));
+//
+//            model.addAttribute("selectedSpecialistId", selectedSpecialistId);
+//            displayPage(model, selectedSpecialistId, personFullNameRegistered, request);
 
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");

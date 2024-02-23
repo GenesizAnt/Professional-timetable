@@ -50,4 +50,8 @@ public class SpecialistsAndClientService {
     public Optional<SpecialistsAndClient> assignedToSpecialist(Person idSpecialist, Person idVisitor) {
         return specialistsAndClientRepository.findBySpecialistListAndAndVisitorList(idSpecialist, idVisitor);
     }
+
+    public Optional<SpecialistsAndClient> findByVisitorListId(Long idVisitor) {
+        return specialistsAndClientRepository.findByVisitorListId(idVisitor);
+    }
 }
