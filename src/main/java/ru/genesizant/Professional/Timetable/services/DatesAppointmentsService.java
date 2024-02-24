@@ -470,4 +470,9 @@ public class DatesAppointmentsService {
         }
         return false;
     }
+
+    public Optional<DatesAppointments> getJson(int i) {
+        Optional<DatesAppointments> datesAppointmentsById;
+        return datesAppointmentsById = datesAppointmentsRepository.findDatesAppointmentsById(i);
+    }
 }

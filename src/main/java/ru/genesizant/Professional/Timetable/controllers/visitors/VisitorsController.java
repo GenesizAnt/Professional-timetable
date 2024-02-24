@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.DayOfWeekRus;
+import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
@@ -278,7 +279,12 @@ public class VisitorsController {
         return "visitors/specialist_choose";
     }
 
-
+    @GetMapping("/testtt")
+    @ResponseBody
+    public String getFooJson(){
+        Optional<DatesAppointments> json = datesAppointmentsService.getJson(44);
+        return json.get().getScheduleTime();
+    }
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
