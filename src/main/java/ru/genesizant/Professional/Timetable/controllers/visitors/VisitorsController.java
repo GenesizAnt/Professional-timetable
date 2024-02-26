@@ -104,7 +104,6 @@ public class VisitorsController {
             Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
             Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
             String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
-//            List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
             List<String> allCalendar = new ArrayList<>();
             LocalDate now = LocalDate.now();
@@ -112,7 +111,7 @@ public class VisitorsController {
                     .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
                     .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
             for (LocalDate nearestDate : nearestDates) {
-                String[][] calendarForView = getCalendarForClient(fullName, nearestDate, schedule.get(nearestDate));
+                String[][] calendarForView = datesAppointmentsService.getCalendarForClient(fullName, nearestDate, schedule.get(nearestDate));
                 try {
                     allCalendar.add(objectMapper.writeValueAsString(calendarForView));
                 } catch (Exception e) {
@@ -120,8 +119,7 @@ public class VisitorsController {
                 }
             }
 
-            System.out.println();
-
+            model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
             model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
 
             for (int i = 0; i < allCalendar.size(); i++) {
@@ -135,53 +133,53 @@ public class VisitorsController {
         return "visitors/full_calendar";
     }
 
-    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
-        List<String> fiveNearestDates = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        List<LocalDate> nearestDates = schedule.keySet().stream()
-                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
-                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date)))
-                .limit(5).toList();
-        for (LocalDate nearestDate : nearestDates) {
-            String[][] calendarForView = getCalendarForClient(personFullName, nearestDate, schedule.get(nearestDate));
-            try {
-                fiveNearestDates.add(objectMapper.writeValueAsString(calendarForView));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return fiveNearestDates;
-    }
-
-    public static String[][] getCalendarForClient(String namePerson, LocalDate date, Map<String, String> json) {
-        String[][] calendarForClient = new String[10][2];
-        int count = 2;
-//        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
-        calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name());
-        calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
-        Map<String, String> sortedScheduleMap = new TreeMap<>(json);
-
-        for (Map.Entry<String, String> entry : sortedScheduleMap.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (value.contains(":")) {
-                String[] values = value.split(":");
-                String statusValue = values[0].trim();
-                String nameVal = values[1].trim();
-                if (namePerson.equals(nameVal)) {
-                    calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
-                    count++;
-                }
-            } else if (value.equals("Доступно")) {
-                calendarForClient[count] = new String[]{key, "---", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
-                count++; //ToDo нужно ли что то вставить вместо ""
-            }
-        }
-        return Arrays.stream(calendarForClient)
-                .filter(row -> Arrays.stream(row, 1, row.length).allMatch(Objects::nonNull))
-                .toArray(String[][]::new);
-    }
+//    private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
+//        List<String> fiveNearestDates = new ArrayList<>();
+//        LocalDate now = LocalDate.now();
+//        List<LocalDate> nearestDates = schedule.keySet().stream()
+//                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+//                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date)))
+//                .limit(5).toList();
+//        for (LocalDate nearestDate : nearestDates) {
+//            String[][] calendarForView = getCalendarForClient(personFullName, nearestDate, schedule.get(nearestDate));
+//            try {
+//                fiveNearestDates.add(objectMapper.writeValueAsString(calendarForView));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return fiveNearestDates;
+//    }
+//
+//    public static String[][] getCalendarForClient(String namePerson, LocalDate date, Map<String, String> json) {
+//        String[][] calendarForClient = new String[10][2];
+//        int count = 2;
+////        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
+//        calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+//        calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name());
+//        calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
+//        Map<String, String> sortedScheduleMap = new TreeMap<>(json);
+//
+//        for (Map.Entry<String, String> entry : sortedScheduleMap.entrySet()) {
+//            String key = entry.getKey();
+//            String value = entry.getValue();
+//            if (value.contains(":")) {
+//                String[] values = value.split(":");
+//                String statusValue = values[0].trim();
+//                String nameVal = values[1].trim();
+//                if (namePerson.equals(nameVal)) {
+//                    calendarForClient[count] = new String[]{key, namePerson, statusValue}; //ToDo "Забронировано" поменять на Запись подтверждена
+//                    count++;
+//                }
+//            } else if (value.equals("Доступно")) {
+//                calendarForClient[count] = new String[]{key, "---", "Доступно"}; //ToDo "Доступно" поменять на Доступно для записи
+//                count++; //ToDo нужно ли что то вставить вместо ""
+//            }
+//        }
+//        return Arrays.stream(calendarForClient)
+//                .filter(row -> Arrays.stream(row, 1, row.length).allMatch(Objects::nonNull))
+//                .toArray(String[][]::new);
+//    }
 
 
     @PostMapping("/appointment_booking_table")
@@ -329,7 +327,7 @@ public class VisitorsController {
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
-        List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+        List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
         model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
         model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());

@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
@@ -12,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -25,9 +26,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
@@ -43,19 +43,21 @@ public class EnrollClientController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final ModelMapper modelMapper;
     private final UnregisteredPersonService unregisteredPersonService;
+    private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ERROR_VALIDATE_FORM = "redirect:/enroll/enroll_page?error=";
     private final String ENROLL_VIEW_REDIRECT = "specialist/enroll_client_view";
 
     @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService) {
+    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.specialistsAndClientService = specialistsAndClientService;
         this.modelMapper = modelMapper;
         this.unregisteredPersonService = unregisteredPersonService;
+        this.objectMapper = objectMapper;
     }
 
     //Отображение страницы для Записи Клиента
@@ -165,12 +167,37 @@ public class EnrollClientController {
     private void displayPage(Model model, HttpServletRequest request) {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
-        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+
+//        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//        String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
+
+        List<String> allCalendar = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        List<LocalDate> nearestDates = schedule.keySet().stream()
+                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
+        for (LocalDate nearestDate : nearestDates) {
+            String[][] calendarForView = datesAppointmentsService.getCalendarForClient("specialist", nearestDate, schedule.get(nearestDate));
+            try {
+                allCalendar.add(objectMapper.writeValueAsString(calendarForView));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+//        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+
+        for (int i = 0; i < allCalendar.size(); i++) {
+            model.addAttribute("day" + i, allCalendar.get(i));
+        }
+
 
         model.addAttribute("clientsBySpecialist", clientsBySpecialist);
         model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
         model.addAttribute("name", request.getSession().getAttribute("name"));
-        model.addAttribute("dates", sortedFreeSchedule);
+//        model.addAttribute("dates", sortedFreeSchedule);
     }
 
     private void handleCustomerSelection(Model model, Optional<@NotNull String> clientId, StatusRegisteredVisitor registeredStatus) {

@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist.calendar;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +19,8 @@ import ru.genesizant.Professional.Timetable.services.PersonService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Controller
 @RequestMapping("/calendar")
@@ -28,16 +29,18 @@ public class CalendarManagementController {
     private final JWTUtil jwtUtil;
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
+    private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
     private final String CALENDAR_VIEW_REDIRECT = "specialist/admission_calendar_view";
 
     @Autowired
-    public CalendarManagementController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService) {
+    public CalendarManagementController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/admission_calendar_view")
@@ -257,10 +260,40 @@ public class CalendarManagementController {
     }
 
     private void displayPage(Model model, HttpServletRequest request) {
-        Map<LocalDate, Map<String, String>> sortedFreeSchedule =
-                datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//        Map<LocalDate, Map<String, String>> sortedFreeSchedule =
+//                datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+
+
+        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//        String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
+
+        List<String> allCalendar = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        List<LocalDate> nearestDates = schedule.keySet().stream()
+                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
+        for (LocalDate nearestDate : nearestDates) {
+            String[][] calendarForView = datesAppointmentsService.getCalendarForClient("specialist", nearestDate, schedule.get(nearestDate));
+            try {
+                allCalendar.add(objectMapper.writeValueAsString(calendarForView));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+//        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+
+        for (int i = 0; i < allCalendar.size(); i++) {
+            model.addAttribute("day" + i, allCalendar.get(i));
+        }
+
+
+//        model.addAttribute("name", request.getSession().getAttribute("name"));
+//        model.addAttribute("dates", sortedFreeSchedule);
+
+
         model.addAttribute("name", request.getSession().getAttribute("name"));
-        model.addAttribute("dates", sortedFreeSchedule);
+//        model.addAttribute("dates", sortedFreeSchedule);
     }
 
     private Optional<Person> getLoggedInPerson(HttpServletRequest request) {
