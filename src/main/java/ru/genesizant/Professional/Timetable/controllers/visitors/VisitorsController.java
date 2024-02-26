@@ -63,7 +63,15 @@ public class VisitorsController {
     @GetMapping("/my_specialist_menu") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getMySpecialistMenu(Model model, HttpServletRequest request) {
 
-        displayPage(model, request);
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            displayPage(model, request);
+
+        } else {
+            return ERROR_LOGIN;
+        }
+
+//        displayPage(model, request);
 
 
 //        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
@@ -86,6 +94,45 @@ public class VisitorsController {
 //        model.addAttribute("day5", nearestDates.get(4));
 
         return ENROLL_VIEW_REDIRECT;
+    }
+
+    @GetMapping("/full_calendar") //ToDo Формально не отображает ВЕСЬ календарь только 20 дней
+    public String getFullCalendar(Model model, HttpServletRequest request) {
+
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+            Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+            String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
+//            List<String> nearestDates = getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+
+            List<String> allCalendar = new ArrayList<>();
+            LocalDate now = LocalDate.now();
+            List<LocalDate> nearestDates = schedule.keySet().stream()
+                    .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+                    .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
+            for (LocalDate nearestDate : nearestDates) {
+                String[][] calendarForView = getCalendarForClient(fullName, nearestDate, schedule.get(nearestDate));
+                try {
+                    allCalendar.add(objectMapper.writeValueAsString(calendarForView));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println();
+
+            model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+
+            for (int i = 0; i < allCalendar.size(); i++) {
+                model.addAttribute("day" + i, allCalendar.get(i));
+            }
+
+        } else {
+            return ERROR_LOGIN;
+        }
+
+        return "visitors/full_calendar";
     }
 
     private List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {

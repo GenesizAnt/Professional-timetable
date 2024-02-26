@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Меню по работе со специалистом</title>
+    <title>Все доступные даты специалиста</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -73,7 +73,7 @@
         <a class="nav-link active" aria-current="page" th:href="@{/development}">Мой профиль</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/visitors/my_specialist_menu}">Меню по специалисту</a>
+        <a class="nav-link" th:href="@{/visitors/my_specialist_menu}">Меню специалиста</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" th:href="@{/development}">История посещений</a>
@@ -89,80 +89,11 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-12">
-                <h1 th:text="'Привет, ' + ${nameClient} + '! Это меню взаимодействия со специалистом'"></h1>
+                <h3 th:text="${nameClient} + ', здесь ты видишь рассписание до 20-и ближайших доступных для записи дат. Если отображается меньше, то это все запланированные ближайшие даты специалиста.'"></h3>
             </div>
         </div>
     </div>
 </header>
-
-<section class="about">
-    <div class="container">
-        <div class="row">
-            <div class="alert alert-danger text-center" role="alert" th:if="${param.error != null}">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
-                    <use xlink:href="#exclamation-triangle-fill"/>
-                </svg>
-                <span style="color:firebrick" th:text="${param.error}"></span>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-regular fa-pen-to-square"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#deleteTime">
-                    <h6 class="text-center">Записаться на прием</h6>
-                </button>
-                <div class="modal fade" id="deleteTime" tabindex="-1" aria-labelledby="deleteTimeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteTimeLabel">Выберете время, на которое хотите
-                                    записаться</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/visitors/appointment_booking_form}">
-                                    <input type="hidden" th:name="selectedSpecialistId" th:value="${idSpecialist}"/>
-                                    <div class="col-12">
-                                        <input type="datetime-local" id="meetingDataTime" name="meetingDataTime">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                            role="button">Записать
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-calendar-days"></i></div>
-                <a th:href="@{/visitors/full_calendar}" class="btn btn-primary btn-list">
-                    <h6 class="text-center">Календарь специалиста на 20 дней</h6>
-                </a>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-bell"></i></div>
-                <a th:href="@{/development}" class="btn btn-primary btn-list">
-                    <h6 class="text-center">Установить напоминание о посещении</h6>
-                </a>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-envelopes-bulk"></i></div>
-                <a th:href="@{/development}" class="btn btn-primary btn-list">
-                    <h6 class="text-center">Отправить письмо специалисту</h6>
-                </a>
-                <div class="line"></div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <script th:inline="javascript">
 
@@ -249,17 +180,49 @@
         document.body.appendChild(table);
     }
 
+    var data0 = JSON.parse(/*[[${day0}]]*/ '');
     var data1 = JSON.parse(/*[[${day1}]]*/ '');
     var data2 = JSON.parse(/*[[${day2}]]*/ '');
     var data3 = JSON.parse(/*[[${day3}]]*/ '');
     var data4 = JSON.parse(/*[[${day4}]]*/ '');
     var data5 = JSON.parse(/*[[${day5}]]*/ '');
+    var data6 = JSON.parse(/*[[${day6}]]*/ '');
+    var data7 = JSON.parse(/*[[${day7}]]*/ '');
+    var data8 = JSON.parse(/*[[${day8}]]*/ '');
+    var data9 = JSON.parse(/*[[${day9}]]*/ '');
+    var data10 = JSON.parse(/*[[${day10}]]*/ '');
+    var data11 = JSON.parse(/*[[${day11}]]*/ '');
+    var data12 = JSON.parse(/*[[${day12}]]*/ '');
+    var data13 = JSON.parse(/*[[${day13}]]*/ '');
+    var data14 = JSON.parse(/*[[${day14}]]*/ '');
+    var data15 = JSON.parse(/*[[${day15}]]*/ '');
+    var data16 = JSON.parse(/*[[${day16}]]*/ '');
+    var data17 = JSON.parse(/*[[${day17}]]*/ '');
+    var data18 = JSON.parse(/*[[${day18}]]*/ '');
+    var data19 = JSON.parse(/*[[${day19}]]*/ '');
+    var data20 = JSON.parse(/*[[${day20}]]*/ '');
 
+    createTable(data0);
     createTable(data1);
     createTable(data2);
     createTable(data3);
     createTable(data4);
     createTable(data5);
+    createTable(data6);
+    createTable(data7);
+    createTable(data8);
+    createTable(data9);
+    createTable(data10);
+    createTable(data11);
+    createTable(data12);
+    createTable(data13);
+    createTable(data14);
+    createTable(data15);
+    createTable(data16);
+    createTable(data17);
+    createTable(data18);
+    createTable(data19);
+    createTable(data20);
 </script>
 
 </body>
