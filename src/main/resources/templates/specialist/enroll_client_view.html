@@ -23,6 +23,50 @@
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
+    <style>
+        table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        th:first-child, td:first-child {
+            width: 16%; /* ширина первого столбца */
+        }
+
+        th, td {
+            width: 42%; /* ширина второго и третьего столбцов */
+            text-align: center; /* выравнивание текста по центру */
+        }
+
+        th, td {
+            text-align: center; /* выравнивание текста по центру */
+        }
+
+        tr {
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -485,33 +529,168 @@
 
 <!--Выбор времени и даты для регистрации клиента-->
 
+<script th:inline="javascript">
+
+    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+    // var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');
+    var selectedCustomerId1 = /*[[${selectedCustomerId}]]*/ '';
+    var registeredStatus1 = /*[[${registeredStatus}]]*/ '';
+
+
+    function createTable(data) {
+        var table = document.createElement('table');
+        table.className = "table";
+        var tableBody = document.createElement('tbody');
+
+        // Создаем строку заголовков
+        var tr = document.createElement('tr');
+
+        var th1 = document.createElement('th');
+        th1.textContent = data[0][0];
+        th1.colSpan = 1;
+        tr.appendChild(th1);
+
+        var th2 = document.createElement('th');
+        th2.textContent = data[0][1];
+        th2.colSpan = 2;
+        tr.appendChild(th2);
+
+        tableBody.appendChild(tr);
+
+        var tr = document.createElement('tr');
+        data[1].forEach(elem => {
+            let th = document.createElement('th');
+            th.textContent = elem;
+            tr.appendChild(th);
+        });
+        tableBody.appendChild(tr);
+
+        for (var i = 2; i < data.length; i++) {
+            tr = document.createElement('tr');
+            data[i].forEach((elem, index) => {
+                var ind = i;
+                var td = document.createElement('td');
+                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"
+                if (index === 2 && elem === "Доступно") {
+                    var link = document.createElement('a');
+                    link.textContent = elem;
+                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
+
+                        var applicationFromSpecialist = {
+                            // specialistId: idSpecialist,
+                            meetingDate: table.rows[0].cells[0].textContent,
+                            meetingTime: table.rows[ind].cells[index - 2].textContent,
+                            selectedCustomerId: selectedCustomerId1,
+                            registeredStatus: registeredStatus1
+                        }; // Ваши данные для отправки на контроллер
+                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+
+                        // Отправляем данные на сервер
+                        fetch("/enroll/newDatesAppointmentsTable", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                                // Здесь могут быть другие заголовки, если необходимо
+                            },
+                            body: JSON.stringify(applicationFromSpecialist)
+                        })
+                            .then(response => {
+                                location.reload();
+                                // Обрабатываем ответ от сервера
+                            })
+                            .catch(error => {
+                                // Обрабатываем ошибки при отправке запроса на сервер
+                            });
+                    });
+                    td.appendChild(link);
+                } else {
+                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
+                    td.textContent = elem;
+                }
+                tr.appendChild(td);
+            });
+            tableBody.appendChild(tr);
+        }
+
+        table.appendChild(tableBody);
+        document.body.appendChild(table);
+    }
+
+    var data0 = JSON.parse(/*[[${day0}]]*/ '');
+    var data1 = JSON.parse(/*[[${day1}]]*/ '');
+    var data2 = JSON.parse(/*[[${day2}]]*/ '');
+    var data3 = JSON.parse(/*[[${day3}]]*/ '');
+    var data4 = JSON.parse(/*[[${day4}]]*/ '');
+    var data5 = JSON.parse(/*[[${day5}]]*/ '');
+    var data6 = JSON.parse(/*[[${day6}]]*/ '');
+    var data7 = JSON.parse(/*[[${day7}]]*/ '');
+    var data8 = JSON.parse(/*[[${day8}]]*/ '');
+    var data9 = JSON.parse(/*[[${day9}]]*/ '');
+    var data10 = JSON.parse(/*[[${day10}]]*/ '');
+    var data11 = JSON.parse(/*[[${day11}]]*/ '');
+    var data12 = JSON.parse(/*[[${day12}]]*/ '');
+    var data13 = JSON.parse(/*[[${day13}]]*/ '');
+    var data14 = JSON.parse(/*[[${day14}]]*/ '');
+    var data15 = JSON.parse(/*[[${day15}]]*/ '');
+    var data16 = JSON.parse(/*[[${day16}]]*/ '');
+    var data17 = JSON.parse(/*[[${day17}]]*/ '');
+    var data18 = JSON.parse(/*[[${day18}]]*/ '');
+    var data19 = JSON.parse(/*[[${day19}]]*/ '');
+    var data20 = JSON.parse(/*[[${day20}]]*/ '');
+
+    createTable(data0);
+    createTable(data1);
+    createTable(data2);
+    createTable(data3);
+    createTable(data4);
+    createTable(data5);
+    createTable(data6);
+    createTable(data7);
+    createTable(data8);
+    createTable(data9);
+    createTable(data10);
+    createTable(data11);
+    createTable(data12);
+    createTable(data13);
+    createTable(data14);
+    createTable(data15);
+    createTable(data16);
+    createTable(data17);
+    createTable(data18);
+    createTable(data19);
+    createTable(data20);
+</script>
+
 <!--Отображение календаря-->
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Дата</th>
-            <th>Время</th>
-            <th>Статус</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="dateEntry : ${dates}">
-            <td th:text="${dateEntry.key}"></td>
-            <td>
-                <div th:each="timeEntry : ${dateEntry.value}">
-                    <span th:text="${timeEntry.key}"></span><br>
-                </div>
-            </td>
-            <td>
-                <div th:each="statusEntry : ${dateEntry.value}">
-                    <span th:text="${statusEntry.value}"></span><br>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+<!--<div class="table-responsive">-->
+<!--    <table class="table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Дата</th>-->
+<!--            <th>Время</th>-->
+<!--            <th>Статус</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="dateEntry : ${dates}">-->
+<!--            <td th:text="${dateEntry.key}"></td>-->
+<!--            <td>-->
+<!--                <div th:each="timeEntry : ${dateEntry.value}">-->
+<!--                    <span th:text="${timeEntry.key}"></span><br>-->
+<!--                </div>-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <div th:each="statusEntry : ${dateEntry.value}">-->
+<!--                    <span th:text="${statusEntry.value}"></span><br>-->
+<!--                </div>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
 <footer id="footer">
     <div class="container">
@@ -524,27 +703,27 @@
     </div>
 </footer>
 
-<script>
-    $(document).ready(function () {
-        $('table').DataTable({
-            paging: true,
-            pageLength: 5,
-            language: {
-                "lengthMenu": "Показать _MENU_ записей",
-                "search": "Найти:",
-                "info": "Отображение от _START_ до _END_ из _TOTAL_ элементов",
-                "paginate": {
-                    "previous": "Предыдущий",
-                    "next": "Следующий"
-                },
-            },
-            "lengthMenu": [
-                [3, 5, 10, -1],
-                [3, 5, 10, 'Все']
-            ]
-        });
-    });
-</script>
+<!--<script>-->
+<!--    $(document).ready(function () {-->
+<!--        $('table').DataTable({-->
+<!--            paging: true,-->
+<!--            pageLength: 5,-->
+<!--            language: {-->
+<!--                "lengthMenu": "Показать _MENU_ записей",-->
+<!--                "search": "Найти:",-->
+<!--                "info": "Отображение от _START_ до _END_ из _TOTAL_ элементов",-->
+<!--                "paginate": {-->
+<!--                    "previous": "Предыдущий",-->
+<!--                    "next": "Следующий"-->
+<!--                },-->
+<!--            },-->
+<!--            "lengthMenu": [-->
+<!--                [3, 5, 10, -1],-->
+<!--                [3, 5, 10, 'Все']-->
+<!--            ]-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
 
 <!--lengthMenu: [-->
 <!--[3, 5, 10, -1],-->

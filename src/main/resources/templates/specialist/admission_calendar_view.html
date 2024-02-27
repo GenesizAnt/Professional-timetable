@@ -634,35 +634,35 @@
                 if (index === 2 && elem === "Доступно") {
                     var link = document.createElement('a');
                     link.textContent = elem;
-                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
-                    link.addEventListener('click', function (event) {
-                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
-
-                        var applicationFromVisitor = {
-                            specialistId: idSpecialist,
-                            meetingDate: table.rows[0].cells[0].textContent,
-                            meetingTime: table.rows[ind].cells[index - 2].textContent
-                        }; // Ваши данные для отправки на контроллер
-                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
-
-                        // Отправляем данные на сервер
-                        fetch("/enroll/enroll_page", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
-                                // Здесь могут быть другие заголовки, если необходимо
-                            },
-                            body: JSON.stringify(applicationFromVisitor)
-                        })
-                            .then(response => {
-                                location.reload();
-                                // Обрабатываем ответ от сервера
-                            })
-                            .catch(error => {
-                                // Обрабатываем ошибки при отправке запроса на сервер
-                            });
-                    });
+                    link.href = "/enroll/enroll_page"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
+                    // link.addEventListener('click', function (event) {
+                    //     event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
+                    //
+                    //     var applicationFromVisitor = {
+                    //         specialistId: idSpecialist,
+                    //         meetingDate: table.rows[0].cells[0].textContent,
+                    //         meetingTime: table.rows[ind].cells[index - 2].textContent
+                    //     }; // Ваши данные для отправки на контроллер
+                    //     // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+                    //
+                    //     // Отправляем данные на сервер
+                    //     fetch("/enroll/enroll_page", {
+                    //         method: 'POST',
+                    //         headers: {
+                    //             'Content-Type': 'application/json',
+                    //             'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    //             // Здесь могут быть другие заголовки, если необходимо
+                    //         },
+                    //         body: JSON.stringify(applicationFromVisitor)
+                    //     })
+                    //         .then(response => {
+                    //             location.reload();
+                    //             // Обрабатываем ответ от сервера
+                    //         })
+                    //         .catch(error => {
+                    //             // Обрабатываем ошибки при отправке запроса на сервер
+                    //         });
+                    // });
                     td.appendChild(link);
                 } else {
                     // Если текст не "Доступно" или это не третий столбец, просто добавляем текст

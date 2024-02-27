@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
@@ -26,6 +23,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -134,6 +133,40 @@ public class EnrollClientController {
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+            }
+            //ToDo сделать добавление в БД Таблица Приемы
+            displayPage(model, request);
+
+        } else {
+            return encodeError("Для записи нужно выбрать клиента, время и дату записи");
+        }
+
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/newDatesAppointmentsTable")
+    public String newDatesAppointmentsTable(Model model, HttpServletRequest request,
+                                           @RequestBody Map<String, String> applicationFromSpecialist) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
+        }
+
+        String selectedCustomerId = applicationFromSpecialist.get("selectedCustomerId");
+        String registeredStatus = applicationFromSpecialist.get("registeredStatus");
+        String meetingDate = applicationFromSpecialist.get("meetingDate");
+        String meetingTime = applicationFromSpecialist.get("meetingTime");
+        LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
+        LocalDateTime meeting = date.atTime(time);
+
+        if (!selectedCustomerId.equals("") && !meetingDate.equals("") && !meetingTime.equals("") && !registeredStatus.equals("")) {
+
+            if (registeredStatus.equals(REGISTERED.name())) {
+                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+            } else if (registeredStatus.equals(UNREGISTERED.name())) {
+                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             }
             //ToDo сделать добавление в БД Таблица Приемы
             displayPage(model, request);
