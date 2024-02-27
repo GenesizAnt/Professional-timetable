@@ -47,6 +47,9 @@ public class SpecialistAppointments {
     @Column(name = "consultation_fee")
     private BigDecimal consultationFee;
 
+    @Column(name = "prepayment")
+    private boolean prepayment;
+
     @OneToMany(mappedBy = "specialistAppointments")
     private List<StatisticalAnalysis> statisticalAnalysesList;
 
@@ -54,6 +57,14 @@ public class SpecialistAppointments {
     private List<SpecialistNotes> specialistNotesList;
 
     public SpecialistAppointments() {
+    }
+
+    public boolean isPrepayment() {
+        return prepayment;
+    }
+
+    public void setPrepayment(boolean prepayment) {
+        this.prepayment = prepayment;
     }
 
     public List<StatisticalAnalysis> getStatisticalAnalysesList() {
