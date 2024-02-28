@@ -62,4 +62,8 @@ public class PersonService {
             personRepository.save(newRolePerson);
         }
     }
+
+    public Optional<Person> findByFullName(String username, String surname, String patronymic) {
+        return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
+    }
 }

@@ -13,4 +13,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     List<Person> findByRole(String role);
 
+    Optional<Person> findByUsernameAndSurnameAndPatronymic(String username, String surname, String patronymic);
+
 }

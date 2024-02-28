@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -146,27 +145,28 @@ public class EnrollClientController {
 
     @PostMapping("/newDatesAppointmentsTable")
     public String newDatesAppointmentsTable(Model model, HttpServletRequest request,
-                                           @RequestBody Map<String, String> applicationFromSpecialist) {
+                                            @RequestBody Map<String, String> applicationFromSpecialist) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
 
         String selectedCustomerId = applicationFromSpecialist.get("selectedCustomerId");
         String registeredStatus = applicationFromSpecialist.get("registeredStatus");
-        String meetingDate = applicationFromSpecialist.get("meetingDate");
-        String meetingTime = applicationFromSpecialist.get("meetingTime");
-        LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
-        LocalDateTime meeting = date.atTime(time);
+        LocalDateTime meetingDateTime = parseInLocalDataTime(applicationFromSpecialist);
+//        String meetingDate = applicationFromSpecialist.get("meetingDate");
+//        String meetingTime = applicationFromSpecialist.get("meetingTime");
+//        LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+//        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
+//        LocalDateTime meeting = date.atTime(time);
 
-        if (!selectedCustomerId.equals("") && !meetingDate.equals("") && !meetingTime.equals("") && !registeredStatus.equals("")) {
+        if (!selectedCustomerId.equals("") && !registeredStatus.equals("")) { //ToDo сделать другую проверку
 
             if (registeredStatus.equals(REGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             } else if (registeredStatus.equals(UNREGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             }
             //ToDo сделать добавление в БД Таблица Приемы
             displayPage(model, request);
@@ -195,6 +195,51 @@ public class EnrollClientController {
 
         return ENROLL_VIEW_REDIRECT;
     }
+
+
+    @PostMapping("/enroll/recordingConfirmed")
+    public String recordingConfirmed(Model model, HttpServletRequest request,
+                                     @RequestBody Map<String, String> recordingIsConfirmed) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
+        }
+
+        String meetingPerson = recordingIsConfirmed.get("meetingPerson");
+        Map<String, String> fioPerson = fioParser(recordingIsConfirmed.get("meetingPerson"));
+        LocalDateTime meetingDateTime = parseInLocalDataTime(recordingIsConfirmed);
+
+        Long idVisitor = getIdMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id"));
+
+//        (long) request.getSession().getAttribute("id")
+
+
+//        if (true) {
+//            datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
+//            displayPage(model, request);
+//        } else {
+//            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
+//        }
+
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    private Map<String, String> fioParser(String meetingPerson) {
+        Map<String, String> fioPerson = new HashMap<>();
+        String[] fioArray = meetingPerson.split(" ");
+        if (fioArray.length == 3) {
+            fioPerson.put("surname", fioArray[0]);
+            fioPerson.put("name", fioArray[1]);
+            fioPerson.put("patronymic", fioArray[2]);
+        }
+        return fioPerson;
+    }
+
+    private Long getIdMeetingPerson(Map<String, String> fioPerson, long idSpecialist) {
+
+
+        return null;
+    }
+
 
     //Получение и передача данных для отображения страницы
     private void displayPage(Model model, HttpServletRequest request) {
@@ -258,6 +303,14 @@ public class EnrollClientController {
     private boolean isValidMeetingRequestParameters(Optional<LocalDateTime> meeting, String selectedCustomerId, Optional<StatusRegisteredVisitor> registeredStatus) {
 //        if (meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent())
         return meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent();
+    }
+
+    private LocalDateTime parseInLocalDataTime(Map<String, String> dataTime) {
+        String meetingDate = dataTime.get("meetingDate");
+        String meetingTime = dataTime.get("meetingTime");
+        LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
+        return date.atTime(time);
     }
 
     //ToDo сделать форму для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов

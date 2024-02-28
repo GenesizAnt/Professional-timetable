@@ -606,6 +606,42 @@
                             });
                     });
                     td.appendChild(link);
+                } else if (index === 2 && elem === "Требует подтверждения") {
+                    var link = document.createElement('a');
+                    link.textContent = elem;
+                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
+
+                        var recordingIsConfirmed = {
+                            // specialistId: idSpecialist,
+                            meetingDate: table.rows[0].cells[0].textContent,
+                            meetingTime: table.rows[ind].cells[index - 2].textContent,
+                            meetingPerson: table.rows[ind].cells[index - 1].textContent,
+                            // selectedCustomerId: selectedCustomerId1,
+                            // registeredStatus: registeredStatus1
+                        }; // Ваши данные для отправки на контроллер
+                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+
+                        // Отправляем данные на сервер
+                        fetch("/enroll/recordingConfirmed", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                                // Здесь могут быть другие заголовки, если необходимо
+                            },
+                            body: JSON.stringify(recordingIsConfirmed)
+                        })
+                            .then(response => {
+                                location.reload();
+                                // Обрабатываем ответ от сервера
+                            })
+                            .catch(error => {
+                                // Обрабатываем ошибки при отправке запроса на сервер
+                            });
+                    });
+                    td.appendChild(link);
                 } else {
                     // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
                     td.textContent = elem;
