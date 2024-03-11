@@ -45,7 +45,7 @@ public class VisitorsController {
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ERROR_VALIDATE_FORM = "redirect:/visitors/my_specialist_menu?error=";
-    private final String ENROLL_VIEW_REDIRECT = "visitors/my_specialist_menu";
+    private final String ENROLL_VIEW_REDIRECT = "redirect:/visitors/my_specialist_menu";
 
     @Autowired
     public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, ObjectMapper objectMapper) {
@@ -93,7 +93,7 @@ public class VisitorsController {
 //        model.addAttribute("day4", nearestDates.get(3));
 //        model.addAttribute("day5", nearestDates.get(4));
 
-        return ENROLL_VIEW_REDIRECT;
+        return "visitors/my_specialist_menu";
     }
 
     @GetMapping("/full_calendar") //ToDo Формально не отображает ВЕСЬ календарь только 20 дней
@@ -250,6 +250,25 @@ public class VisitorsController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    @PostMapping("/cancellingBookingVisitor")
+    public String cancellingBookingVisitor(Model model, HttpServletRequest request,
+                                    @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                    @RequestParam("meetingCancel") Optional<@NotNull LocalDateTime> meetingCancel) {
+
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
+        }
+
+        if (meetingCancel.isPresent()) {
+            datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
+            displayPage(model, request);
+        } else {
+            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
+        }
+
+        return ENROLL_VIEW_REDIRECT;
+    }
+
 
     //отображение меню конкретного специалиста для клиента (запись, даты и пр.)
     @GetMapping("/specialist_choose/{id}") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
@@ -302,26 +321,26 @@ public class VisitorsController {
         return "visitors/specialist_choose";
     }
 
-    @GetMapping("/assigned_specialist/{id}")
-    public String appointSpecialist(Model model, HttpServletRequest request, @PathVariable String id) {
-
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            PersonFullName personFullNameRegistered =
-                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
-
-            specialistsAndClientService.appointSpecialist(personFullNameRegistered.getId(), Long.valueOf(id));
-
-            model.addAttribute("selectedSpecialistId", id);
-            displayPage(model, request);
-
-        } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
-            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
-        }
-
-        return "visitors/specialist_choose";
-    }
+//    @GetMapping("/assigned_specialist/{id}") //ToDo Лишний контролер???
+//    public String appointSpecialist(Model model, HttpServletRequest request, @PathVariable String id) {
+//
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+//
+//            PersonFullName personFullNameRegistered =
+//                    modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
+//
+//            specialistsAndClientService.appointSpecialist(personFullNameRegistered.getId(), Long.valueOf(id));
+//
+//            model.addAttribute("selectedSpecialistId", id);
+//            displayPage(model, request);
+//
+//        } else {
+//            model.addAttribute("error", "Упс! Пора перелогиниться!");
+//            return "redirect:/auth/login?error"; //ToDo добавить считывание ошибки и правильного отображения сейчас отображается "Неправильные имя или пароль"
+//        }
+//
+//        return "visitors/specialist_choose";
+//    }
 
 
     private void displayPage(Model model, HttpServletRequest request) {

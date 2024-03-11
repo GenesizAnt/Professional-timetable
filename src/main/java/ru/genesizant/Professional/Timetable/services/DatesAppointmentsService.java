@@ -14,9 +14,7 @@ import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.DatesAppointmentsRepository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -463,9 +461,9 @@ public class DatesAppointmentsService {
 //        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
         calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name());
+        //ToDo попробовать такой вариант, только решить вопрос первой маленькой буквы LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("ru"))
         calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
         Map<String, String> sortedScheduleMap = new TreeMap<>(json);
-
         for (Map.Entry<String, String> entry : sortedScheduleMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
