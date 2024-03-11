@@ -33,7 +33,7 @@ public class CalendarManagementController {
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
-    private final String CALENDAR_VIEW_REDIRECT = "specialist/admission_calendar_view";
+    private final String CALENDAR_VIEW_REDIRECT = "redirect:/calendar/admission_calendar_view";
 
     @Autowired
     public CalendarManagementController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ObjectMapper objectMapper) {
@@ -54,7 +54,7 @@ public class CalendarManagementController {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
             return ERROR_LOGIN;
         }
-        return CALENDAR_VIEW_REDIRECT;
+        return "specialist/admission_calendar_view";
     }
 
     // форма для автоматического заполнения календаря на будущий период

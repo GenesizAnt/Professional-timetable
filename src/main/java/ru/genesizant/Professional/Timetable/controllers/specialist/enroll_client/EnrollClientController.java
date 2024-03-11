@@ -45,7 +45,7 @@ public class EnrollClientController {
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ERROR_VALIDATE_FORM = "redirect:/enroll/enroll_page?error=";
-    private final String ENROLL_VIEW_REDIRECT = "specialist/enroll_client_view";
+    private final String ENROLL_VIEW_REDIRECT = "redirect:/enroll/enroll_page";
 
     @Autowired
     public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, ObjectMapper objectMapper) {
@@ -70,7 +70,7 @@ public class EnrollClientController {
             return ERROR_LOGIN;
         }
 
-        return ENROLL_VIEW_REDIRECT;
+        return "specialist/enroll_client_view";
     }
 
     //Выбор и отображение Клиента для записи
