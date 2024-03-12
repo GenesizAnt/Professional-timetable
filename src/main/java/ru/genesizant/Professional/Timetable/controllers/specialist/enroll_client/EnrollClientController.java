@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
@@ -197,18 +198,31 @@ public class EnrollClientController {
     }
 
 
-    @PostMapping("/enroll/recordingConfirmed")
+    @PostMapping("/recordingConfirmed")
     public String recordingConfirmed(Model model, HttpServletRequest request,
                                      @RequestBody Map<String, String> recordingIsConfirmed) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
 
-        String meetingPerson = recordingIsConfirmed.get("meetingPerson");
-        Map<String, String> fioPerson = fioParser(recordingIsConfirmed.get("meetingPerson"));
+        String meetingPerson = recordingIsConfirmed.get("meetingPerson"); //для проверки
+        PersonFullName personFullName = getPersonFullName(recordingIsConfirmed.get("meetingPerson"));
+//        Map<String, String> fioPerson = fioParser(recordingIsConfirmed.get("meetingPerson"));
         LocalDateTime meetingDateTime = parseInLocalDataTime(recordingIsConfirmed);
+        long id = (long) request.getSession().getAttribute("id"); //для проверки
+        System.out.println();
+        datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
 
-        Long idVisitor = getIdMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id"));
+//        Map<String, String> identityVisitor = getIdentificationMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id")); //ToDo Чтобы не проверять через ФИО добавить в таблицу ид клинета, но не отрисовывать
+
+//        if (registeredStatus.get().equals(REGISTERED)) {
+//            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+//        } else if (registeredStatus.get().equals(UNREGISTERED)) {
+//            PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+//        }
+
 
 //        (long) request.getSession().getAttribute("id")
 
@@ -223,21 +237,27 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
-    private Map<String, String> fioParser(String meetingPerson) {
-        Map<String, String> fioPerson = new HashMap<>();
+    private PersonFullName getPersonFullName(String meetingPerson) {
+        PersonFullName personFullName = new PersonFullName();
         String[] fioArray = meetingPerson.split(" ");
         if (fioArray.length == 3) {
-            fioPerson.put("surname", fioArray[0]);
-            fioPerson.put("name", fioArray[1]);
-            fioPerson.put("patronymic", fioArray[2]);
+            personFullName.setSurname(fioArray[0]);
+            personFullName.setUsername(fioArray[1]);
+            personFullName.setPatronymic(fioArray[2]);
         }
-        return fioPerson;
+        return personFullName;
     }
 
-    private Long getIdMeetingPerson(Map<String, String> fioPerson, long idSpecialist) {
+    private Map<String, String> getIdentificationMeetingPerson(Map<String, String> fioPerson, long idSpecialist) {
+        Map<String, String> identityVisitor = new HashMap<>();
+        Long idPerson = personService.getPersonByFullName(fioPerson);
+        Optional<SpecialistsAndClient> specialistsAndClient = specialistsAndClientService.findByVisitorListId(idPerson);
+        if (specialistsAndClient.isPresent()) {
+            identityVisitor.put("id", idPerson.toString());
+        }
 
 
-        return null;
+        return identityVisitor;
     }
 
 

@@ -10,6 +10,7 @@ import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -65,5 +66,12 @@ public class PersonService {
 
     public Optional<Person> findByFullName(String username, String surname, String patronymic) {
         return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
+    }
+
+    public Long getPersonByFullName(Map<String, String> fioPerson) {
+        return personRepository.findIdByUsernameAndSurnameAndPatronymic(
+                fioPerson.get("name"),
+                fioPerson.get("surname"),
+                fioPerson.get("patronymic"));
     }
 }
