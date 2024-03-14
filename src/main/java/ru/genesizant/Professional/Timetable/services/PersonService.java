@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,7 +23,7 @@ public class PersonService {
         this.modelMapper = modelMapper;
     }
 
-    public Optional<Person> loadUserByEmail(String email)  {
+    public Optional<Person> loadUserByEmail(String email) {
         return personRepository.findByEmail(email);
     }
 
@@ -68,10 +66,7 @@ public class PersonService {
         return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
     }
 
-    public Long getPersonByFullName(Map<String, String> fioPerson) {
-        return personRepository.findIdByUsernameAndSurnameAndPatronymic(
-                fioPerson.get("name"),
-                fioPerson.get("surname"),
-                fioPerson.get("patronymic"));
-    }
+//    public Long getPersonByFullName(String username, String surname, String patronymic) {
+//        return personRepository.findIdByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
+//    }
 }

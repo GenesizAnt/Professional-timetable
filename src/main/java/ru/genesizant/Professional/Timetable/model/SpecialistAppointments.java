@@ -41,7 +41,7 @@ public class SpecialistAppointments {
     @Column(name = "visit_date")
     private LocalDate visitDate;
 
-    @Column(name = "appointmentTime")
+    @Column(name = "appointmenttime")
     private LocalDateTime appointmentTime;
 
     @Column(name = "consultation_fee")
