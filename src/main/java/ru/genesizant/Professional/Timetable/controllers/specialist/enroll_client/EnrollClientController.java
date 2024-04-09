@@ -254,6 +254,28 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    @GetMapping("/list_debtors")
+    public String listDebtors(Model model, HttpServletRequest request) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+
+            List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
+//            List<LocalDateTime> times = new ArrayList<>();
+//            if (!appointmentsList.isEmpty()) {
+//                for (SpecialistAppointments appointments : appointmentsList) {
+//                    if (!appointments.isPrepayment()) {
+//                        times.add(appointments.getAppointmentTime());
+//                    }
+//                }
+                model.addAttribute("appointmentsList", appointmentsList);
+//            }
+
+        } else {
+            return ERROR_LOGIN;
+        }
+
+        return "specialist/list_debtors";
+    }
+
     private PersonFullName getPersonFullName(String meetingPerson) {
         PersonFullName personFullName = new PersonFullName();
         String[] fioArray = meetingPerson.split(" ");
@@ -287,20 +309,27 @@ public class EnrollClientController {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
+        List<LocalDateTime> times = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
+            for (SpecialistAppointments appointments : appointmentsList) {
+                if (!appointments.isPrepayment()) {
+                    times.add(appointments.getAppointmentTime());
+                }
+            }
 //            List<LocalDate> dates = new ArrayList<>();
 //            for (SpecialistAppointments specialistAppointments : appointmentsList) {
 //                dates.add(specialistAppointments.getVisitDate());
 //            }
-            Map<LocalDate, LocalTime> timeMap = new HashMap<>();
-            timeMap.put(appointmentsList.get(0).getVisitDate(), LocalTime.now());
-            LocalDateTime localDateTime = LocalDateTime.now();
-            model.addAttribute("visitDate1", timeMap.toString() );
-//            model.addAttribute("visitDate1", appointmentsList.get(0).getVisitDate());
-            model.addAttribute("visitDate2", localDateTime);
+//            Map<LocalDate, LocalTime> timeMap = new HashMap<>();
+//            timeMap.put(appointmentsList.get(0).getVisitDate(), LocalTime.now());
+//            LocalDateTime localDateTime = LocalDateTime.now();
+//            model.addAttribute("visitDate1", timeMap.toString() );
+////            model.addAttribute("visitDate1", appointmentsList.get(0).getVisitDate());
+//            model.addAttribute("visitDate2", localDateTime);
             //ToDo здесь еще должно быть время посещения
             //ToDo Перебор по всему списку??
         }
+        model.addAttribute("visitDates", times);
 
 
 //        Map<LocalDate, Map<String, String>> sortedFreeSchedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));

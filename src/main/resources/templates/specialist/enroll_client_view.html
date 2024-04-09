@@ -119,12 +119,22 @@
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
                     <span style="color:firebrick" th:text="${param.error}"></span>
                 </div>
-                <div class="alert alert-danger text-center" role="alert" th:if="${visitDate1 != null}">
-                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg><br>
-                    <span style="color:firebrick" th:text="${visitDate1 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate1}"></span><br>
-                    <span style="color:firebrick" th:text="${visitDate2 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate2}"></span><br>
-                    <span style="color:firebrick" th:text="${visitDate3 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate3}"></span>
+                <div th:if="${#lists.size(visitDates) > 0}">
+                    <a href="list_debtors">Полный список неоплаченных</a>
+                    <div class="alert alert-danger text-center" role="alert" th:each="date : ${visitDates}">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                            <use xlink:href="#exclamation-triangle-fill"/>
+                        </svg>
+                        <span style="color:firebrick" th:text="'Внимание! Есть неоплаченная консультация на ' + ${date}"></span>
+                        <br>
+                    </div>
                 </div>
+<!--                <div class="alert alert-danger text-center" role="alert" th:if="${visitDate1 != null}">-->
+<!--                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg><br>-->
+<!--                    <span style="color:firebrick" th:text="${visitDate1 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate1}"></span><br>-->
+<!--                    <span style="color:firebrick" th:text="${visitDate2 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate2}"></span><br>-->
+<!--                    <span style="color:firebrick" th:text="${visitDate3 != null} ? 'Внимание! Есть неоплаченная консультация на ' + ${visitDate3}"></span>-->
+<!--                </div>-->
             </div>
             <div class="row">
                 <div class="col-md-6 col-sm-12 text-center">
