@@ -10,9 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.enums.DayOfWeekRus;
-import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
+import ru.genesizant.Professional.Timetable.repositories.SpecialistAppointmentsRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
@@ -20,16 +20,13 @@ import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeek;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
 @Controller
@@ -41,6 +38,7 @@ public class VisitorsController {
     private final DatesAppointmentsService datesAppointmentsService;
     private final ModelMapper modelMapper;
     private final SpecialistsAndClientService specialistsAndClientService;
+    private final SpecialistAppointmentsRepository specialistAppointmentsRepository;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -48,12 +46,13 @@ public class VisitorsController {
     private final String ENROLL_VIEW_REDIRECT = "redirect:/visitors/my_specialist_menu";
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, ObjectMapper objectMapper) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsRepository specialistAppointmentsRepository, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.modelMapper = modelMapper;
         this.specialistsAndClientService = specialistsAndClientService;
+        this.specialistAppointmentsRepository = specialistAppointmentsRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -347,6 +346,17 @@ public class VisitorsController {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
         List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
+        List<LocalDateTime> times = new ArrayList<>();
+        if (!appointmentsList.isEmpty()) {
+            for (SpecialistAppointments appointments : appointmentsList) {
+                if (!appointments.isPrepayment() && appointments.getVisitor_appointments().getId().equals(request.getSession().getAttribute("id"))) {
+                    times.add(appointments.getAppointmentTime());
+                }
+            }
+        }
+        model.addAttribute("visitDates", times);
 
         model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
         model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());

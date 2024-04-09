@@ -165,7 +165,8 @@ public class EnrollClientController {
 //        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
 //        LocalDateTime meeting = date.atTime(time);
 
-        if (!selectedCustomerId.equals("") && !registeredStatus.equals("")) { //ToDo сделать другую проверку
+        if (selectedCustomerId != null && registeredStatus != null &&
+                !selectedCustomerId.equals("") && !registeredStatus.equals("")) { //ToDo сделать другую проверку
 
             if (registeredStatus.equals(REGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
