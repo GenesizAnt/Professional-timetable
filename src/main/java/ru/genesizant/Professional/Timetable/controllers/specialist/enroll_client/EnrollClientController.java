@@ -96,7 +96,8 @@ public class EnrollClientController {
         } else {
             return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
-        return ENROLL_VIEW_REDIRECT;
+        return "specialist/enroll_client_view";
+//        return ENROLL_VIEW_REDIRECT;
     }
 
     //Специалист создает незарегистрированного пользователя
@@ -253,28 +254,6 @@ public class EnrollClientController {
 //        }
 
         return ENROLL_VIEW_REDIRECT;
-    }
-
-    @GetMapping("/list_debtors")
-    public String listDebtors(Model model, HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
-//            List<LocalDateTime> times = new ArrayList<>();
-//            if (!appointmentsList.isEmpty()) {
-//                for (SpecialistAppointments appointments : appointmentsList) {
-//                    if (!appointments.isPrepayment()) {
-//                        times.add(appointments.getAppointmentTime());
-//                    }
-//                }
-                model.addAttribute("appointmentsList", appointmentsList);
-//            }
-
-        } else {
-            return ERROR_LOGIN;
-        }
-
-        return "specialist/list_debtors";
     }
 
     private PersonFullName getPersonFullName(String meetingPerson) {
