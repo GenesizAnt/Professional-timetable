@@ -82,7 +82,7 @@
                                             <option value="">Список клиентов</option>
                                             <option th:each="client : ${listName}"
                                                     th:value="${client.idAppointment}"
-                                                    th:text="${'Неоплаченная консультация на ' + client.dateAppointment.toLocalDate() + ' в ' + client.dateAppointment.toLocalTime() + ' от ' + client.fullName}">
+                                                    th:text="${'Неоплаченная консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' от ' + client.fullName}">
                                             </option>
                                         </select>
                                         <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"
@@ -121,7 +121,7 @@
                                             <option value="">Выбери консультацию необходимую к оплате</option>
                                             <option th:each="client : ${agreePay}"
                                                     th:value="${client.idAppointment}"
-                                                    th:text="${'Консультация на ' + client.dateAppointment.toLocalDate() + ' в ' + client.dateAppointment.toLocalTime() + ' от ' + client.fullName}">
+                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' от ' + client.fullName}">
                                             </option>
                                         </select>
                                         <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"

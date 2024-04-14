@@ -354,7 +354,7 @@ public class VisitorsController {
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
                 if (!appointments.isPrepayment() && appointments.getVisitor_appointments().getId().equals(request.getSession().getAttribute("id"))) {
-                    times.add(appointments.getAppointmentTime());
+                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
                 }
             }
         }

@@ -1,12 +1,14 @@
 package ru.genesizant.Professional.Timetable.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class AgreementAppointmentDTO {
 
     private Long idAppointment;
     private String fullName;
-    private LocalDateTime dateAppointment;
+    private LocalDate dateAppointment;
+    private LocalTime timeAppointment;
 
     public Long getIdAppointment() {
         return idAppointment;
@@ -24,17 +26,19 @@ public class AgreementAppointmentDTO {
         this.fullName = fullName;
     }
 
-    public LocalDateTime getDateAppointment() {
+    public LocalDate getDateAppointment() {
         return dateAppointment;
     }
 
-    public void setDateAppointment(LocalDateTime dateAppointment) {
+    public void setDateAppointment(LocalDate dateAppointment) {
         this.dateAppointment = dateAppointment;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Неоплаченная консультация на " + dateAppointment.toLocalDate() + " в " + dateAppointment.toLocalTime() +
-//                " от " + fullName;
-//    }
+    public LocalTime getTimeAppointment() {
+        return timeAppointment;
+    }
+
+    public void setTimeAppointment(LocalTime timeAppointment) {
+        this.timeAppointment = timeAppointment;
+    }
 }

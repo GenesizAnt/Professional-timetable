@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -42,7 +43,7 @@ public class SpecialistAppointments {
     private LocalDate visitDate;
 
     @Column(name = "appointmenttime")
-    private LocalDateTime appointmentTime;
+    private LocalTime appointmentTime;
 
     @Column(name = "consultation_fee")
     private BigDecimal consultationFee;
@@ -139,11 +140,11 @@ public class SpecialistAppointments {
         this.visitDate = visitDate;
     }
 
-    public LocalDateTime getAppointmentTime() {
+    public LocalTime getAppointmentTime() {
         return appointmentTime;
     }
 
-    public void setAppointmentTime(LocalDateTime appointmentTime) {
+    public void setAppointmentTime(LocalTime appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
 

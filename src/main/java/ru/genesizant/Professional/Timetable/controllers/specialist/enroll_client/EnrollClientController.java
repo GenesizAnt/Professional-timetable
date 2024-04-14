@@ -226,6 +226,7 @@ public class EnrollClientController {
         //ToDo Добавить поле время приема
         SpecialistAppointments specialistAppointments = new SpecialistAppointments();
         specialistAppointments.setVisitDate(meetingDateTime.toLocalDate());
+        specialistAppointments.setAppointmentTime(meetingDateTime.toLocalTime());
         specialistAppointments.setSpecialist_appointments(personService.findById((long) request.getSession().getAttribute("id")).get());
         specialistAppointments.setVisitor_appointments(personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get());
         specialistAppointments.setPrepayment(Boolean.FALSE);
@@ -293,7 +294,8 @@ public class EnrollClientController {
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
                 if (!appointments.isPrepayment()) {
-                    times.add(appointments.getAppointmentTime());
+//                    LocalDateTime dateTime = appointments.getVisitDate().atTime(appointments.getAppointmentTime());
+                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
                 }
             }
 //            List<LocalDate> dates = new ArrayList<>();

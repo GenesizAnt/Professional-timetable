@@ -84,7 +84,8 @@ public class DebtorsController {
                 AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
                 appointmentDTO.setIdAppointment(appointments.getId());
                 appointmentDTO.setFullName(appointments.getVisitor_appointments().getFullName());
-                appointmentDTO.setDateAppointment(appointments.getAppointmentTime());
+                appointmentDTO.setDateAppointment(appointments.getVisitDate());
+                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
                 if (appointments.isPrepayment()) {
                     agreePay.add(appointmentDTO);
                 } else {
