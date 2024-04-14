@@ -54,10 +54,10 @@ public class Person {
     @OneToMany(mappedBy = "ownerService")
     private List<ProfessionalServices> professionalServicesList; //ToDo переименовать??
 
-    @OneToMany(mappedBy = "specialist_appointments")
+    @OneToMany(mappedBy = "specialistAppointments")
     private List<SpecialistAppointments> specialistAppointmentsList;
 
-    @OneToMany(mappedBy = "visitor_appointments")
+    @OneToMany(mappedBy = "visitorAppointments")
     private List<SpecialistAppointments> visitorAppointmentsList;
 
     @OneToMany(mappedBy = "specialist_statistical")

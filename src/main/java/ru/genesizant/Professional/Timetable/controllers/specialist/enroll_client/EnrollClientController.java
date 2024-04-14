@@ -15,7 +15,6 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
-import ru.genesizant.Professional.Timetable.repositories.SpecialistAppointmentsRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.*;
 
@@ -134,7 +133,7 @@ public class EnrollClientController {
                 personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
                         personService.findById((long) request.getSession().getAttribute("id")).get(),
-                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
+                        personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             }
@@ -186,7 +185,7 @@ public class EnrollClientController {
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
                 specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
                         personService.findById((long) request.getSession().getAttribute("id")).get(),
-                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
+                        personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
             } else if (registeredStatus.equals(UNREGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
@@ -240,7 +239,7 @@ public class EnrollClientController {
         //ToDo переименовать поле appointmenttime в Сикуль - нижнее подчеркивание
         specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
                 personService.findById((long) request.getSession().getAttribute("id")).get(),
-                personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE);
+                personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
 
 //        Map<String, String> identityVisitor = getIdentificationMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id")); //ToDo Чтобы не проверять через ФИО добавить в таблицу ид клинета, но не отрисовывать
 

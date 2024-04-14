@@ -24,19 +24,30 @@ public class SpecialistAppointmentsService {
         return specialistAppointmentsRepository.findAll();
     }
 
-    public void createNewAppointments(LocalDate toLocalDate, LocalTime toLocalTime, Person idSpecialist, Person idVisitor, Boolean isPrePay) {
+    public List<SpecialistAppointments> findAppointmentsByVisitor(Long idVisitor, Long idSpecialist) {
+        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
+    }
+
+    public void createNewAppointments(LocalDate toLocalDate, LocalTime toLocalTime, Person idSpecialist, Person idVisitor, Boolean isPrePaySpecialist, Boolean isPrePayVisitor) {
         SpecialistAppointments specialistAppointments = new SpecialistAppointments();
         specialistAppointments.setVisitDate(toLocalDate);
         specialistAppointments.setAppointmentTime(toLocalTime);
-        specialistAppointments.setSpecialist_appointments(idSpecialist);
-        specialistAppointments.setVisitor_appointments(idVisitor);
-        specialistAppointments.setPrepayment(isPrePay);
+        specialistAppointments.setSpecialistAppointments(idSpecialist);
+        specialistAppointments.setVisitorAppointments(idVisitor);
+        specialistAppointments.setPrepayment(isPrePaySpecialist);
+        specialistAppointments.setPrepaymentVisitor(isPrePayVisitor);
         specialistAppointmentsRepository.save(specialistAppointments);
     }
 
     public void agreementPrePay(Long idAgreement, Boolean isPrePay) {
         Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
         appointments.get().setPrepayment(isPrePay);
+        specialistAppointmentsRepository.save(appointments.get());
+    }
+
+    public void agreementVisitorPrePay(Long idAgreement, Boolean isPrePay) {
+        Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
+        appointments.get().setPrepaymentVisitor(isPrePay);
         specialistAppointmentsRepository.save(appointments.get());
     }
 }

@@ -23,11 +23,11 @@ public class SpecialistAppointments {
 
     @ManyToOne
     @JoinColumn(name = "specialist_id", referencedColumnName = "id")
-    private Person specialist_appointments;
+    private Person specialistAppointments;
 
     @ManyToOne
     @JoinColumn(name = "visitor_id", referencedColumnName = "id")
-    private Person visitor_appointments;
+    private Person visitorAppointments;
 
     @ManyToOne
     @JoinColumn(name = "services_id", referencedColumnName = "id")
@@ -50,6 +50,9 @@ public class SpecialistAppointments {
 
     @Column(name = "prepayment")
     private boolean prepayment;
+
+    @Column(name = "prepaymentvisitor")
+    private boolean prepaymentVisitor;
 
     @OneToMany(mappedBy = "specialistAppointments")
     private List<StatisticalAnalysis> statisticalAnalysesList;
@@ -92,20 +95,20 @@ public class SpecialistAppointments {
         this.id = id;
     }
 
-    public Person getSpecialist_appointments() {
-        return specialist_appointments;
+    public Person getSpecialistAppointments() {
+        return specialistAppointments;
     }
 
-    public void setSpecialist_appointments(Person specialist_appointments) {
-        this.specialist_appointments = specialist_appointments;
+    public void setSpecialistAppointments(Person specialistAppointments) {
+        this.specialistAppointments = specialistAppointments;
     }
 
-    public Person getVisitor_appointments() {
-        return visitor_appointments;
+    public Person getVisitorAppointments() {
+        return visitorAppointments;
     }
 
-    public void setVisitor_appointments(Person visitor_appointments) {
-        this.visitor_appointments = visitor_appointments;
+    public void setVisitorAppointments(Person visitorAppointments) {
+        this.visitorAppointments = visitorAppointments;
     }
 
     public ProfessionalServices getProfessionalServices() {
@@ -154,5 +157,13 @@ public class SpecialistAppointments {
 
     public void setConsultationFee(BigDecimal consultationFee) {
         this.consultationFee = consultationFee;
+    }
+
+    public boolean isPrepaymentVisitor() {
+        return prepaymentVisitor;
+    }
+
+    public void setPrepaymentVisitor(boolean prepaymentVisitor) {
+        this.prepaymentVisitor = prepaymentVisitor;
     }
 }

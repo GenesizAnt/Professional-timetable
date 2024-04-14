@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client;
+package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -12,62 +12,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
+import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
+import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/administration")
-public class DebtorsController {
+@RequestMapping("/managed")
+public class ManagedPay {
 
     private final JWTUtil jwtUtil;
     private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final SpecialistsAndClientService specialistsAndClientService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String ENROLL_VIEW_REDIRECT = "redirect:/administration/proof_clients";
+    private final String ENROLL_VIEW_REDIRECT = "redirect:/managed/managed_pay";
 
     @Autowired
-    public DebtorsController(JWTUtil jwtUtil, SpecialistAppointmentsService specialistAppointmentsService) {
+    public ManagedPay(JWTUtil jwtUtil, SpecialistAppointmentsService specialistAppointmentsService, SpecialistsAndClientService specialistsAndClientService) {
         this.jwtUtil = jwtUtil;
         this.specialistAppointmentsService = specialistAppointmentsService;
+        this.specialistsAndClientService = specialistsAndClientService;
     }
 
-    @GetMapping("/proof_clients")
+    @GetMapping("/managed_pay")
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
         } else {
             return ERROR_LOGIN;
         }
-        return "specialist/list_debtors";
+        return "visitors/managed_pay";
     }
 
-    @PostMapping("/agreement")
-    public String agreementAppointment(Model model, HttpServletRequest request,
-                                       @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
+    @PostMapping("/make_payment")
+    public String makePayment(Model model, HttpServletRequest request,
+                                         @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
         if (agreementId.isPresent() && !agreementId.get().equals("")) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
-            displayPage(model, request);
-        } else {
-            return ERROR_LOGIN;
-        }
-        return ENROLL_VIEW_REDIRECT;
-    }
-
-    @PostMapping("/no_agreement")
-    public String noAgreementAppointment(Model model, HttpServletRequest request,
-                                       @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-        if (agreementId.isPresent() && !agreementId.get().equals("")) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.FALSE);
+            specialistAppointmentsService.agreementVisitorPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
             displayPage(model, request);
         } else {
             return ERROR_LOGIN;
@@ -76,24 +65,20 @@ public class DebtorsController {
     }
 
     private void displayPage(Model model, HttpServletRequest request) {
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
+        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"),  assignedToSpecialist.get().getSpecialistList().getId());
         List<AgreementAppointmentDTO> needPay = new ArrayList<>();
-        List<AgreementAppointmentDTO> agreePay = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
                 AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
                 appointmentDTO.setIdAppointment(appointments.getId());
-                appointmentDTO.setFullName(appointments.getVisitorAppointments().getFullName());
                 appointmentDTO.setDateAppointment(appointments.getVisitDate());
                 appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-                if (appointments.isPrepayment()) {
-                    agreePay.add(appointmentDTO);
-                } else {
+                if (!appointments.isPrepayment()) {
                     needPay.add(appointmentDTO);
                 }
             }
             model.addAttribute("listName", needPay);
-            model.addAttribute("agreePay", agreePay);
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }

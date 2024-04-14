@@ -353,7 +353,7 @@ public class VisitorsController {
         List<LocalDateTime> times = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
-                if (!appointments.isPrepayment() && appointments.getVisitor_appointments().getId().equals(request.getSession().getAttribute("id"))) {
+                if (!appointments.isPrepayment() && appointments.getVisitorAppointments().getId().equals(request.getSession().getAttribute("id"))) {
                     times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
                 }
             }
