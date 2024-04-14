@@ -17,10 +17,7 @@ import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.repositories.SpecialistAppointmentsRepository;
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.PersonService;
-import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
-import ru.genesizant.Professional.Timetable.services.UnregisteredPersonService;
+import ru.genesizant.Professional.Timetable.services.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +42,7 @@ public class EnrollClientController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final ModelMapper modelMapper;
     private final UnregisteredPersonService unregisteredPersonService;
-    private final SpecialistAppointmentsRepository specialistAppointmentsRepository;
+    private final SpecialistAppointmentsService specialistAppointmentsService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -53,14 +50,14 @@ public class EnrollClientController {
     private final String ENROLL_VIEW_REDIRECT = "redirect:/enroll/enroll_page";
 
     @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, SpecialistAppointmentsRepository specialistAppointmentsRepository, ObjectMapper objectMapper) {
+    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, SpecialistAppointmentsService specialistAppointmentsService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.specialistsAndClientService = specialistsAndClientService;
         this.modelMapper = modelMapper;
         this.unregisteredPersonService = unregisteredPersonService;
-        this.specialistAppointmentsRepository = specialistAppointmentsRepository;
+        this.specialistAppointmentsService = specialistAppointmentsService;
         this.objectMapper = objectMapper;
     }
 
@@ -132,17 +129,32 @@ public class EnrollClientController {
 
         if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus)) {
             //ToDo сделать Валид для проверки что время не забронированно
-
+            PersonFullName personFullName = null;
             if (registeredStatus.get().equals(REGISTERED)) {
-                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+                personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
+                        personService.findById((long) request.getSession().getAttribute("id")).get(),
+                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
-                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+                personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             }
-            //ToDo сделать добавление в БД Таблица Приемы
-            displayPage(model, request);
+            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
 
+
+//            if (registeredStatus.get().equals(REGISTERED)) {
+//                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+//                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
+//                        personService.findById((long) request.getSession().getAttribute("id")).get(),
+//                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
+//            } else if (registeredStatus.get().equals(UNREGISTERED)) {
+//                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+//                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
+//                        personService.findById((long) request.getSession().getAttribute("id")).get(),
+//                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
+//            }
+            displayPage(model, request);
         } else {
             return encodeError("Для записи нужно выбрать клиента, время и дату записи");
         }
@@ -172,6 +184,9 @@ public class EnrollClientController {
             if (registeredStatus.equals(REGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
+                specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+                        personService.findById((long) request.getSession().getAttribute("id")).get(),
+                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
             } else if (registeredStatus.equals(UNREGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
@@ -223,15 +238,9 @@ public class EnrollClientController {
         //ToDo вынести метод в другое место? контролер решает две задачи
         //ToDo ужас твориться с таблицей надо перепроверить все поля, например дата и продолжительность
         //ToDo переименовать поле appointmenttime в Сикуль - нижнее подчеркивание
-        //ToDo Добавить поле время приема
-        SpecialistAppointments specialistAppointments = new SpecialistAppointments();
-        specialistAppointments.setVisitDate(meetingDateTime.toLocalDate());
-        specialistAppointments.setAppointmentTime(meetingDateTime.toLocalTime());
-        specialistAppointments.setSpecialist_appointments(personService.findById((long) request.getSession().getAttribute("id")).get());
-        specialistAppointments.setVisitor_appointments(personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get());
-        specialistAppointments.setPrepayment(Boolean.FALSE);
-        specialistAppointmentsRepository.save(specialistAppointments);
-        System.out.println();
+        specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+                personService.findById((long) request.getSession().getAttribute("id")).get(),
+                personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE);
 
 //        Map<String, String> identityVisitor = getIdentificationMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id")); //ToDo Чтобы не проверять через ФИО добавить в таблицу ид клинета, но не отрисовывать
 
@@ -289,7 +298,7 @@ public class EnrollClientController {
     private void displayPage(Model model, HttpServletRequest request) {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
         List<LocalDateTime> times = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
