@@ -16,6 +16,7 @@ import ru.genesizant.Professional.Timetable.repositories.SpecialistAppointmentsR
 import ru.genesizant.Professional.Timetable.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
 import java.net.URLEncoder;
@@ -38,7 +39,8 @@ public class VisitorsController {
     private final DatesAppointmentsService datesAppointmentsService;
     private final ModelMapper modelMapper;
     private final SpecialistsAndClientService specialistsAndClientService;
-    private final SpecialistAppointmentsRepository specialistAppointmentsRepository;
+//    private final SpecialistAppointmentsRepository specialistAppointmentsRepository;
+    private final SpecialistAppointmentsService specialistAppointmentsService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -46,13 +48,13 @@ public class VisitorsController {
     private final String ENROLL_VIEW_REDIRECT = "redirect:/visitors/my_specialist_menu";
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsRepository specialistAppointmentsRepository, ObjectMapper objectMapper) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsService specialistAppointmentsService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.modelMapper = modelMapper;
         this.specialistsAndClientService = specialistsAndClientService;
-        this.specialistAppointmentsRepository = specialistAppointmentsRepository;
+        this.specialistAppointmentsService = specialistAppointmentsService;
         this.objectMapper = objectMapper;
     }
 
@@ -347,7 +349,7 @@ public class VisitorsController {
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
         List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsRepository.findAll();
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
         List<LocalDateTime> times = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {

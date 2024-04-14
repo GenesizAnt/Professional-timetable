@@ -81,6 +81,9 @@
         <a class="nav-link" th:href="@{/calendar/admission_calendar_view}">Управление календарем</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" th:href="@{/administration/proof_clients}">Управление оплатами</a>
+    </li>
+    <li class="nav-item">
         <form th:method="POST" th:action="@{/logout}">
             <input type="submit" class="btn btn-secondary" value="Выход">
         </form>
@@ -120,7 +123,7 @@
                     <span style="color:firebrick" th:text="${param.error}"></span>
                 </div>
                 <div th:if="${#lists.size(visitDates) > 0}">
-                    <a href="/administration/proof_clients">Полный список неоплаченных</a>
+<!--                    <a href="/administration/proof_clients">Полный список неоплаченных</a>-->
                     <div class="alert alert-danger text-center" role="alert" th:each="date : ${visitDates}">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                             <use xlink:href="#exclamation-triangle-fill"/>
