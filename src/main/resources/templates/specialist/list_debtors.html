@@ -133,6 +133,44 @@
                     </div>
                     <div class="line"></div>
                 </div>
+                <div class="col-md-6 col-sm-12 text-center">
+                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>
+                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                            data-bs-target="#listVisitorPay">
+                        <h6 class="text-center">Клиент оплатил</h6>
+                    </button>
+                    <div class="modal fade" id="listVisitorPay" tabindex="-1" aria-labelledby="listVisitorPayLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success text-white">
+                                    <h5 class="modal-title" id="listVisitorPayLabel">Список консультаций, которые клиент отметил как оплаченные</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:method="POST" th:action="@{/administration/agreement}">
+                                        <select class="form-select" size="10" aria-label="Select Client"
+                                                name="agreementId" required>
+                                            <option value="">Выбери консультацию для подтверждения оплаты</option>
+                                            <option th:each="appointment : ${maybePay}"
+                                                    th:value="${appointment.idAppointment}"
+                                                    th:text="${'Консультация на ' + appointment.dateAppointment + ' в ' + appointment.timeAppointment + ' клиента ' + appointment.fullName}">
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                                role="button">Подтвердить оплату</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
             </div>
         </div>
     </div>

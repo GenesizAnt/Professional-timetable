@@ -75,10 +75,26 @@ public class DebtorsController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+//    @PostMapping("/maybe_pay")
+//    public String maybePayAppointment(Model model, HttpServletRequest request,
+//                                         @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+//        if (agreementId.isPresent() && !agreementId.get().equals("")) {
+//            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
+//            displayPage(model, request);
+//        } else {
+//            return ERROR_LOGIN;
+//        }
+//        return ENROLL_VIEW_REDIRECT;
+//    }
+
     private void displayPage(Model model, HttpServletRequest request) {
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
         List<AgreementAppointmentDTO> needPay = new ArrayList<>();
         List<AgreementAppointmentDTO> agreePay = new ArrayList<>();
+        List<AgreementAppointmentDTO> maybePay = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
                 AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
@@ -86,14 +102,18 @@ public class DebtorsController {
                 appointmentDTO.setFullName(appointments.getVisitorAppointments().getFullName());
                 appointmentDTO.setDateAppointment(appointments.getVisitDate());
                 appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
+                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
+                    maybePay.add(appointmentDTO); //клиент подтвердил, спец нет
+                }
                 if (appointments.isPrepayment()) {
-                    agreePay.add(appointmentDTO);
+                    agreePay.add(appointmentDTO); // спец подтвердил
                 } else {
-                    needPay.add(appointmentDTO);
+                    needPay.add(appointmentDTO); // ни спец ни клиент не подтвердил оплату
                 }
             }
             model.addAttribute("listName", needPay);
             model.addAttribute("agreePay", agreePay);
+            model.addAttribute("maybePay", maybePay);
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }

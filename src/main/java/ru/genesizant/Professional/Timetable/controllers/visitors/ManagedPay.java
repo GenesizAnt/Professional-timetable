@@ -74,7 +74,7 @@ public class ManagedPay {
                 appointmentDTO.setIdAppointment(appointments.getId());
                 appointmentDTO.setDateAppointment(appointments.getVisitDate());
                 appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-                if (!appointments.isPrepayment()) {
+                if (!appointments.isPrepaymentVisitor()) {
                     needPay.add(appointmentDTO);
                 }
             }
