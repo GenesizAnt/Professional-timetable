@@ -112,7 +112,16 @@
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                         <use xlink:href="#exclamation-triangle-fill"/>
                     </svg>
-                    <span style="color: firebrick" th:text="'Внимание! Есть неоплаченная консультация на ' + ${date.toLocalDate()} + ' в ' + ${date.toLocalTime()}"></span>
+                    <span style="color: firebrick" th:text="'Внимание! Есть неоплаченная консультация на ' + ${date.getDateAppointment()} + ' в ' + ${date.getTimeAppointment()}"></span>
+                    <br>
+                </div>
+            </div>
+            <div th:if="${#lists.size(needAgree) > 0}">
+                <div class="alert alert-success text-center" role="alert" th:each="date : ${needAgree}">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                        <use xlink:href="#exclamation-triangle-fill"/>
+                    </svg>
+                    <span style="color: firebrick" th:text="'Внимание! Оплаченная консультация на ' +  ${date.getDateAppointment()} + ' в ' +  ${date.getTimeAppointment()} + ' ждет подтверждения специалиста '"></span>
                     <br>
                 </div>
             </div>

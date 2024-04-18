@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
@@ -350,15 +351,26 @@ public class VisitorsController {
         List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
-        List<LocalDateTime> times = new ArrayList<>();
+//        List<LocalDateTime> times = new ArrayList<>();
+        List<AgreementAppointmentDTO> times = new ArrayList<>();
+        List<AgreementAppointmentDTO> needAgree = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
-                if (!appointments.isPrepayment() && appointments.getVisitorAppointments().getId().equals(request.getSession().getAttribute("id"))) {
-                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
+                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
+                appointmentDTO.setIdAppointment(appointments.getId());
+                appointmentDTO.setDateAppointment(appointments.getVisitDate());
+                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
+                if (!appointments.isPrepayment() && appointments.getVisitorAppointments().getId().equals(request.getSession().getAttribute("id")) && !appointments.isPrepaymentVisitor()) {
+                    times.add(appointmentDTO);
+                }
+                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
+                    needAgree.add(appointmentDTO);
                 }
             }
         }
         model.addAttribute("visitDates", times);
+        model.addAttribute("needAgree", needAgree);
+
 
         model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
         model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());

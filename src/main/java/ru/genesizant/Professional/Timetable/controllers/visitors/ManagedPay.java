@@ -78,7 +78,7 @@ public class ManagedPay {
                     needPay.add(appointmentDTO);
                 }
             }
-            model.addAttribute("listName", needPay);
+            model.addAttribute("needPay", needPay);
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
