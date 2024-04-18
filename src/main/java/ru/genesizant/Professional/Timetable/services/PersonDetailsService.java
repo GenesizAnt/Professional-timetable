@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.repositories.PersonRepository;
-import ru.genesizant.Professional.Timetable.security.PersonDetails;
+import ru.genesizant.Professional.Timetable.config.security.PersonDetails;
 
 import java.util.Optional;
 

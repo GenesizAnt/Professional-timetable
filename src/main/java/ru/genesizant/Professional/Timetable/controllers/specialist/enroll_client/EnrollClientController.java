@@ -15,7 +15,7 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
-import ru.genesizant.Professional.Timetable.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.*;
 
 import java.net.URLEncoder;

@@ -11,11 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.genesizant.Professional.Timetable.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.PersonDetailsService;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {

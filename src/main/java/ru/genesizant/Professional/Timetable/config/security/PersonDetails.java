@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.security;
+package ru.genesizant.Professional.Timetable.config.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

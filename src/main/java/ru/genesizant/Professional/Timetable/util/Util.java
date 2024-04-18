@@ -1,13 +1,6 @@
 package ru.genesizant.Professional.Timetable.util;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.Model;
-import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.security.JWTUtil;
-
-import java.util.Optional;
 
 @Component
 public class Util {

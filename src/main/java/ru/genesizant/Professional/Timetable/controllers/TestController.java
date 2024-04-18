@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.security.PersonDetails;
+import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.config.security.PersonDetails;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 

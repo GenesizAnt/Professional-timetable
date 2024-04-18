@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.security;
+package ru.genesizant.Professional.Timetable.config.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
