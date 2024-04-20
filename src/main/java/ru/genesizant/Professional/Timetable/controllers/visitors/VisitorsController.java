@@ -236,11 +236,14 @@ public class VisitorsController {
 
         model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
         model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
-        model.addAttribute("day1", nearestDates.get(0));
-        model.addAttribute("day2", nearestDates.get(1));
-        model.addAttribute("day3", nearestDates.get(2));
-        model.addAttribute("day4", nearestDates.get(3));
-        model.addAttribute("day5", nearestDates.get(4));
+        //ToDo решить почему не работает с пустым списком как это исправить!!!!!!!!!!!!!!!!!!!!!!!!!!!! - на этот метод поставить оптионал datesAppointmentsService.getFiveNearestDates
+        if (!nearestDates.isEmpty()) {
+            model.addAttribute("day1", nearestDates.get(0));
+            model.addAttribute("day2", nearestDates.get(1));
+            model.addAttribute("day3", nearestDates.get(2));
+            model.addAttribute("day4", nearestDates.get(3));
+            model.addAttribute("day5", nearestDates.get(4));
+        }
     }
 
     private String encodeError(String error) {

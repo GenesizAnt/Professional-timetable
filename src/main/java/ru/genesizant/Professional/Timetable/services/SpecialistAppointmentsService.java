@@ -20,12 +20,23 @@ public class SpecialistAppointmentsService {
         this.specialistAppointmentsRepository = specialistAppointmentsRepository;
     }
 
+    //ToDo возможно сделать через оптионал????
     public List<SpecialistAppointments> findAllAppointments() {
-        return specialistAppointmentsRepository.findAll();
+        List<SpecialistAppointments> all = specialistAppointmentsRepository.findAll();
+        if (all.isEmpty()) {
+            return List.of();
+        }
+        return all;
     }
 
+    //ToDo возможно сделать через оптионал????
     public List<SpecialistAppointments> findAppointmentsByVisitor(Long idVisitor, Long idSpecialist) {
-        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
+        List<SpecialistAppointments> appointments = specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
+        if (appointments.isEmpty()) {
+            return List.of();
+        }
+        return appointments;
+//        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
     }
 
     public void createNewAppointments(LocalDate toLocalDate, LocalTime toLocalTime, Person idSpecialist, Person idVisitor, Boolean isPrePaySpecialist, Boolean isPrePayVisitor) {
