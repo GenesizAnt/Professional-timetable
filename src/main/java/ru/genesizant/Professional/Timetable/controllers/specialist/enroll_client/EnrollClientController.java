@@ -138,21 +138,6 @@ public class EnrollClientController {
                 personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             }
             datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
-
-
-//            if (registeredStatus.get().equals(REGISTERED)) {
-//                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-//                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
-//                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
-//                        personService.findById((long) request.getSession().getAttribute("id")).get(),
-//                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
-//            } else if (registeredStatus.get().equals(UNREGISTERED)) {
-//                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-//                datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
-//                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
-//                        personService.findById((long) request.getSession().getAttribute("id")).get(),
-//                        personService.findById(personFullName.getId()).get(), Boolean.FALSE);
-//            }
             displayPage(model, request);
         } else {
             return encodeError("Для записи нужно выбрать клиента, время и дату записи");
@@ -190,7 +175,6 @@ public class EnrollClientController {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             }
-            //ToDo сделать добавление в БД Таблица Приемы
             displayPage(model, request);
 
         } else {
