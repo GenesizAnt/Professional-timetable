@@ -35,7 +35,7 @@ public class DatesAppointmentsService {
         this.objectMapper = objectMapper;
     }
 
-    //Добавить в БД доступные даты и время на будущее
+    //Добавить в БД доступные даты и время на будущее (заполнение календаря на будущий период)
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
@@ -119,7 +119,7 @@ public class DatesAppointmentsService {
         return sortedFreeSchedule;
     }
 
-    //Получить расписание в формате Map<String, String>
+    //Получить расписание в формате Map<String, String> где Map<Время, Статус доступности>
     private Map<String, String> getAvailableTime(String scheduleTime) {
 
         Map<String, String> freeSchedule = new HashMap<>();
@@ -237,14 +237,17 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Удалить полный День из доступных для выбора дат
     public void deleteVisitDate(LocalDate date) {
         datesAppointmentsRepository.deleteByVisitDate(date); //ToDo вернуть ошибку если неверные данные
     }
 
+    //Удалить Диапазон Дней из доступных для выбора дат
     public void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange) {
         datesAppointmentsRepository.deleteByVisitDateBetween(startDateRange, endDateRange); //ToDo вернуть ошибку если неверные данные
     }
 
+    //Удалить конкретное Время из доступного дня
     public void deleteTimeAdmission(LocalDate date, String selectedTimeAdmission) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -504,7 +507,7 @@ public class DatesAppointmentsService {
         return false;
     }
 
-    public boolean isBetweenSavedDate(String startDate, String endDate, Long id) {
+    public boolean isDateWithinRangeOfAppointments(String startDate, String endDate, Long id) {
         List<DatesAppointments> allVisitDatesBySpecialistId = datesAppointmentsRepository.findAllVisitDatesBySpecialistDateAppointmentsId(id);
         LocalDate startDateObject = LocalDate.parse(startDate);
         LocalDate endDateObject = LocalDate.parse(endDate);

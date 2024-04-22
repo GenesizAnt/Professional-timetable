@@ -22,9 +22,9 @@ public class JWTUtil {
     @Value("${jwt_secret}")
     private String secret;
 
+    //Генерация токена с жизненным циклом 60 минут, после клиенту нужно перелогиниться
     public String generateToken(String email) {
         Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
-//        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(30).toInstant());
 
         return JWT.create()
                 .withSubject("User details") //sub (subject) — определяет тему токена.

@@ -16,6 +16,7 @@ import java.io.IOException;
 @Controller
 public class ImageController {
 
+    //Метод, который запрашивает браузер, чтобы отобразить картинку, изначально настроен на картинку страницы регистрации
     @GetMapping("/img/{imageName}")
     @ResponseBody
     public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {

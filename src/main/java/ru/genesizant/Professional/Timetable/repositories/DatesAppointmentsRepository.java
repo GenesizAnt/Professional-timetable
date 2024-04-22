@@ -18,15 +18,18 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
     //Получить Конкретную дату и конкретного Спеца
     Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate date, long id);
 
+    //Удалить полный День из доступных для выбора дат
     @Transactional
     void deleteByVisitDate(LocalDate date);
 
+    //Удалить Диапазон Дней из доступных для выбора дат
     @Transactional
     void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange);
 
     @Transactional
     void deleteByVisitDateBefore(LocalDate date);
 
+    //Получить доступное время на конкретный день
     Optional<DatesAppointments> findByVisitDate(LocalDate date);
 
     List<DatesAppointments> findAllVisitDatesBySpecialistDateAppointmentsId(Long id);

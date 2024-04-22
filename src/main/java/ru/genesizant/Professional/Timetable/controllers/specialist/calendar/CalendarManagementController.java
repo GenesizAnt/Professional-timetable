@@ -43,6 +43,7 @@ public class CalendarManagementController {
         this.objectMapper = objectMapper;
     }
 
+    //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
     @GetMapping("/admission_calendar_view")
     public String addAdmissionCalendarView(Model model, HttpServletRequest request) {
 
@@ -57,7 +58,7 @@ public class CalendarManagementController {
         return "specialist/admission_calendar_view";
     }
 
-    // форма для автоматического заполнения календаря на будущий период
+    // Кнопка для автоматического заполнения календаря на будущий период
     @PostMapping("/admission_calendar_update")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request,
                                              @RequestParam("startDate") String startDate,
@@ -69,10 +70,10 @@ public class CalendarManagementController {
             return ERROR_LOGIN;
         }
 
-        Optional<Person> personSpecialist = getLoggedInPerson(request);
+        Optional<Person> personSpecialist = findLoggedInPerson(request);
 
         if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
-            if (datesAppointmentsService.isBetweenSavedDate(startDate, endDate, personSpecialist.get().getId())) {
+            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, personSpecialist.get().getId())) {
                 return encodeError("Нельзя добавить календарь в уже существующих датах");
             } else {
                 datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(),
@@ -90,7 +91,7 @@ public class CalendarManagementController {
         return CALENDAR_VIEW_REDIRECT;
     }
 
-    //удалить полный День из календаря доступных для выбора дат
+    //Удалить полный День из доступных для выбора дат
     @PostMapping("/dateFormDelete")
     public String selectedDateFormDelete(Model model, HttpServletRequest request,
                                          @RequestParam("selectedDate") Optional<LocalDate> selectedDate) {
@@ -108,7 +109,7 @@ public class CalendarManagementController {
     }
 
 
-    //удалить Диапазон Дней из календаря доступных для выбора дат
+    //Удалить Диапазон Дней из доступных для выбора дат
     @PostMapping("/dateRangeFormDelete")
     public String selectedDateRangeFormDelete(Model model, HttpServletRequest request,
                                               @RequestParam("startDateRange") Optional<LocalDate> startDateRange,
@@ -126,7 +127,7 @@ public class CalendarManagementController {
         return CALENDAR_VIEW_REDIRECT;
     }
 
-    //удалить конкретное Время из календаря доступное для выбора
+    //Удалить конкретное Время из доступного дня
     @PostMapping("/timeAdmissionFormDelete")
     public String selectedTimeAdmissionFormDelete(Model model, HttpServletRequest request,
                                                   @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
@@ -144,7 +145,7 @@ public class CalendarManagementController {
         return CALENDAR_VIEW_REDIRECT;
     }
 
-    //удалить Диапазон Времени из календаря доступного для выбора
+    //Удалить диапазон Времени из доступного дня
     @PostMapping("/timeAdmissionRangeFormDelete")
     public String selectedTimeAdmissionRangeFormDelete(Model model, HttpServletRequest request,
                                                        @RequestParam("startTimeAdmission") String startTimeAdmission,
@@ -296,7 +297,7 @@ public class CalendarManagementController {
 //        model.addAttribute("dates", sortedFreeSchedule);
     }
 
-    private Optional<Person> getLoggedInPerson(HttpServletRequest request) {
+    private Optional<Person> findLoggedInPerson(HttpServletRequest request) {
         return Optional.ofNullable((Long) request.getSession().getAttribute("id"))
                 .flatMap(personService::findById);
     }
