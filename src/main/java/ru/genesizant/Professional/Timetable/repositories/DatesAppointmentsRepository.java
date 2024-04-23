@@ -26,6 +26,7 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
     @Transactional
     void deleteByVisitDateBetween(LocalDate startDateRange, LocalDate endDateRange);
 
+    //Удалить все Даты из календаря до указанной даты
     @Transactional
     void deleteByVisitDateBefore(LocalDate date);
 

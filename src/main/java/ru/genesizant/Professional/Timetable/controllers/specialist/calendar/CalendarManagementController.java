@@ -70,13 +70,13 @@ public class CalendarManagementController {
             return ERROR_LOGIN;
         }
 
-        Optional<Person> personSpecialist = findLoggedInPerson(request);
+        Person personSpecialist = findLoggedInPerson(request);
 
         if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
-            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, personSpecialist.get().getId())) {
+            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, personSpecialist.getId())) {
                 return encodeError("Нельзя добавить календарь в уже существующих датах");
             } else {
-                datesAppointmentsService.addFreeDateSchedule(personSpecialist.get(),
+                datesAppointmentsService.addFreeDateSchedule(personSpecialist,
                                                             startDate,
                                                             endDate,
                                                             startTime,
@@ -136,7 +136,7 @@ public class CalendarManagementController {
             return ERROR_LOGIN;
         }
 
-        if (selectedTimeAdmission.equals("") && dateOne.isPresent()) {
+        if (!selectedTimeAdmission.equals("") && dateOne.isPresent()) {
             datesAppointmentsService.deleteTimeAdmission(dateOne.get(), selectedTimeAdmission);
             displayPage(model, request);
         } else {
@@ -155,7 +155,7 @@ public class CalendarManagementController {
             return ERROR_LOGIN;
         }
 
-        if (startTimeAdmission.equals("") && endTimeAdmission.equals("") && dateOne.isPresent()) {
+        if (!startTimeAdmission.equals("") && !endTimeAdmission.equals("") && dateOne.isPresent()) {
             datesAppointmentsService.deleteTimeRangeAdmission(dateOne.get(), startTimeAdmission, endTimeAdmission);
             displayPage(model, request);
         } else {
@@ -164,7 +164,7 @@ public class CalendarManagementController {
         return CALENDAR_VIEW_REDIRECT;
     }
 
-    //изменить статус доступности конкретного Времени из календаря доступного для выбора
+    //Изменить статус доступности конкретного Времени из календаря доступного для выбора
     @PostMapping("/setTimeAvailabilityStatus")
     public String setTimeAvailabilityStatus(Model model, HttpServletRequest request,
                                             @RequestParam("date") Optional<LocalDate> date,
@@ -183,7 +183,7 @@ public class CalendarManagementController {
         return CALENDAR_VIEW_REDIRECT;
     }
 
-    //изменить статус доступности Диапазона Времени из календаря доступного для выбора
+    //Изменить статус доступности Диапазона Времени из календаря доступного для выбора
     @PostMapping("/setRangeTimeAvailabilityStatus")
     public String setRangeTimeAvailabilityStatus(Model model, HttpServletRequest request,
                                                  @RequestParam("date") Optional<LocalDate> date,
@@ -261,13 +261,7 @@ public class CalendarManagementController {
     }
 
     private void displayPage(Model model, HttpServletRequest request) {
-//        Map<LocalDate, Map<String, String>> sortedFreeSchedule =
-//                datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-
-
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
-//        String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
-
         List<String> allCalendar = new ArrayList<>();
         LocalDate now = LocalDate.now();
         List<LocalDate> nearestDates = schedule.keySet().stream()
@@ -282,24 +276,17 @@ public class CalendarManagementController {
             }
         }
 
-//        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-
+        // allCalendar каждый элемент это строковое предоставление массива данных определенного дня в формате [["23.04.2024","Вторник"],["Время","Бронь","Статус"],["10:00","---","Доступно".......
         for (int i = 0; i < allCalendar.size(); i++) {
             model.addAttribute("day" + i, allCalendar.get(i));
         }
-
-
-//        model.addAttribute("name", request.getSession().getAttribute("name"));
-//        model.addAttribute("dates", sortedFreeSchedule);
-
-
         model.addAttribute("name", request.getSession().getAttribute("name"));
-//        model.addAttribute("dates", sortedFreeSchedule);
     }
 
-    private Optional<Person> findLoggedInPerson(HttpServletRequest request) {
+    private Person findLoggedInPerson(HttpServletRequest request) {
         return Optional.ofNullable((Long) request.getSession().getAttribute("id"))
-                .flatMap(personService::findById);
+                .flatMap(personService::findById)
+                .orElseThrow(() -> new RuntimeException("Person not found"));
     }
 
     private String encodeError(String error) {

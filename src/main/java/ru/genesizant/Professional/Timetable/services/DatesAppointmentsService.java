@@ -264,6 +264,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Удалить диапазон Времени из доступного дня
     public void deleteTimeRangeAdmission(LocalDate date, String startTimeAdmission, String endTimeAdmission) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -290,6 +291,7 @@ public class DatesAppointmentsService {
         return time.compareTo(startTimeAdmission) >= 0 && time.compareTo(endTimeAdmission) <= 0;
     }
 
+    //Установить указанный статус консультации на конкретную дату и время
     public void setStatusTimeAdmission(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -306,6 +308,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Установить указанный статус консультации на диапазон дат и время
     public void setStatusRangeTimeAdmission(LocalDate date, String startTimeAdmission, String endTimeStartAdmission, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -329,6 +332,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    // Получить встречи, которые в рамках указанного диапазона времени
     private List<String> getListTimeAdmission(String startTimeAdmission, String endTimeStartAdmission, Map<String, String> time) {
         List<String> listTimeAdmission = new ArrayList<>();
         for (Map.Entry<String, String> entry : time.entrySet()) {
@@ -340,10 +344,12 @@ public class DatesAppointmentsService {
         return listTimeAdmission;
     }
 
+    //Удалить все Даты из календаря до указанной даты
     public void clearDateVisitBefore(LocalDate date) {
         datesAppointmentsRepository.deleteByVisitDateBefore(date);
     }
 
+    //Добавить время приема в определеный день
     public void addTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -360,6 +366,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Добавить диапазон времени приема в определеный день
     public void addRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, String intervalHour, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -458,8 +465,9 @@ public class DatesAppointmentsService {
         return fiveNearestDates;
     }
 
+    // Получение данных по конкретной дате в виде двумерного массива, необходимо для корректного преобразования в json
     public String[][] getCalendarForClient(String namePerson, LocalDate date, Map<String, String> json) {
-        String[][] calendarForClient = new String[10][2];
+        String[][] calendarForClient = new String[20][2];
         int count = 2;
 //        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
         calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
