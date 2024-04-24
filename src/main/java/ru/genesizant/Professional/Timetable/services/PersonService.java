@@ -62,6 +62,7 @@ public class PersonService {
         }
     }
 
+    // найти запись по ФИО
     public Optional<Person> findByFullName(String username, String surname, String patronymic) {
         return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
     }

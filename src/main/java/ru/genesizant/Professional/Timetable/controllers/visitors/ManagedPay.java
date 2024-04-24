@@ -39,6 +39,7 @@ public class ManagedPay {
         this.specialistsAndClientService = specialistsAndClientService;
     }
 
+    // Отображение страницы управление оплатами
     @GetMapping("/managed_pay")
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -49,6 +50,7 @@ public class ManagedPay {
         return "visitors/managed_pay";
     }
 
+    // Кнопка Подтверждение оплаты
     @PostMapping("/make_payment")
     public String makePayment(Model model, HttpServletRequest request,
                                          @RequestParam("agreementId") Optional<@NotNull String> agreementId) {

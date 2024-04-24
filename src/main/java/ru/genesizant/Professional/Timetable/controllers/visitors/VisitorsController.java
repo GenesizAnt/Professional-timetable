@@ -59,7 +59,7 @@ public class VisitorsController {
 
     //ToDo в разделе Мой профиль - добавить окно с выбором специалистов за которыми закреплен клиент, чтобы клиент мог переключаться между ними (специалистами)
 
-    //отображение меню специалиста за которым закреплен клиент
+    //Отображение меню специалиста за которым закреплен клиент
     @GetMapping("/my_specialist_menu") //ToDo добавить в конфиг - доступ только для авторизированных пользователей
     public String getMySpecialistMenu(Model model, HttpServletRequest request) {
 
@@ -101,6 +101,7 @@ public class VisitorsController {
         return "visitors/full_calendar";
     }
 
+    //Записаться через кнопку в таблице
     @PostMapping("/appointment_booking_table")
     public String setAppointmentBookingTable(Model model, HttpServletRequest request,
                                              @RequestBody Map<String, String> applicationFromVisitor) {
@@ -129,16 +130,9 @@ public class VisitorsController {
         }
         return ENROLL_VIEW_REDIRECT;
     }
-//
-//    @GetMapping("/refresh")
-//    public String getRefresh(Model model, HttpServletRequest request) {
-//        if (!jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
-//        }
-//        displayPage(model, request);
-//        return "redirect:/visitors/my_specialist_menu";
-//    }
 
+    //Записаться через кнопку
+    //ToDo Посмотреть дублирующий код с предыдущ
     @PostMapping("/appointment_booking_form")
     public String setAppointmentBookingForm(Model model, HttpServletRequest request,
                                             @RequestParam("selectedSpecialistId") String selectedSpecialistId,
@@ -161,6 +155,7 @@ public class VisitorsController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    // Отменить запись
     @PostMapping("/cancellingBookingVisitor")
     public String cancellingBookingVisitor(Model model, HttpServletRequest request,
                                     @RequestParam("selectedSpecialistId") String selectedSpecialistId,

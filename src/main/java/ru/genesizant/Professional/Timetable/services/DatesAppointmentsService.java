@@ -416,6 +416,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Отмена записи ранее записанного клиента
     public void cancellingBookingAppointments(LocalDateTime meeting, Long specialistId) {
 
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
@@ -447,6 +448,7 @@ public class DatesAppointmentsService {
         }
     }
 
+    //Получить 5 ближайших дат из существующего расписания
     public List<String> getFiveNearestDates(Map<LocalDate, Map<String, String>> schedule, String personFullName) {
         List<String> fiveNearestDates = new ArrayList<>();
         LocalDate now = LocalDate.now();

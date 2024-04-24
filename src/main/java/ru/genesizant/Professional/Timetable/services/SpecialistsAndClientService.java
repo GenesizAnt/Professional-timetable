@@ -51,6 +51,7 @@ public class SpecialistsAndClientService {
         return specialistsAndClientRepository.findBySpecialistListAndAndVisitorList(idSpecialist, idVisitor);
     }
 
+    // Найти пару Спец-Клиент по ИД клиента
     public Optional<SpecialistsAndClient> findByVisitorListId(Long idVisitor) {
         return specialistsAndClientRepository.findByVisitorListId(idVisitor);
     }

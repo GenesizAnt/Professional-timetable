@@ -35,6 +35,7 @@ public class DebtorsController {
         this.specialistAppointmentsService = specialistAppointmentsService;
     }
 
+    //Отображение страницы для подтверждения оплат от клиентов
     @GetMapping("/proof_clients")
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -45,6 +46,7 @@ public class DebtorsController {
         return "specialist/list_debtors";
     }
 
+    //Кнопка для подтверждения оплаты по конкретному клиенту
     @PostMapping("/agreement")
     public String agreementAppointment(Model model, HttpServletRequest request,
                                        @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
@@ -60,6 +62,7 @@ public class DebtorsController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    //Кнопка для ОТМЕНЫ подтверждения оплаты по конкретному клиенту
     @PostMapping("/no_agreement")
     public String noAgreementAppointment(Model model, HttpServletRequest request,
                                        @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
@@ -74,21 +77,6 @@ public class DebtorsController {
         }
         return ENROLL_VIEW_REDIRECT;
     }
-
-//    @PostMapping("/maybe_pay")
-//    public String maybePayAppointment(Model model, HttpServletRequest request,
-//                                         @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
-//        if (!jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
-//        }
-//        if (agreementId.isPresent() && !agreementId.get().equals("")) {
-//            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
-//            displayPage(model, request);
-//        } else {
-//            return ERROR_LOGIN;
-//        }
-//        return ENROLL_VIEW_REDIRECT;
-//    }
 
     private void displayPage(Model model, HttpServletRequest request) {
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();

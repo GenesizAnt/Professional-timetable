@@ -61,7 +61,6 @@ public class EnrollClientController {
     }
 
     //Отображение страницы для Записи Клиента
-    //передает на Вью - Имя спеца, Список зарег и незарег пользователей, Календарь
     @GetMapping("/enroll_page")
     public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request) { //ToDo showEnrollPage
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -93,7 +92,6 @@ public class EnrollClientController {
             return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
         return "specialist/enroll_client_view";
-//        return ENROLL_VIEW_REDIRECT;
     }
 
     //Специалист создает незарегистрированного пользователя
@@ -116,7 +114,7 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
-    //Запись клиента на выбранную дату
+    //Запись клиента на выбранную дату по кнопке
     @PostMapping("/newDatesAppointments")
     public String newDatesAppointments(Model model, HttpServletRequest request,
                                        @RequestParam("meeting") Optional<LocalDateTime> meeting,
@@ -131,6 +129,7 @@ public class EnrollClientController {
             PersonFullName personFullName = null;
             if (registeredStatus.get().equals(REGISTERED)) {
                 personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                //ToDo упростить метод ужас как много передается в аргументах
                 specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
                         personService.findById((long) request.getSession().getAttribute("id")).get(),
                         personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
@@ -146,6 +145,7 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    //Запись клиента на выбранную дату из таблицы
     @PostMapping("/newDatesAppointmentsTable")
     public String newDatesAppointmentsTable(Model model, HttpServletRequest request,
                                             @RequestBody Map<String, String> applicationFromSpecialist) {
@@ -156,15 +156,11 @@ public class EnrollClientController {
         String selectedCustomerId = applicationFromSpecialist.get("selectedCustomerId");
         String registeredStatus = applicationFromSpecialist.get("registeredStatus");
         LocalDateTime meetingDateTime = parseInLocalDataTime(applicationFromSpecialist);
-//        String meetingDate = applicationFromSpecialist.get("meetingDate");
-//        String meetingTime = applicationFromSpecialist.get("meetingTime");
-//        LocalDate date = LocalDate.parse(meetingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-//        LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
-//        LocalDateTime meeting = date.atTime(time);
 
         if (selectedCustomerId != null && registeredStatus != null &&
                 !selectedCustomerId.equals("") && !registeredStatus.equals("")) { //ToDo сделать другую проверку
 
+            //ToDo насколько дублируется код из предыдущ метода?
             if (registeredStatus.equals(REGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
@@ -203,16 +199,13 @@ public class EnrollClientController {
     }
 
 
+    // Подтверждение записи встречи, которую инициировал клиент
     @PostMapping("/recordingConfirmed")
-    public String recordingConfirmed(Model model, HttpServletRequest request,
-                                     @RequestBody Map<String, String> recordingIsConfirmed) {
+    public String recordingConfirmed(HttpServletRequest request, @RequestBody Map<String, String> recordingIsConfirmed) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
-
-
         PersonFullName personFullName = getPersonFullName(recordingIsConfirmed.get("meetingPerson"));
-//        Map<String, String> fioPerson = fioParser(recordingIsConfirmed.get("meetingPerson"));
         Map<String, String> identificationMeetingPerson = getIdentificationMeetingPerson(personFullName);
         LocalDateTime meetingDateTime = parseInLocalDataTime(recordingIsConfirmed);
 
@@ -249,6 +242,7 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    // Получить ФИО из запроса, в таблице ФИО хранится одной строкой
     private PersonFullName getPersonFullName(String meetingPerson) {
         PersonFullName personFullName = new PersonFullName();
         String[] fioArray = meetingPerson.split(" ");
@@ -260,6 +254,7 @@ public class EnrollClientController {
         return personFullName;
     }
 
+    // ОПАСНЫЙ МЕТОД ищет ИД специалиста по ФИО - опасно т.к. может быть тезка
     private Map<String, String> getIdentificationMeetingPerson(PersonFullName fioPerson) {
         Map<String, String> identityVisitor = new HashMap<>();
         Optional<Person> person = personService.findByFullName(
@@ -339,6 +334,7 @@ public class EnrollClientController {
 //        model.addAttribute("dates", sortedFreeSchedule);
     }
 
+    //Получение клиента для отображения на странице
     private void handleCustomerSelection(Model model, Optional<@NotNull String> clientId, StatusRegisteredVisitor registeredStatus) {
         if (registeredStatus.equals(REGISTERED)) {
             PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(Long.valueOf(clientId.get())), PersonFullName.class);
@@ -366,6 +362,7 @@ public class EnrollClientController {
         return meeting.isPresent() && !selectedCustomerId.equals("") && registeredStatus.isPresent();
     }
 
+    // Получить LocalDateTime из Мар
     private LocalDateTime parseInLocalDataTime(Map<String, String> dataTime) {
         String meetingDate = dataTime.get("meetingDate");
         String meetingTime = dataTime.get("meetingTime");
@@ -373,6 +370,4 @@ public class EnrollClientController {
         LocalTime time = LocalTime.parse(meetingTime, DateTimeFormatter.ofPattern("HH:mm"));
         return date.atTime(time);
     }
-
-    //ToDo сделать форму для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов
 }

@@ -34,7 +34,7 @@ public class SpecialistController {
 
 //            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
 
-            model.addAttribute("name", request.getSession().getAttribute("name"));
+//            model.addAttribute("name", request.getSession().getAttribute("name"));
 //            model.addAttribute("specialists", specialists);
 //            (long) request.getSession().getAttribute("id")
 

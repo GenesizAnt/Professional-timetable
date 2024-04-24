@@ -27,6 +27,7 @@ public class UnregisteredPersonService {
         return unregisteredPersonRepository.findById(id);
     }
 
+    //Создание незарегистрированного пользователя
     public void addNewUnregisteredPerson(String username, String surname, String patronymic, Person specialist) {
         UnregisteredPerson newUnregisteredPerson = new UnregisteredPerson();
         newUnregisteredPerson.setUsername(username);

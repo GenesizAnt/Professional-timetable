@@ -30,6 +30,7 @@ public class SpecialistAppointmentsService {
     }
 
     //ToDo возможно сделать через оптионал????
+    //ToDo возможно переименовать????
     public List<SpecialistAppointments> findAppointmentsByVisitor(Long idVisitor, Long idSpecialist) {
         List<SpecialistAppointments> appointments = specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
         if (appointments.isEmpty()) {
@@ -39,6 +40,7 @@ public class SpecialistAppointmentsService {
 //        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
     }
 
+    //Создать встречу
     public void createNewAppointments(LocalDate toLocalDate, LocalTime toLocalTime, Person idSpecialist, Person idVisitor, Boolean isPrePaySpecialist, Boolean isPrePayVisitor) {
         SpecialistAppointments specialistAppointments = new SpecialistAppointments();
         specialistAppointments.setVisitDate(toLocalDate);
@@ -50,12 +52,14 @@ public class SpecialistAppointmentsService {
         specialistAppointmentsRepository.save(specialistAppointments);
     }
 
+    // Подтверждение или Отмена оплаты по конкретному клиенту - кнопка специалиста
     public void agreementPrePay(Long idAgreement, Boolean isPrePay) {
         Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
         appointments.get().setPrepayment(isPrePay);
         specialistAppointmentsRepository.save(appointments.get());
     }
 
+    // Подтверждение или Отмена оплаты - кнопка клиента
     public void agreementVisitorPrePay(Long idAgreement, Boolean isPrePay) {
         Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
         appointments.get().setPrepaymentVisitor(isPrePay);
