@@ -2,11 +2,13 @@ package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Comment("Заметки специалиста по проведенным приемам")
 @Entity
 @Table(name = "specialistnotes")
 public class SpecialistNotes {

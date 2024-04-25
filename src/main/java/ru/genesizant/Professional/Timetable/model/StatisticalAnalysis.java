@@ -2,12 +2,14 @@ package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Comment("Статистика - пока показывает только время")
 @Entity
 @Table(name = "statisticalanalysis")
 public class StatisticalAnalysis {

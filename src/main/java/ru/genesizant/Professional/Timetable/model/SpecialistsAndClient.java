@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.Comment;
 
 import java.util.List;
 
+@Comment("Связка Специлист-Клиент")
 @Entity
 @Table(name = "specialistsandclient")
 public class SpecialistsAndClient {

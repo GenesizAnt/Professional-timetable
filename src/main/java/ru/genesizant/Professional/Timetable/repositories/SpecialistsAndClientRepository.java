@@ -11,12 +11,10 @@ import java.util.Optional;
 @Repository
 public interface SpecialistsAndClientRepository extends JpaRepository<SpecialistsAndClient, Long> {
 
+    //Список закрепленных за специалистом клиентов
     List<SpecialistsAndClient> findAllBySpecialistListIdOrderById(long id);
 
-    Optional<SpecialistsAndClient> findBySpecialistListAndAndVisitorList(Person idSpecialist, Person idVisitor);
-
-//    Optional<SpecialistsAndClient> findSpecialistsAndClientByVisitorList(Person id);
-
+    // Найти пару Спец-Клиент по ИД клиента
     Optional<SpecialistsAndClient> findByVisitorListId(Long visitorId);
 
 }

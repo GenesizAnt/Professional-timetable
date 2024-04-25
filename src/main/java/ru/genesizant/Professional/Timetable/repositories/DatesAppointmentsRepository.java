@@ -33,5 +33,6 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
     //Получить доступное время на конкретный день
     Optional<DatesAppointments> findByVisitDate(LocalDate date);
 
+    //Найти все даты для приемов у специалиста
     List<DatesAppointments> findAllVisitDatesBySpecialistDateAppointmentsId(Long id);
 }

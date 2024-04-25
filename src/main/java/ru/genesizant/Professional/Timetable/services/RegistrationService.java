@@ -19,11 +19,6 @@ public class RegistrationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    @Autowired
-//    public RegistrationService(PeopleRepository peopleRepository) {
-//        this.peopleRepository = peopleRepository;
-//    }
-
     @Transactional
     public void register(Person person, String jwtToken) {
         person.setJwtToken(jwtToken);

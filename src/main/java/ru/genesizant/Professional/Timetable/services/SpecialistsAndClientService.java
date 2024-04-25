@@ -26,6 +26,7 @@ public class SpecialistsAndClientService {
         this.personService = personService;
     }
 
+    //Список закрепленных за специалистом клиентов
     public List<PersonFullName> getClientsBySpecialistList(long id) {
         List<PersonFullName> clientsBySpecialist = new ArrayList<>();
         List<SpecialistsAndClient> visitorList = specialistsAndClientRepository.findAllBySpecialistListIdOrderById(id);
@@ -33,9 +34,6 @@ public class SpecialistsAndClientService {
             clientsBySpecialist.add(
                     modelMapper.map(personService.findById(person.getVisitorList().getId()), PersonFullName.class)
             );
-
-//            Person person = this.modelMapper.map(personDTO, Person.class);
-//            PersonFullName personFullName = modelMapper.map(personService.findById(person.getVisitorList().getId()), PersonFullName.class);
         }
         return clientsBySpecialist;
     }
@@ -45,10 +43,6 @@ public class SpecialistsAndClientService {
         newAppointSpecialist.setVisitorList(personService.findById(visitorId).get());
         newAppointSpecialist.setSpecialistList(personService.findById(specialistId).get());
         specialistsAndClientRepository.save(newAppointSpecialist);
-    }
-
-    public Optional<SpecialistsAndClient> assignedToSpecialist(Person idSpecialist, Person idVisitor) {
-        return specialistsAndClientRepository.findBySpecialistListAndAndVisitorList(idSpecialist, idVisitor);
     }
 
     // Найти пару Спец-Клиент по ИД клиента

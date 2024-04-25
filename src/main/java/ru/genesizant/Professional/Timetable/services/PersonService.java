@@ -41,6 +41,7 @@ public class PersonService {
         return personRepository.findById(id);
     }
 
+    // Получить ФИО всех пользователей
     public List<PersonFullName> findAllPersonFullName() {
         List<PersonFullName> allUsers = new ArrayList<>();
         List<Person> allPerson = personRepository.findAll();
@@ -53,6 +54,7 @@ public class PersonService {
         return allUsers;
     }
 
+    //Установить роль пользователю
     public void setNewRoleForUser(Long clientId, String selectedRole) {
         Optional<Person> person = personRepository.findById(clientId);
         if (person.isPresent()) {
@@ -66,8 +68,4 @@ public class PersonService {
     public Optional<Person> findByFullName(String username, String surname, String patronymic) {
         return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
     }
-
-//    public Long getPersonByFullName(String username, String surname, String patronymic) {
-//        return personRepository.findIdByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
-//    }
 }

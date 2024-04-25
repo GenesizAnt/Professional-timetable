@@ -39,7 +39,7 @@ public class PersonValidator implements Validator {
             errors.rejectValue("password", "", "Обязательно должен быть пароль!"); //ToDo установить правило пароля, не менее 4 символов например
         }
         if (personService.loadUserByEmail(person.getEmail()).isPresent()) {
-            errors.rejectValue("email", "", "Человек с таким email уже существует");
+            errors.rejectValue("email", "", "Пользователь с таким email уже существует");
         }
     }
 }

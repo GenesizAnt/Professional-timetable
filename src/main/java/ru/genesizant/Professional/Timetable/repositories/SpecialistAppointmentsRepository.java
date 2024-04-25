@@ -8,8 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SpecialistAppointmentsRepository extends JpaRepository<SpecialistAppointments, Long> {
-//    List<SpecialistAppointments> findByVisitorAppointmentsIdAndSpecialistAppointmentsId(Long visitorId, Long specialistId);
-//    List<SpecialistAppointments> findBySpecialist_appointmentsIdOrderByIdAndVisitor_appointmentsIdOrderById(Long visitorId, Long specialistId);
 
+    // Все приемы которые есть у пары Специалист+Клиент
     List<SpecialistAppointments> findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(Long visitorId, Long specialistId);
 }

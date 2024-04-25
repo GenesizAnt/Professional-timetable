@@ -5,10 +5,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.Comment;
 
 import java.time.Duration;
 import java.util.List;
 
+@Comment("Услуги специалиста")
 @Entity
 @Table(name = "professionalservices")
 public class ProfessionalServices {
@@ -27,6 +29,7 @@ public class ProfessionalServices {
     @Column(name = "shortdescription")
     private String shortDescription;
 
+    @Comment("Длительность услуги")
     @Min(value = 0)
     @Column(name = "durationservice")     //ToDo https://qaa-engineer.ru/kak-ispolzovat-tip-interval-v-postgresql/
     private Duration durationService;

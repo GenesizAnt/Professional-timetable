@@ -48,7 +48,6 @@ public class DatesAppointmentsService {
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour, status);
 
         for (int i = 0; i <= daysBetween; i++) {
-
             Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
             if (existingRecord.isPresent()) {
                 // обновление существующей записи
@@ -66,7 +65,8 @@ public class DatesAppointmentsService {
 
 
     //ToDo сделать утилитный класс для методов этого сервиса?
-    //Получить возможное расписание на день "с" "по" с определенным интервалом в формате "Время":"Статус"
+    //Парсинг расписания в Map<String, String> из заданных параметров даты/время/интервал
+    // Расписание на день "с" "по" с определенным интервалом в формате "Время":"Статус"
     private Map<String, String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
         LocalTime startTime = LocalTime.parse(startTimeWork);
         LocalTime endTime = LocalTime.parse(endTimeWork);
@@ -115,7 +115,6 @@ public class DatesAppointmentsService {
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 
-
         return sortedFreeSchedule;
     }
 
@@ -147,10 +146,6 @@ public class DatesAppointmentsService {
                         String inputName = NEED_CONFIRMATION.getStatus() + " : " + jsonNodeInput.get(fieldName).asText();
                         freeSchedule.put(key, inputName);
                     }
-//                    if (jsonNodeInput.asToken().equals())
-//                    String inputName = RESERVED.getStatus() + " : " + jsonNodeInput.get(RESERVED.getStatus()).asText();
-//                    freeSchedule.put(key, inputName);
-//                    freeSchedule.put(key, nestedValue);
                 }
             }
         } catch (Exception e) {
@@ -191,7 +186,7 @@ public class DatesAppointmentsService {
         return sortedFreeSchedule;
     }
 
-    //Получить расписание в формате Map<String, String>
+    //Получить расписание в формате Map<String, String> для клиента
     private Map<String, String> getAvailableTimeForVisitor(String scheduleTime, String personFullNameRegistered) {
 
         Map<String, String> freeSchedule = new HashMap<>();
@@ -349,7 +344,7 @@ public class DatesAppointmentsService {
         datesAppointmentsRepository.deleteByVisitDateBefore(date);
     }
 
-    //Добавить время приема в определеный день
+    //Добавить время приема в определенный день
     public void addTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -381,35 +376,24 @@ public class DatesAppointmentsService {
 
     //Записать(обозначить как забронированное время) Клиента на прием
     public void enrollVisitorNewAppointments(LocalDateTime meeting, PersonFullName personFullName, Long specialistId, StatusPerson statusPerson) {
-
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
-
         if (datesAppointments.isPresent()) {
             String scheduleTime = datesAppointments.get().getScheduleTime();
             try {
                 // Преобразование JSON-строки в объект JsonNode
                 JsonNode jsonNode = objectMapper.readTree(scheduleTime);
-
                 // создаем новый объект ObjectNode для замены значения
                 ObjectNode objectNode = objectMapper.createObjectNode();
-
                 switch (statusPerson) {
                     case VISITOR -> objectNode.put(NEED_CONFIRMATION.getStatus(), personFullName.toString());
                     case SPECIALIST -> objectNode.put(CONFIRMED.getStatus(), personFullName.toString());
                 }
-
-//                objectNode.put(RESERVED.getStatus(), personFullName.toString());
-
                 // заменяем значение в объекте JsonNode
                 ((ObjectNode) jsonNode).set(String.valueOf(meeting.toLocalTime()), objectNode);
-
                 // преобразуем объект JsonNode обратно в строку JSON
                 String updatedScheduleTime = objectMapper.writeValueAsString(jsonNode);
-
                 datesAppointments.get().setScheduleTime(updatedScheduleTime);
-
                 datesAppointmentsRepository.save(datesAppointments.get());
-
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -418,30 +402,18 @@ public class DatesAppointmentsService {
 
     //Отмена записи ранее записанного клиента
     public void cancellingBookingAppointments(LocalDateTime meeting, Long specialistId) {
-
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
-
         if (datesAppointments.isPresent()) {
             String scheduleTime = datesAppointments.get().getScheduleTime();
             try {
                 // Преобразование JSON-строки в объект JsonNode
                 JsonNode jsonNode = objectMapper.readTree(scheduleTime);
-
-//                ObjectNode objectNode = objectMapper.createObjectNode();
-//
-//                objectNode.put(String.valueOf(meeting.toLocalTime()), AVAILABLE.getStatus());
-
                 ((ObjectNode) jsonNode).remove(String.valueOf(meeting.toLocalTime()));
-
                 ((ObjectNode) jsonNode).put(String.valueOf(meeting.toLocalTime()), AVAILABLE.getStatus());
-
                 // преобразуем объект JsonNode обратно в строку JSON
                 String updatedScheduleTime = objectMapper.writeValueAsString(jsonNode);
-
                 datesAppointments.get().setScheduleTime(updatedScheduleTime);
-
                 datesAppointmentsRepository.save(datesAppointments.get());
-
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -470,10 +442,9 @@ public class DatesAppointmentsService {
     // Получение данных по конкретной дате в виде двумерного массива, необходимо для корректного преобразования в json
     public String[][] getCalendarForClient(String namePerson, LocalDate date, Map<String, String> json) {
         String[][] calendarForClient = new String[20][2];
-        int count = 2;
-//        String dayOfWeekInRussian = getRusDayWeek(date.getDayOfWeek().name());
-        calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name());
+        calendarForClient[0][0] = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")); // первая строка таблицы - дата
+        calendarForClient[0][1] = getRusDayWeek(date.getDayOfWeek().name()); // вторая строка таблицы - день недели
+        int count = 2; // третья строка таблицы и далее - заполнение таблицы с третьей строки
         //ToDo попробовать такой вариант, только решить вопрос первой маленькой буквы LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("ru"))
         calendarForClient[1] = new String[]{"Время", "Бронь", "Статус"};
         Map<String, String> sortedScheduleMap = new TreeMap<>(json);
@@ -498,6 +469,7 @@ public class DatesAppointmentsService {
                 .toArray(String[][]::new);
     }
 
+    //ToDo Удалить??
     public boolean isCheckAvailableCancellingBooking(LocalDateTime meeting, String personFullNameRegistered, Long specialistId) {
 
         Optional<DatesAppointments> datesAppointments = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(meeting.toLocalDate(), specialistId);
@@ -517,6 +489,7 @@ public class DatesAppointmentsService {
         return false;
     }
 
+    //Проверяет переданные даты от специалиста для создания расписания, на пересечение уже созданного расписания
     public boolean isDateWithinRangeOfAppointments(String startDate, String endDate, Long id) {
         List<DatesAppointments> allVisitDatesBySpecialistId = datesAppointmentsRepository.findAllVisitDatesBySpecialistDateAppointmentsId(id);
         LocalDate startDateObject = LocalDate.parse(startDate);

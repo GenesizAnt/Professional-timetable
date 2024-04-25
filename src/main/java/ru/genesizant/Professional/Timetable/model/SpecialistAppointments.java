@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+@Comment("Записи приемов специалиста")
 @Entity
 @Table(name = "specialistappointments")
 public class SpecialistAppointments {
@@ -36,8 +38,9 @@ public class SpecialistAppointments {
     @Column(name = "consultation_successful")
     private boolean consultationSuccessful;
 
+    @Comment("Первичное или вторичное посещение")
     @Column(name = "visit_type")
-    private String visitType; //первичное или вторичное
+    private String visitType;
 
     @Column(name = "visit_date")
     private LocalDate visitDate;
@@ -45,12 +48,15 @@ public class SpecialistAppointments {
     @Column(name = "appointmenttime")
     private LocalTime appointmentTime;
 
+    @Comment("Стоимость консультации")
     @Column(name = "consultation_fee")
     private BigDecimal consultationFee;
 
+    @Comment("Предоплата отмеченная специалистом")
     @Column(name = "prepayment")
     private boolean prepayment;
 
+    @Comment("Предоплата отмеченная клиентом")
     @Column(name = "prepaymentvisitor")
     private boolean prepaymentVisitor;
 

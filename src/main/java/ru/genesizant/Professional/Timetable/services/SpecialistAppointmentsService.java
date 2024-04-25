@@ -31,6 +31,8 @@ public class SpecialistAppointmentsService {
 
     //ToDo возможно сделать через оптионал????
     //ToDo возможно переименовать????
+    //ToDo не оптимальный запрос! Каждый раз тянутся ВСЕ приемы, а нужно проверять еще не состоявшиеся
+    // Все приемы которые есть у пары Специалист+Клиент
     public List<SpecialistAppointments> findAppointmentsByVisitor(Long idVisitor, Long idSpecialist) {
         List<SpecialistAppointments> appointments = specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
         if (appointments.isEmpty()) {

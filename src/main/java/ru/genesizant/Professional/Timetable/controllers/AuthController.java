@@ -60,7 +60,6 @@ public class AuthController {
         }
 
         String jwtToken = jwtUtil.generateToken(person.getEmail());
-        System.out.println(jwtToken); //ToDo временный код для проверки
         session.setAttribute("jwtToken", jwtToken); // ToDo добавить в форму регистрации зарегистрироваться как специалист
 
         registrationService.register(person, jwtToken);
@@ -105,14 +104,9 @@ public class AuthController {
                 return "redirect:/auth/login";
             }
         }
-
-//        return "redirect:/visitors/start_menu_visitor";
     }
-
     //ToDo lesson 92 - правильно сделать отдельный метод @ExceptionHandler для возвращения кода и ошибки
 // return Map.of("message", "Incorrect credentials!"); //ToDo как создать свою ошибку 1:03:00 https://youtu.be/NIv9TFTSIlg?t=3933
-
-
     private Person concertPerson(PersonDTO personDTO) {
         Person person = this.modelMapper.map(personDTO, Person.class);
         person.setRole("ROLE_USER"); //ToDo это должно быть не здесь?? временная заглушка

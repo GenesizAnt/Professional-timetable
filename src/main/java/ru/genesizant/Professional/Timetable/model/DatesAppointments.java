@@ -1,9 +1,11 @@
 package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
 
+@Comment("Таблица открытых дат для записей у специалиста")
 @Entity
 @Table(name = "datesappointments")
 public class DatesAppointments {
