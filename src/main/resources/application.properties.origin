@@ -6,3 +6,6 @@ server.port=8080
 
 jwt_secret=
 error_login=redirect:/auth/login
+
+telegram.bot.name=
+telegram.bot.token=
