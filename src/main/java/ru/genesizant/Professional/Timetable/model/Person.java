@@ -84,8 +84,8 @@ public class Person {
     @OneToMany(mappedBy = "specialistUnregisteredPerson")
     private List<UnregisteredPerson> specialistUnregisteredPersonList;
 
-    @OneToMany(mappedBy = "personMainService")
-    private List<UserTelegram> usersTelegram;
+    @OneToOne(mappedBy = "personMainService")
+    private UserTelegram userTelegram;
 
     public Person() {
     }
@@ -174,6 +174,14 @@ public class Person {
         this.professionalServicesList = professionalServicesList;
     }
 
+    public UserTelegram getUserTelegram() {
+        return userTelegram;
+    }
+
+    public void setUserTelegram(UserTelegram userTelegram) {
+        this.userTelegram = userTelegram;
+    }
+
     public Long getId() {
         return id;
     }
@@ -246,21 +254,5 @@ public class Person {
         this.jwtToken = jwtToken;
     }
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "username='" + username + '\'' +
-                ", surname='" + surname + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 
-    public List<UserTelegram> getUsersTelegram() {
-        return usersTelegram;
-    }
-
-    public void setUsersTelegram(List<UserTelegram> usersTelegram) {
-        this.usersTelegram = usersTelegram;
-    }
 }

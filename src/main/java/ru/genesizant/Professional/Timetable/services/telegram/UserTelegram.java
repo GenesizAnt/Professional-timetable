@@ -21,7 +21,10 @@ public class UserTelegram {
     @Column(name = "email")
     private String email;
 
-    @ManyToOne
+    @Column(name = "role")
+    private String role;
+
+    @OneToOne
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person personMainService;
 
@@ -75,5 +78,13 @@ public class UserTelegram {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
