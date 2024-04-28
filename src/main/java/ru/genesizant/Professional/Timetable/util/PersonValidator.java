@@ -38,13 +38,8 @@ public class PersonValidator implements Validator {
         if (person.getPassword() == null) {
             errors.rejectValue("password", "", "Обязательно должен быть пароль!"); //ToDo установить правило пароля, не менее 4 символов например
         }
-        if (personService.loadUserByEmail(person.getEmail()).isPresent()) {
+        if (personService.findByEmail(person.getEmail()).isPresent()) {
             errors.rejectValue("email", "", "Пользователь с таким email уже существует");
         }
     }
 }
-
-
-//        Optional<Person> person1 = peopleService.loadUserByUsername(person.getUsername());
-//        String username = person1.get().getUsername();
-//        System.out.println(username);

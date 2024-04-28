@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.dto;
+package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

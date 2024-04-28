@@ -23,7 +23,7 @@ public class PersonService {
         this.modelMapper = modelMapper;
     }
 
-    public Optional<Person> loadUserByEmail(String email) {
+    public Optional<Person> findByEmail(String email) {
         return personRepository.findByEmail(email);
     }
 

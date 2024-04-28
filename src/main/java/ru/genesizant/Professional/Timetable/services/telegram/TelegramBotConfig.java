@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.config;
+package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

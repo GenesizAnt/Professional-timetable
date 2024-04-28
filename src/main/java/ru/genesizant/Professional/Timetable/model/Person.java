@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.Comment;
+import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 
 import java.util.List;
 
@@ -82,6 +83,9 @@ public class Person {
 
     @OneToMany(mappedBy = "specialistUnregisteredPerson")
     private List<UnregisteredPerson> specialistUnregisteredPersonList;
+
+    @OneToMany(mappedBy = "personMainService")
+    private List<UserTelegram> usersTelegram;
 
     public Person() {
     }
@@ -250,5 +254,13 @@ public class Person {
                 ", patronymic='" + patronymic + '\'' +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    public List<UserTelegram> getUsersTelegram() {
+        return usersTelegram;
+    }
+
+    public void setUsersTelegram(List<UserTelegram> usersTelegram) {
+        this.usersTelegram = usersTelegram;
     }
 }
