@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -66,5 +67,9 @@ public class SpecialistAppointmentsService {
         Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
         appointments.get().setPrepaymentVisitor(isPrePay);
         specialistAppointmentsRepository.save(appointments.get());
+    }
+
+    public List<SpecialistAppointments> findVisitorAppointmentsAfterDate(Long visitorId, LocalDate currentDate) {
+        return specialistAppointmentsRepository.findVisitorAppointmentsAfterDate(visitorId, currentDate);
     }
 }

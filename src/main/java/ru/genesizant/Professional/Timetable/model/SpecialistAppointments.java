@@ -60,6 +60,14 @@ public class SpecialistAppointments {
     @Column(name = "prepaymentvisitor")
     private boolean prepaymentVisitor;
 
+    @Comment("Было ли уведомление за 24 часа")
+    @Column(name = "notify24hours")
+    private boolean notify24hours;
+
+    @Comment("Было ли уведомление за 3 часа")
+    @Column(name = "notify3hours")
+    private boolean notify3hours;
+
     @OneToMany(mappedBy = "specialistAppointments")
     private List<StatisticalAnalysis> statisticalAnalysesList;
 
@@ -171,5 +179,21 @@ public class SpecialistAppointments {
 
     public void setPrepaymentVisitor(boolean prepaymentVisitor) {
         this.prepaymentVisitor = prepaymentVisitor;
+    }
+
+    public boolean isNotify24hours() {
+        return notify24hours;
+    }
+
+    public void setNotify24hours(boolean notify24hours) {
+        this.notify24hours = notify24hours;
+    }
+
+    public boolean isNotify3hours() {
+        return notify3hours;
+    }
+
+    public void setNotify3hours(boolean notify3hours) {
+        this.notify3hours = notify3hours;
     }
 }

@@ -20,7 +20,8 @@ public class UserTelegramService {
     }
 
     public boolean isUserEmailEmpty(Long chatId) {
-        return userTelegramRepository.findById(chatId).get().getEmail().isEmpty();
+        Optional<UserTelegram> userOptional = userTelegramRepository.findById(chatId);
+        return !userOptional.isPresent() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
     }
 
     public UserTelegram findById(Long chatId) {
@@ -32,4 +33,9 @@ public class UserTelegramService {
     public void save(UserTelegram userTelegram) {
         userTelegramRepository.save(userTelegram);
     }
+
+    public Iterable<UserTelegram> findAll() {
+        return userTelegramRepository.findAll();
+    }
+
 }
