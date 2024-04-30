@@ -53,6 +53,7 @@ public class MessageService {
 
             //ДОАБВЛЕНО ДЛЯ ТЕСТА, НУЖНО ВКЛЮЧИТЬ РАСПИСАНИЕ!!!!!!!!!!!
             sendNotifyReminderAppointment();
+            //ДОАБВЛЕНО ДЛЯ ТЕСТА, НУЖНО ВКЛЮЧИТЬ РАСПИСАНИЕ!!!!!!!!!!!
 
             String response;
             switch (text) {
@@ -167,43 +168,69 @@ public class MessageService {
         * если попадает, то отправлять сообщение*/
 
 
-        LocalDate localDate = LocalDate.now().minusDays(1);
+        LocalDate localDate = LocalDate.now().plusDays(1);
+        LocalDate localDate2 = LocalDate.now();
 
         // Список Клиент->Его встречи
-        Map<Long, List<SpecialistAppointments>> map = new HashMap<>();
+        Map<Long, List<SpecialistAppointments>> map2 = new HashMap<>();
         Iterable<UserTelegram> all = userTelegramService.findAll();
 
 
         //СЕЙЧАС МЕТОД ВОЗВРАЩАЕТ ВСЕ ПОСЕЩЕНИЯ ПОСЛЕ ТЕКУЩЕГО ДНЯ!!!!!!!!!!!!!!!!!
         for (UserTelegram userTelegram : all) {
-            map.put(userTelegram.getChatId(), specialistAppointmentsService.findVisitorAppointmentsAfterDate(userTelegram.getPersonMainService().getId(), localDate));
+            map2.put(userTelegram.getChatId(), specialistAppointmentsService.
+                    findVisitorAppointmentsAfterDateWithNotifications
+                            (userTelegram.getPersonMainService().getId(), localDate2, Boolean.FALSE, Boolean.FALSE));
         }
 
-
+        System.out.println();
 
         /*
         * Код ниже делает фильтр встреч конкретного человека по диапазону за сутки и полтора часа плюс минус
         * нужно добавить установку флага и его проверку, что уведомление уже было или изначально делать запрос с метками фалс
         * добавить такой же метод для уведомления за три часа*/
 
-        List<SpecialistAppointments> appointmentsList = map.get(255720333L);
+
+            //проверка за 3 часа
+            List<SpecialistAppointments> appointmentsList = map2.get(242381592L);
             List<SpecialistAppointments> filteredAppointments = new ArrayList<>();
             // Получение текущей даты и времени
             LocalDate currentDate = LocalDate.now();
             LocalTime currentTime = LocalTime.now();
             // Определение временных границ для фильтрации (на 24 часа раньше и на 1.5 часа вперед)
-            LocalTime lowerBound = currentTime.minusHours(1).minusMinutes(30);
-            LocalTime upperBound = currentTime.plusHours(1).plusMinutes(30);
+            LocalTime lowerBound = currentTime.minusHours(3).minusMinutes(30);
+            LocalTime upperBound = currentTime.minusHours(2).minusMinutes(30);
             // Фильтрация списка по заданным критериям
-            for (SpecialistAppointments appointmentsList1: appointmentsList) {
-//                for (SpecialistAppointments appointment : appointmentsList1) {
-                    LocalDate appointmentDate = appointmentsList1.getVisitDate();
-                    LocalTime appointmentTime = appointmentsList1.getAppointmentTime();
-                    // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
-                    if (currentDate.isEqual(appointmentDate.minusDays(1)) && appointmentTime.isAfter(lowerBound) && appointmentTime.isBefore(upperBound)) {
-                        filteredAppointments.add(appointmentsList1);
-                    }
-//                }
+            for (SpecialistAppointments appointmentsList1 : appointmentsList) {
+                LocalDate appointmentDate = appointmentsList1.getVisitDate();
+                LocalTime appointmentTime = appointmentsList1.getAppointmentTime();
+                // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
+                if (currentDate.isEqual(appointmentDate) && appointmentTime.isAfter(lowerBound) && appointmentTime.isBefore(upperBound)) {
+                    filteredAppointments.add(appointmentsList1);
+                    //ДОБАВИТЬ ЗАПИСЬ ЧТО УВЕДОМЛЕНИЕ БЫЛООООООООООООООООООООООООООООООО!
+                }
+            }
+
+
+
+            //проверка за 24 часа
+            List<SpecialistAppointments> appointmentsList2 = map2.get(242381592L);
+            List<SpecialistAppointments> filteredAppointments2 = new ArrayList<>();
+            // Получение текущей даты и времени
+            LocalDate currentDate2 = LocalDate.now();
+            LocalTime currentTime2 = LocalTime.now();
+            // Определение временных границ для фильтрации (на 24 часа раньше и на 1.5 часа вперед)
+            LocalTime lowerBound2 = currentTime2.minusHours(1).minusMinutes(30);
+            LocalTime upperBound2 = currentTime2.plusHours(1).plusMinutes(30);
+            // Фильтрация списка по заданным критериям
+            for (SpecialistAppointments appointmentsList1 : appointmentsList2) {
+                LocalDate appointmentDate = appointmentsList1.getVisitDate();
+                LocalTime appointmentTime = appointmentsList1.getAppointmentTime();
+                // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
+                if (currentDate2.isEqual(appointmentDate.minusDays(1)) && appointmentTime.isAfter(lowerBound2) && appointmentTime.isBefore(upperBound2)) {
+                    filteredAppointments2.add(appointmentsList1);
+                    //ДОБАВИТЬ ЗАПИСЬ ЧТО УВЕДОМЛЕНИЕ БЫЛООООООООООООООООООООООООООООООО!
+                }
             }
 
 
@@ -211,6 +238,34 @@ public class MessageService {
 
 
 
+
+
+
+
+
+
+
+
+
+//        List<SpecialistAppointments> appointmentsList = map.get(255720333L);
+//            List<SpecialistAppointments> filteredAppointments = new ArrayList<>();
+//            // Получение текущей даты и времени
+//            LocalDate currentDate = LocalDate.now();
+//            LocalTime currentTime = LocalTime.now();
+//            // Определение временных границ для фильтрации (на 24 часа раньше и на 1.5 часа вперед)
+//            LocalTime lowerBound = currentTime.minusHours(1).minusMinutes(30);
+//            LocalTime upperBound = currentTime.plusHours(1).plusMinutes(30);
+//            // Фильтрация списка по заданным критериям
+//            for (SpecialistAppointments appointmentsList1: appointmentsList) {
+////                for (SpecialistAppointments appointment : appointmentsList1) {
+//                    LocalDate appointmentDate = appointmentsList1.getVisitDate();
+//                    LocalTime appointmentTime = appointmentsList1.getAppointmentTime();
+//                    // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
+//                    if (currentDate.isEqual(appointmentDate.minusDays(1)) && appointmentTime.isAfter(lowerBound) && appointmentTime.isBefore(upperBound)) {
+//                        filteredAppointments.add(appointmentsList1);
+//                    }
+////                }
+//            }
 
     }
 }

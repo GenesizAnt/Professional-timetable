@@ -18,7 +18,19 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
     @Query("SELECT sa " +
             "FROM SpecialistAppointments sa " +
             "WHERE sa.visitorAppointments.id = :visitorId " +
-            "AND sa.visitDate > :currentDate")
+            "AND sa.visitDate >= :currentDate")
     List<SpecialistAppointments> findVisitorAppointmentsAfterDate(@Param("visitorId") Long visitorId,
                                                                   @Param("currentDate") LocalDate currentDate);
+
+    @Query("SELECT sa " +
+            "FROM SpecialistAppointments sa " +
+            "WHERE sa.visitorAppointments.id = :visitorId " +
+            "AND sa.visitDate >= :currentDate " +
+            "AND sa.notify24hours = :notify24hours " +
+            "AND sa.notify3hours = :notify3hours")
+    List<SpecialistAppointments> findVisitorAppointmentsAfterDateWithNotifications(
+            @Param("visitorId") Long visitorId,
+            @Param("currentDate") LocalDate currentDate,
+            @Param("notify24hours") boolean notify24hours,
+            @Param("notify3hours") boolean notify3hours);
 }

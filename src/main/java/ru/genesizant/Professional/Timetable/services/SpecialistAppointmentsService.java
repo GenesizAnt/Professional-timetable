@@ -69,7 +69,20 @@ public class SpecialistAppointmentsService {
         specialistAppointmentsRepository.save(appointments.get());
     }
 
+    // получить список приемов по конкретному клиенту после определенной даты
     public List<SpecialistAppointments> findVisitorAppointmentsAfterDate(Long visitorId, LocalDate currentDate) {
         return specialistAppointmentsRepository.findVisitorAppointmentsAfterDate(visitorId, currentDate);
+    }
+
+    // получить список приемов по конкретному клиенту после определенной даты с учетом были ли уведомления ранее
+    public List<SpecialistAppointments> findVisitorAppointmentsAfterDateWithNotifications(Long visitorId,
+                                                                                          LocalDate currentDate,
+                                                                                          boolean notify24hours,
+                                                                                          boolean notify3hours) {
+        return specialistAppointmentsRepository.findVisitorAppointmentsAfterDateWithNotifications(
+                visitorId,
+                currentDate,
+                notify24hours,
+                notify3hours);
     }
 }
