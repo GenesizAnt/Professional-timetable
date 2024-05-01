@@ -1,7 +1,6 @@
 package ru.genesizant.Professional.Timetable.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -84,5 +83,13 @@ public class SpecialistAppointmentsService {
                 currentDate,
                 notify24hours,
                 notify3hours);
+    }
+
+    public SpecialistAppointments findById(Long id) {
+        return specialistAppointmentsRepository.findById(id).orElse(null);
+    }
+
+    public void save(SpecialistAppointments specialistAppointments) {
+        specialistAppointmentsRepository.save(specialistAppointments);
     }
 }

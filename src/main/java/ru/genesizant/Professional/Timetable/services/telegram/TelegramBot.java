@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -17,13 +18,15 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotProperties botProperties;
-    private final MessageService messageService;
+    private final MainMessageService mainMessageService;
+    private final NotifyMessageService notifyMessageService;
 
     @Autowired
-    public TelegramBot(BotProperties botProperties, MessageService messageService) {
+    public TelegramBot(BotProperties botProperties, MainMessageService mainMessageService, NotifyMessageService notifyMessageService) {
         super(botProperties.token());
         this.botProperties = botProperties;
-        this.messageService = messageService;
+        this.mainMessageService = mainMessageService;
+        this.notifyMessageService = notifyMessageService;
         try {
             this.execute(new SetMyCommands(listMenuCommand(), new BotCommandScopeDefault(),null));
         } catch (TelegramApiException e) {
@@ -35,8 +38,20 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            SendMessage sendMessage = messageService.messageReceiver(update);
+            SendMessage sendMessage = mainMessageService.messageReceiver(update);
             execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *") // это 15 минут - "* */15 * * * *"
+    public void notifySendler() {
+        try {
+            List<SendMessage> messageList = notifyMessageService.messageReceiver();
+            for (SendMessage sendMessage : messageList) {
+                execute(sendMessage);
+            }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
