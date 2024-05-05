@@ -11,6 +11,7 @@ import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SpecialistAppointmentsRepository extends JpaRepository<SpecialistAppointments, Long> {
@@ -49,5 +50,14 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
     void deleteBySpecialistIdAndVisitDateAndAppointmentTime(@Param("specialistId") Long specialistId,
                                                             @Param("visitDate") LocalDate visitDate,
                                                             @Param("appointmentTime") LocalTime appointmentTime);
+
+    @Query("SELECT sa " +
+            "FROM SpecialistAppointments sa " +
+            "WHERE sa.specialistAppointments = :specialistId " +
+            "AND sa.visitDate = :visitDate " +
+            "AND sa.appointmentTime = :appointmentTime")
+    Optional<SpecialistAppointments> getAppointmentsSpecificDay(@Param("specialistId") Long specialistId,
+                                        @Param("visitDate") LocalDate visitDate,
+                                        @Param("appointmentTime") LocalTime appointmentTime);
 
 }

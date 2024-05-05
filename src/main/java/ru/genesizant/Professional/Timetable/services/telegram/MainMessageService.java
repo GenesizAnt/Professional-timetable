@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
 import com.vdurmont.emoji.EmojiParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -34,30 +35,20 @@ public class MainMessageService {
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final UserTelegramService userTelegramService;;
 
+    @Autowired
     public MainMessageService(PersonService personService, SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService) {
         this.personService = personService;
         this.specialistAppointmentsService = specialistAppointmentsService;
         this.userTelegramService = userTelegramService;
     }
 
-//    @Autowired
-//    public MainMessageService(PersonService personService, UserTelegramService userTelegramService, SpecialistAppointmentsService specialistAppointmentsService) {
-//        this.personService = personService;
-//        this.userTelegramService = userTelegramService;
-//        this.specialistAppointmentsService = specialistAppointmentsService;
-//    }
-
     //Получает и обрабатывает сообщение отправленное в бот
     public SendMessage messageReceiver(Update update) {
-        ReplyKeyboardMarkup keyboardMarkup = getReplyKeyboardMarkup(); //ToDo добавляет клавиатуру к каждому сообщению, оно вообще надо?
+//        ReplyKeyboardMarkup keyboardMarkup = getReplyKeyboardMarkup(); //ToDo добавляет клавиатуру к каждому сообщению, оно вообще надо?
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
-
-            //ДОАБВЛЕНО ДЛЯ ТЕСТА, НУЖНО ВКЛЮЧИТЬ РАСПИСАНИЕ!!!!!!!!!!!
-//            sendNotifyReminderAppointment();
-            //ДОАБВЛЕНО ДЛЯ ТЕСТА, НУЖНО ВКЛЮЧИТЬ РАСПИСАНИЕ!!!!!!!!!!!
 
             String response;
             switch (text) {
@@ -77,33 +68,13 @@ public class MainMessageService {
                     }
                 }
                 case "/stop" -> response = String.format("До свидания %s!", name);
-                case "/button" -> {
-                    response = String.format("Ня %s!", name);
-                }
                 default -> {
                     response = getResponse(text, chatId, name);
                 }
             }
-            return getReceiveMessage(chatId, response, keyboardMarkup);
+            return getReceiveMessage(chatId, response);
         }
-        return getReceiveMessage(update.getMessage().getChatId(), "Неизвестный запрос", keyboardMarkup);
-    }
-
-    //Добавляем поддержку экранной клавиатуры
-    private ReplyKeyboardMarkup getReplyKeyboardMarkup() {
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-        KeyboardRow row = new KeyboardRow();
-        row.add("погода");
-        row.add("шутка");
-        keyboardRows.add(row);
-        row = new KeyboardRow();
-        row.add("регистрация");
-        row.add("проверить почту");
-        row.add("удалить почту");
-        keyboardRows.add(row);
-        keyboardMarkup.setKeyboard(keyboardRows);
-        return keyboardMarkup;
+        return getReceiveMessage(update.getMessage().getChatId(), "Неизвестный запрос");
     }
 
     //Обработка разных сценариев неизвестного сообщения от пользователя
@@ -160,6 +131,23 @@ public class MainMessageService {
         sendMessage.setText(response);
         sendMessage.setReplyMarkup(keyboardMarkup);
         return sendMessage;
+    }
+
+    //Добавляем поддержку экранной клавиатуры
+    private ReplyKeyboardMarkup getReplyKeyboardMarkup() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        row.add("погода");
+        row.add("шутка");
+        keyboardRows.add(row);
+        row = new KeyboardRow();
+        row.add("регистрация");
+        row.add("проверить почту");
+        row.add("удалить почту");
+        keyboardRows.add(row);
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
     }
 
 ////    @Scheduled(cron = "0  /15 *  *   *   * ") // 0 0 * * * * будет запускаться каждый час

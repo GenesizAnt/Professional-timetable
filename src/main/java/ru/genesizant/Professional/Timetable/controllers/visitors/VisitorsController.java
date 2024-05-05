@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -18,6 +19,7 @@ import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
+import ru.genesizant.Professional.Timetable.services.telegram.NotifyMessageService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +42,7 @@ public class VisitorsController {
     private final ModelMapper modelMapper;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final NotifyMessageService notifyMessageService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -47,13 +50,14 @@ public class VisitorsController {
     private final String ENROLL_VIEW_REDIRECT = "redirect:/visitors/my_specialist_menu";
 
     @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsService specialistAppointmentsService, ObjectMapper objectMapper) {
+    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsService specialistAppointmentsService, NotifyMessageService notifyMessageService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
         this.modelMapper = modelMapper;
         this.specialistsAndClientService = specialistsAndClientService;
         this.specialistAppointmentsService = specialistAppointmentsService;
+        this.notifyMessageService = notifyMessageService;
         this.objectMapper = objectMapper;
     }
 
@@ -164,7 +168,10 @@ public class VisitorsController {
             return ERROR_LOGIN;
         }
         if (meetingCancel.isPresent()) {
+            SendMessage sendMessage = notifyMessageService.getNotifyCancellationMsg(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
+            notifyMessageService.notifyCancellation(sendMessage);
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
+            specialistAppointmentsService.removeAppointment(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");

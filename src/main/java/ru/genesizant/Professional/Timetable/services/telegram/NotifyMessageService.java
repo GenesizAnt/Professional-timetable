@@ -2,10 +2,13 @@ package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,19 +16,64 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
+
 @Service
 public class NotifyMessageService {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
-    private final UserTelegramService userTelegramService;;
+    private final UserTelegramService userTelegramService;
+    private final TelegramBot telegramBot;
 
-    public NotifyMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService) {
+    public NotifyMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService, TelegramBot telegramBot) {
         this.specialistAppointmentsService = specialistAppointmentsService;
         this.userTelegramService = userTelegramService;
+        this.telegramBot = telegramBot;
     }
 
     public List<SendMessage> messageReceiver() {
         return new ArrayList<>(sendNotifyReminderAppointment());
+    }
+
+//    public SendMessage messageReceiver2() {
+//        notifyCancelMsg()
+//    }
+
+    public SendMessage notifyCancellation(SendMessage sendMessage) {
+        return sendMessage;
+    }
+
+    public SendMessage getNotifyCancellationMsg(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
+        SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
+        try {
+            switch (statusPerson) {
+                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.findById(
+                        appointmentsSpecificDay.getSpecialistAppointments().getId()).getChatId(), cancellationMessage(appointmentsSpecificDay, VISITOR)));
+                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.findById(
+                        appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(), cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+            }
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    private String cancellationMessage(SpecialistAppointments appointment, StatusPerson statusPerson) {
+        String responseMsg = "";
+        switch (statusPerson) {
+            case VISITOR -> responseMsg = String.format("%s, сообщаем, что специалист %s отменил назначенную встречу на %s в %s",
+                    appointment.getVisitorAppointments().getUsername(),
+                    appointment.getSpecialistAppointments().getFullName(),
+                    appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что клиент %s отменил назначенную встречу на %s в %s",
+                    appointment.getSpecialistAppointments().getUsername(),
+                    appointment.getVisitorAppointments().getFullName(),
+                    appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        }
+        return responseMsg;
     }
 
     private List<SendMessage> sendNotifyReminderAppointment() {
@@ -41,14 +89,19 @@ public class NotifyMessageService {
             Long chatId = entry.getKey();
             List<SpecialistAppointments> appointments = entry.getValue();
             for (SpecialistAppointments appointment : appointments) {
-                SendMessage message = new SendMessage();
-                message.setChatId(chatId.toString());
-                message.setText(getMessNotify(appointment));
+                SendMessage message = createMessage(chatId, getMessNotify(appointment));
                 messages.add(message);
                 changeFlagNotify(hour, appointment);
             }
         }
         return messages;
+    }
+
+    private SendMessage createMessage(Long chatId, String msg) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText(msg);
+        return message;
     }
 
     private void changeFlagNotify(int hour, SpecialistAppointments appointment) {
@@ -159,5 +212,4 @@ public class NotifyMessageService {
         }
         return personAppointments;
     }
-
 }

@@ -69,9 +69,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private List<BotCommand> listMenuCommand() {
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand("/start", "начало работы"));
-        listOfCommands.add(new BotCommand("/schedule", "получить расписание"));
-        listOfCommands.add(new BotCommand("/notify", "подписаться на уведомления"));
+        listOfCommands.add(new BotCommand("/start", "Начало работы"));
+        listOfCommands.add(new BotCommand("/changepassword", "Изменить пароль"));
         return listOfCommands;
     }
 }

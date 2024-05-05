@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -111,5 +112,10 @@ public class SpecialistAppointmentsService {
                 specialistId,
                 meeting.toLocalDate(),
                 meeting.toLocalTime());
+    }
+
+    public SpecialistAppointments getAppointmentsSpecificDay(Long specialistId, LocalDateTime meeting) {
+        return specialistAppointmentsRepository.
+                getAppointmentsSpecificDay(specialistId, meeting.toLocalDate(), meeting.toLocalTime()).orElse(null);
     }
 }

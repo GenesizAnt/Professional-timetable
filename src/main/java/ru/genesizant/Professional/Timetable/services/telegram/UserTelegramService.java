@@ -2,7 +2,9 @@ package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
