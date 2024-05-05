@@ -72,60 +72,61 @@ public class NotifyMessageService {
     }
 
     private Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange24Hour() {
+        Map<Long, List<SpecialistAppointments>> personAppointments = meetingsWithoutNotifications(Boolean.FALSE, Boolean.FALSE);
+        if (isAnyListNotEmpty(personAppointments)) {
+            Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange24Hour = new HashMap<>();
 
-        Map<Long, List<SpecialistAppointments>> personAppointments = meetingsWithoutNotifications();
-        Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange24Hour = new HashMap<>();
+            for (Long person : personAppointments.keySet()) {
 
+                List<SpecialistAppointments> appointmentsWithoutNotifications = new ArrayList<>();
+                List<SpecialistAppointments> appointmentsList = personAppointments.get(person);
 
-        for (Long person : personAppointments.keySet()) {
-
-            List<SpecialistAppointments> appointmentsWithoutNotifications = new ArrayList<>();
-            List<SpecialistAppointments> appointmentsList = personAppointments.get(person);
-
-            // Фильтрация списка по заданным критериям
-            for (SpecialistAppointments appointment : appointmentsList) {
-                if (isNeedNotifyBy24Hour(appointment)) {
-                    appointmentsWithoutNotifications.add(appointment);
+                // Фильтрация списка по заданным критериям
+                for (SpecialistAppointments appointment : appointmentsList) {
+                    if (isNeedNotifyBy24Hour(appointment)) {
+                        appointmentsWithoutNotifications.add(appointment);
+                    }
                 }
+                meetingsWithoutNotificationsInRange24Hour.put(person, appointmentsWithoutNotifications);
             }
-            meetingsWithoutNotificationsInRange24Hour.put(person, appointmentsWithoutNotifications);
+            return meetingsWithoutNotificationsInRange24Hour;
+        } else {
+            return Map.of();
         }
-        return meetingsWithoutNotificationsInRange24Hour;
     }
 
     private Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange3Hour() {
+        Map<Long, List<SpecialistAppointments>> personAppointments = meetingsWithoutNotifications(Boolean.TRUE, Boolean.FALSE);
+        if (isAnyListNotEmpty(personAppointments)) {
+            Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange3Hour = new HashMap<>();
 
-        Map<Long, List<SpecialistAppointments>> personAppointments = meetingsWithoutNotifications();
-        Map<Long, List<SpecialistAppointments>> meetingsWithoutNotificationsInRange3Hour = new HashMap<>();
+            for (Long person : personAppointments.keySet()) {
 
+                List<SpecialistAppointments> appointmentsWithoutNotifications = new ArrayList<>();
+                List<SpecialistAppointments> appointmentsList = personAppointments.get(person);
 
-        for (Long person : personAppointments.keySet()) {
-
-            List<SpecialistAppointments> appointmentsWithoutNotifications = new ArrayList<>();
-            List<SpecialistAppointments> appointmentsList = personAppointments.get(person);
-
-            // Фильтрация списка по заданным критериям
-            for (SpecialistAppointments appointment : appointmentsList) {
-                if (isNeedNotifyBy3Hour(appointment)) {
-                    appointmentsWithoutNotifications.add(appointment);
+                // Фильтрация списка по заданным критериям
+                for (SpecialistAppointments appointment : appointmentsList) {
+                    if (isNeedNotifyBy3Hour(appointment)) {
+                        appointmentsWithoutNotifications.add(appointment);
+                    }
                 }
+                meetingsWithoutNotificationsInRange3Hour.put(person, appointmentsWithoutNotifications);
             }
-            meetingsWithoutNotificationsInRange3Hour.put(person, appointmentsWithoutNotifications);
+            return meetingsWithoutNotificationsInRange3Hour;
+        } else {
+            return Map.of();
         }
-        return meetingsWithoutNotificationsInRange3Hour;
     }
 
-//    List<SendMessage> messageReminderAppointment24Hour = new ArrayList<>();
-// //ДОБАВИТЬ ЗАПИСЬ ЧТО УВЕДОМЛЕНИЕ БЫЛООООООООООООООООООООООООООООООО!
-
-
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(242381592L);
-//        sendMessage.setText("response");
-//        return sendMessage;
-
-
-
+    private boolean isAnyListNotEmpty(Map<Long, List<SpecialistAppointments>> map) {
+        for (List<SpecialistAppointments> appointmentsList : map.values()) {
+            if (!appointmentsList.isEmpty()) {
+                return true; // Если хотя бы один список не пустой, возвращаем true
+            }
+        }
+        return false; // Если все списки пусты, возвращаем false
+    }
 
     // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
     private boolean isNeedNotifyBy24Hour(SpecialistAppointments appointment) {
@@ -146,84 +147,15 @@ public class NotifyMessageService {
         return currentDate.isEqual(appointmentDate) && LocalTime.now().isAfter(appointmentTimeLowerBound) && LocalTime.now().isBefore(appointmentTimeUpperBound);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//    private SendMessage sendNotifyReminderAppointment3Hour() {
-//        /*
-//         * Код ниже делает фильтр встреч конкретного человека по диапазону за сутки и полтора часа плюс минус
-//         * нужно добавить установку флага и его проверку, что уведомление уже было или изначально делать запрос с метками фалс
-//         * добавить такой же метод для уведомления за три часа*/
-//
-//
-//
-//
-////        LocalDate localDate = LocalDate.now().plusDays(1);
-//        Map<Long, List<SpecialistAppointments>> map2 = meetingsWithoutNotifications();
-//
-//        System.out.println();
-//
-//        /*
-//         * Код ниже делает фильтр встреч конкретного человека по диапазону за сутки и полтора часа плюс минус
-//         * нужно добавить установку флага и его проверку, что уведомление уже было или изначально делать запрос с метками фалс
-//         * добавить такой же метод для уведомления за три часа*/
-//
-//
-//        //проверка за 3 часа
-//        List<SpecialistAppointments> appointmentsList = map2.get(242381592L);
-//        List<SpecialistAppointments> filteredAppointments = new ArrayList<>();
-//        // Получение текущей даты и времени
-//        LocalDate currentDate = LocalDate.now();
-//        LocalTime currentTime = LocalTime.now();
-//        // Определение временных границ для фильтрации (на 24 часа раньше и на 1.5 часа вперед)
-//        LocalTime lowerBound = currentTime.minusHours(3).minusMinutes(30);
-//        LocalTime upperBound = currentTime.minusHours(2).minusMinutes(30);
-//        // Фильтрация списка по заданным критериям
-//        for (SpecialistAppointments appointmentsList1 : appointmentsList) {
-//            LocalDate appointmentDate = appointmentsList1.getVisitDate();
-//            LocalTime appointmentTime = appointmentsList1.getAppointmentTime();
-//            // Проверка, что дата встречи раньше текущей на 24 часа и время попадает в заданный диапазон
-//            if (currentDate.isEqual(appointmentDate) && appointmentTime.isAfter(lowerBound) && appointmentTime.isBefore(upperBound)) {
-//                filteredAppointments.add(appointmentsList1);
-//                //ДОБАВИТЬ ЗАПИСЬ ЧТО УВЕДОМЛЕНИЕ БЫЛООООООООООООООООООООООООООООООО!
-//            }
-//        }
-//
-//
-//
-//
-//
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(242381592L);
-//        sendMessage.setText("response");
-//        return sendMessage;
-//    }
-
     // Список Клиент->Его встречи, которые будут
-    private Map<Long, List<SpecialistAppointments>> meetingsWithoutNotifications() {
+    private Map<Long, List<SpecialistAppointments>> meetingsWithoutNotifications(Boolean isNotifyOneDay, Boolean isNotifyThreeHours) {
         LocalDate localDate = LocalDate.now();
         Map<Long, List<SpecialistAppointments>> personAppointments = new HashMap<>();
         Iterable<UserTelegram> all = userTelegramService.findAll();
         for (UserTelegram userTelegram : all) {
             personAppointments.put(userTelegram.getChatId(), specialistAppointmentsService.
                     findVisitorAppointmentsAfterDateWithNotifications
-                            (userTelegram.getPersonMainService().getId(), localDate, Boolean.FALSE, Boolean.FALSE));
+                            (userTelegram.getPersonMainService().getId(), localDate, isNotifyOneDay, isNotifyThreeHours));
         }
         return personAppointments;
     }

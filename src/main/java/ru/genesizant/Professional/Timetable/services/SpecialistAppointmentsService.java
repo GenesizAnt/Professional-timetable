@@ -51,6 +51,13 @@ public class SpecialistAppointmentsService {
         specialistAppointments.setVisitorAppointments(idVisitor);
         specialistAppointments.setPrepayment(isPrePaySpecialist);
         specialistAppointments.setPrepaymentVisitor(isPrePayVisitor);
+        if (toLocalDate.equals(LocalDate.now())) {
+            specialistAppointments.setNotify24hours(true);
+            specialistAppointments.setNotify3hours(false);
+        } else {
+            specialistAppointments.setNotify24hours(false);
+            specialistAppointments.setNotify3hours(false);
+        }
         specialistAppointmentsRepository.save(specialistAppointments);
     }
 
@@ -91,5 +98,10 @@ public class SpecialistAppointmentsService {
 
     public void save(SpecialistAppointments specialistAppointments) {
         specialistAppointmentsRepository.save(specialistAppointments);
+    }
+
+    public boolean isNeedNotify(LocalDate visitDate) {
+        return specialistAppointmentsRepository.
+                existsByVisitDateGreaterThanEqualAndNotify24hoursIsFalseAndNotify3hoursIsFalse(visitDate);
     }
 }

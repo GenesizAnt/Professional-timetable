@@ -33,4 +33,9 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
             @Param("currentDate") LocalDate currentDate,
             @Param("notify24hours") boolean notify24hours,
             @Param("notify3hours") boolean notify3hours);
+
+//    boolean existsByVisitDateAfterOrVisitDateAndNotify24hoursIsFalseOrNotify3hoursIsFalse(LocalDate visitDate);
+
+    boolean existsByVisitDateGreaterThanEqualAndNotify24hoursIsFalseAndNotify3hoursIsFalse(LocalDate visitDate);
+
 }
