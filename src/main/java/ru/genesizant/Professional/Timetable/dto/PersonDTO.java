@@ -22,7 +22,6 @@ public class PersonDTO {
     @Column(name = "patronymic")
     private String patronymic;
 
-    @NotEmpty(message = "Номер телефона не должен быть пустым")
     @Column(name = "phoneNumber")
     private String phoneNumber;
 

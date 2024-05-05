@@ -44,7 +44,6 @@ public class Person {
     @Column(name = "password")
     private String password;
 
-    @NotEmpty(message = "Номер телефона не должен быть пустым")
     @Column(name = "phonenumber")
     private String phoneNumber;
 

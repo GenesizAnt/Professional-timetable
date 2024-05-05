@@ -45,7 +45,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    @Scheduled(cron = "* */15 * * * *") // это 15 минут - "* */15 * * * *"
+    @Scheduled(cron = "0 */15 * * * *") // это 15 минут - "* */15 * * * *"
     public void notifySendler() {
         try {
             List<SendMessage> messageList = notifyMessageService.messageReceiver();
