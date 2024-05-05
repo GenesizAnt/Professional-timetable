@@ -7,6 +7,7 @@ import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.repositories.SpecialistAppointmentsRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -103,5 +104,12 @@ public class SpecialistAppointmentsService {
     public boolean isNeedNotify(LocalDate visitDate) {
         return specialistAppointmentsRepository.
                 existsByVisitDateGreaterThanEqualAndNotify24hoursIsFalseAndNotify3hoursIsFalse(visitDate);
+    }
+
+    public void removeAppointment(LocalDateTime meeting, Long specialistId) {
+        specialistAppointmentsRepository.deleteBySpecialistIdAndVisitDateAndAppointmentTime(
+                specialistId,
+                meeting.toLocalDate(),
+                meeting.toLocalTime());
     }
 }

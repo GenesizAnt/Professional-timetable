@@ -190,6 +190,7 @@ public class EnrollClientController {
 
         if (meetingCancel.isPresent()) {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
+            specialistAppointmentsService.removeAppointment(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
