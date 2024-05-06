@@ -24,7 +24,7 @@ public class UserTelegramService {
         return !userOptional.isPresent() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
     }
 
-    public UserTelegram findBySpecialistId(Long chatId) {
+    public UserTelegram findByPersonId(Long chatId) {
         Optional<UserTelegram> userTelegram = userTelegramRepository.findByPersonMainService_Id(chatId);
         return userTelegram.orElse(null);
     }

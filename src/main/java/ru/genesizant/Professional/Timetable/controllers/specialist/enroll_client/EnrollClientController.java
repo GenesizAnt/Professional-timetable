@@ -29,7 +29,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
-import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
@@ -193,7 +192,7 @@ public class EnrollClientController {
         }
 
         if (meetingCancel.isPresent()) {
-            sendMessageService.getNotifyCancellationMsg(SPECIALIST, meetingCancel.get(), (long) request.getSession().getAttribute("id"));
+            sendMessageService.notifyCancellation(SPECIALIST, meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             specialistAppointmentsService.removeAppointment(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             displayPage(model, request);

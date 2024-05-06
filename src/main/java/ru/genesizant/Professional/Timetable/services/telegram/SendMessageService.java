@@ -28,19 +28,31 @@ public class SendMessageService {
         this.telegramBot = telegramBot;
     }
 
-//    public SendMessage notifyCancellation(SendMessage sendMessage) {
-//        return sendMessage;
-//    }
-
-    public void getNotifyCancellationMsg(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
+    public void notifyCancellation(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
         SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
         try {
             switch (statusPerson) {
                 case VISITOR -> telegramBot.execute(createMessage(userTelegramService.
-                                findBySpecialistId(appointmentsSpecificDay.getSpecialistAppointments().getId()).getChatId(),
+                                findByPersonId(specialistId).getChatId(),
                         cancellationMessage(appointmentsSpecificDay, VISITOR)));
                 case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.
-                                findBySpecialistId(appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(),
+                                findByPersonId(appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(),
+                        cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+            }
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void notifyEnrollNewAppointment(StatusPerson statusPerson, LocalDateTime localDateTime, Long visitorId, Long specialistId) {
+//        SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
+        try {
+            switch (statusPerson) {
+                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.
+                                findByPersonId(specialistId).getChatId(),
+                        cancellationMessage(appointmentsSpecificDay, VISITOR)));
+                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.
+                                findByPersonId(visitorId).getChatId(),
                         cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
             }
         } catch (TelegramApiException e) {

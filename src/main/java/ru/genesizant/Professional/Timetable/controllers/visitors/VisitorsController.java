@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -19,7 +18,6 @@ import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
-import ru.genesizant.Professional.Timetable.services.telegram.NotifyMessageService;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
 import java.net.URLEncoder;
@@ -128,6 +126,7 @@ public class VisitorsController {
                     modelMapper.map(personService.findById((Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(specialistId), VISITOR);
+            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, (Long) request.getSession().getAttribute("id"), Long.valueOf(specialistId));
             displayPage(model, request);
 
         } else {
@@ -169,7 +168,7 @@ public class VisitorsController {
             return ERROR_LOGIN;
         }
         if (meetingCancel.isPresent()) {
-            sendMessageService.getNotifyCancellationMsg(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
+            sendMessageService.notifyCancellation(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             specialistAppointmentsService.removeAppointment(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
