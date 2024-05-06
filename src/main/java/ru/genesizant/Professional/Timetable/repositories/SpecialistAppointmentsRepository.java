@@ -53,11 +53,11 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
 
     @Query("SELECT sa " +
             "FROM SpecialistAppointments sa " +
-            "WHERE sa.specialistAppointments = :specialistId " +
+            "WHERE sa.specialistAppointments.id = :specialistId " +
             "AND sa.visitDate = :visitDate " +
             "AND sa.appointmentTime = :appointmentTime")
     Optional<SpecialistAppointments> getAppointmentsSpecificDay(@Param("specialistId") Long specialistId,
-                                        @Param("visitDate") LocalDate visitDate,
-                                        @Param("appointmentTime") LocalTime appointmentTime);
+                                                                @Param("visitDate") LocalDate visitDate,
+                                                                @Param("appointmentTime") LocalTime appointmentTime);
 
 }

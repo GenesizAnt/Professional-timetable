@@ -2,9 +2,7 @@ package ru.genesizant.Professional.Timetable.services.telegram;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -26,11 +24,10 @@ public class UserTelegramService {
         return !userOptional.isPresent() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
     }
 
-    public UserTelegram findById(Long chatId) {
-        Optional<UserTelegram> userTelegram = userTelegramRepository.findById(chatId);
+    public UserTelegram findBySpecialistId(Long chatId) {
+        Optional<UserTelegram> userTelegram = userTelegramRepository.findByPersonMainService_Id(chatId);
         return userTelegram.orElse(null);
     }
-
 
     public void save(UserTelegram userTelegram) {
         userTelegramRepository.save(userTelegram);
@@ -40,4 +37,8 @@ public class UserTelegramService {
         return userTelegramRepository.findAll();
     }
 
+    public UserTelegram findById(Long chatId) {
+        Optional<UserTelegram> userTelegram = userTelegramRepository.findById(chatId);
+        return userTelegram.orElse(null);
+    }
 }

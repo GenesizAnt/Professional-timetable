@@ -16,64 +16,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
-import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
-
 @Service
 public class NotifyMessageService {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final UserTelegramService userTelegramService;
-    private final TelegramBot telegramBot;
 
-    public NotifyMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService, TelegramBot telegramBot) {
+    public NotifyMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService) {
         this.specialistAppointmentsService = specialistAppointmentsService;
         this.userTelegramService = userTelegramService;
-        this.telegramBot = telegramBot;
     }
 
     public List<SendMessage> messageReceiver() {
         return new ArrayList<>(sendNotifyReminderAppointment());
-    }
-
-//    public SendMessage messageReceiver2() {
-//        notifyCancelMsg()
-//    }
-
-    public SendMessage notifyCancellation(SendMessage sendMessage) {
-        return sendMessage;
-    }
-
-    public SendMessage getNotifyCancellationMsg(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
-        SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
-        try {
-            switch (statusPerson) {
-                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.findById(
-                        appointmentsSpecificDay.getSpecialistAppointments().getId()).getChatId(), cancellationMessage(appointmentsSpecificDay, VISITOR)));
-                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.findById(
-                        appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(), cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
-            }
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
-    private String cancellationMessage(SpecialistAppointments appointment, StatusPerson statusPerson) {
-        String responseMsg = "";
-        switch (statusPerson) {
-            case VISITOR -> responseMsg = String.format("%s, сообщаем, что специалист %s отменил назначенную встречу на %s в %s",
-                    appointment.getVisitorAppointments().getUsername(),
-                    appointment.getSpecialistAppointments().getFullName(),
-                    appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                    appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что клиент %s отменил назначенную встречу на %s в %s",
-                    appointment.getSpecialistAppointments().getUsername(),
-                    appointment.getVisitorAppointments().getFullName(),
-                    appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                    appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        }
-        return responseMsg;
     }
 
     private List<SendMessage> sendNotifyReminderAppointment() {

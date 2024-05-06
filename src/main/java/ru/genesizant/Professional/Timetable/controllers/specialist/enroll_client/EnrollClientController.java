@@ -17,6 +17,7 @@ import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.*;
+import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
@@ -42,6 +44,7 @@ public class EnrollClientController {
     private final ModelMapper modelMapper;
     private final UnregisteredPersonService unregisteredPersonService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final SendMessageService sendMessageService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -49,7 +52,7 @@ public class EnrollClientController {
     private final String ENROLL_VIEW_REDIRECT = "redirect:/enroll/enroll_page";
 
     @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, SpecialistAppointmentsService specialistAppointmentsService, ObjectMapper objectMapper) {
+    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, SpecialistAppointmentsService specialistAppointmentsService, SendMessageService sendMessageService, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
         this.personService = personService;
         this.datesAppointmentsService = datesAppointmentsService;
@@ -57,6 +60,7 @@ public class EnrollClientController {
         this.modelMapper = modelMapper;
         this.unregisteredPersonService = unregisteredPersonService;
         this.specialistAppointmentsService = specialistAppointmentsService;
+        this.sendMessageService = sendMessageService;
         this.objectMapper = objectMapper;
     }
 
@@ -189,6 +193,7 @@ public class EnrollClientController {
         }
 
         if (meetingCancel.isPresent()) {
+            sendMessageService.getNotifyCancellationMsg(SPECIALIST, meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             specialistAppointmentsService.removeAppointment(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
