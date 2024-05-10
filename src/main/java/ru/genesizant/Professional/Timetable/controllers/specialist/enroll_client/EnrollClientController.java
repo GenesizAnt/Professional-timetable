@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
@@ -132,10 +133,17 @@ public class EnrollClientController {
             PersonFullName personFullName = null;
             if (registeredStatus.get().equals(REGISTERED)) {
                 personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+                Person specialist = personService.findById((long) request.getSession().getAttribute("id")).get();
+                Person visitor = personService.findById(personFullName.getId()).get();
                 //ToDo упростить метод ужас как много передается в аргументах
-                specialistAppointmentsService.createNewAppointments(meeting.get().toLocalDate(), meeting.get().toLocalTime(),
-                        personService.findById((long) request.getSession().getAttribute("id")).get(),
-                        personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+                specialistAppointmentsService.createNewAppointments(
+                        meeting.get().toLocalDate(),
+                        meeting.get().toLocalTime(),
+                        specialist,
+                        visitor,
+                        Boolean.FALSE, Boolean.FALSE);
+
+                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meeting.get(), personFullName.getId(), (long) request.getSession().getAttribute("id"));
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             }
@@ -170,6 +178,8 @@ public class EnrollClientController {
                 specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
                         personService.findById((long) request.getSession().getAttribute("id")).get(),
                         personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+
+                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), (long) request.getSession().getAttribute("id"));
             } else if (registeredStatus.equals(UNREGISTERED.name())) {
                 PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
@@ -222,6 +232,8 @@ public class EnrollClientController {
         specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
                 personService.findById((long) request.getSession().getAttribute("id")).get(),
                 personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
+
+        sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), (long) request.getSession().getAttribute("id"));
 
 //        Map<String, String> identityVisitor = getIdentificationMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id")); //ToDo Чтобы не проверять через ФИО добавить в таблицу ид клинета, но не отрисовывать
 

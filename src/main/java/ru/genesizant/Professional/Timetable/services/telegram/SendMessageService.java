@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.genesizant.Professional.Timetable.enums.StatusPerson;
+import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
@@ -32,11 +34,11 @@ public class SendMessageService {
         SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
         try {
             switch (statusPerson) {
-                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.
-                                findByPersonId(specialistId).getChatId(),
+                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.findByPersonId(
+                        specialistId).getChatId(),
                         cancellationMessage(appointmentsSpecificDay, VISITOR)));
-                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.
-                                findByPersonId(appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(),
+                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.findByPersonId(
+                        appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(),
                         cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
             }
         } catch (TelegramApiException e) {
@@ -45,19 +47,35 @@ public class SendMessageService {
     }
 
     public void notifyEnrollNewAppointment(StatusPerson statusPerson, LocalDateTime localDateTime, Long visitorId, Long specialistId) {
-//        SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
+        UserTelegram specialist = userTelegramService.findByPersonId(specialistId);
+        UserTelegram visitor = userTelegramService.findByPersonId(visitorId);
         try {
             switch (statusPerson) {
-                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.
-                                findByPersonId(specialistId).getChatId(),
-                        cancellationMessage(appointmentsSpecificDay, VISITOR)));
-                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.
-                                findByPersonId(visitorId).getChatId(),
-                        cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+                case VISITOR -> telegramBot.execute(createMessage(specialist.getChatId(),
+                        enrollNewAppointmentMessage(specialist, visitor, localDateTime, VISITOR)));
+                case SPECIALIST -> telegramBot.execute(createMessage(visitor.getChatId(),
+                        enrollNewAppointmentMessage(visitor, specialist, localDateTime, SPECIALIST)));
             }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String enrollNewAppointmentMessage(UserTelegram recipient, UserTelegram sender, LocalDateTime localDateTime, StatusPerson statusPerson) {
+        String responseMsg = "";
+        switch (statusPerson) {
+            case VISITOR -> responseMsg = String.format("%s, сообщаем, что клиент %s записался на консультацию на %s в %s",
+                    recipient.getFirstName(),
+                    sender.getFirstName(),
+                    localDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s подтвердил назначенную встречу на %s в %s",
+                    recipient.getFirstName(),
+                    sender.getFirstName(),
+                    localDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        }
+        return responseMsg;
     }
 
     private String cancellationMessage(SpecialistAppointments appointment, StatusPerson statusPerson) {
