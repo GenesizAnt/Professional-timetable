@@ -90,8 +90,9 @@ public class MainMessageService {
                     userTelegram.setPersonMainService(person);
                     userTelegram.setRole(person.getRole());
                     userTelegramService.save(userTelegram);
-                    response = "Email успешно добавлен, теперь доступны другие функции бота";
+                    response = "Email успешно добавлен, теперь доступны уведомления";
                 } else {
+//                    if ()
                     response = String.format("%s, email уже был добавлен!", name);
                 }
             } else {

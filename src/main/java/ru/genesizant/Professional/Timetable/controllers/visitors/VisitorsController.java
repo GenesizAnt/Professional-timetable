@@ -151,6 +151,7 @@ public class VisitorsController {
                     (Long) request.getSession().getAttribute("id")), PersonFullName.class);
 
             datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullNameRegistered, Long.valueOf(selectedSpecialistId), VISITOR);
+            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting.get(), (Long) request.getSession().getAttribute("id"), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
         } else {
             return encodeError("Для записи нужно выбрать ДАТУ и ВРЕМЯ приема");

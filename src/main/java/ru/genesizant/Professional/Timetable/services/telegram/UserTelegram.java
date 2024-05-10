@@ -24,6 +24,9 @@ public class UserTelegram {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "agree")
+    private boolean agree;
+
     @OneToOne
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person personMainService;
@@ -86,5 +89,13 @@ public class UserTelegram {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isAgree() {
+        return agree;
+    }
+
+    public void setAgree(boolean agree) {
+        this.agree = agree;
     }
 }
