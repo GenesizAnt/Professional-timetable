@@ -18,6 +18,7 @@ import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.config.security.PersonDetails;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.RegistrationService;
+import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 import ru.genesizant.Professional.Timetable.util.PersonValidator;
 
 @Controller
@@ -29,14 +30,16 @@ public class AuthController {
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final PersonService personService;
+    private final SpecialistsAndClientService specialistsAndClientService;
 
     @Autowired
-    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService) {
+    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService, SpecialistsAndClientService specialistsAndClientService) {
         this.personValidator = personValidator;
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
         this.personService = personService;
+        this.specialistsAndClientService = specialistsAndClientService;
     }
 
     @GetMapping("/login")
@@ -51,18 +54,29 @@ public class AuthController {
 
     @PostMapping("/registration")
     public String performRegistration(@ModelAttribute("person") @Valid PersonDTO personDTO,
-                                      BindingResult bindingResult, HttpSession session) {
+                                      BindingResult bindingResult, HttpSession session,
+                                      @RequestParam String role,
+                                      @RequestParam String specialistPhone) {
 
-        Person person = concertPerson(personDTO);
+        Person person = concertPerson(personDTO, role);
         personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors()) {
             return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
+        }
+        Person specialist = personService.findSpecialistByPhoneNumber(specialistPhone);
+        if (specialist == null) {
+            return "/auth/registration?errorNumber=";
         }
 
         String jwtToken = jwtUtil.generateToken(person.getEmail());
         session.setAttribute("jwtToken", jwtToken); // ToDo добавить в форму регистрации зарегистрироваться как специалист
 
         registrationService.register(person, jwtToken);
+
+        if (specialistPhone != null) {
+            specialistsAndClientService.newPair(person, specialistPhone);
+        }
+
         return "redirect:/auth/login";
     }
 
@@ -105,11 +119,16 @@ public class AuthController {
             }
         }
     }
+
     //ToDo lesson 92 - правильно сделать отдельный метод @ExceptionHandler для возвращения кода и ошибки
 // return Map.of("message", "Incorrect credentials!"); //ToDo как создать свою ошибку 1:03:00 https://youtu.be/NIv9TFTSIlg?t=3933
-    private Person concertPerson(PersonDTO personDTO) {
+    private Person concertPerson(PersonDTO personDTO, String role) {
         Person person = this.modelMapper.map(personDTO, Person.class);
-        person.setRole("ROLE_USER"); //ToDo это должно быть не здесь?? временная заглушка
+        if (role.equals("specialist")) {
+            person.setRole("ROLE_ADMIN");
+        } else if (role.equals("client")) {
+            person.setRole("ROLE_USER"); //ToDo это должно быть не здесь?? временная заглушка
+        }
         return person;
     }
 }

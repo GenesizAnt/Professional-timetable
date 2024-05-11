@@ -77,4 +77,8 @@ public class PersonService {
         person.setPassword(passwordEncoder.encode(newPass));
         personRepository.save(person);
     }
+
+    public Person findSpecialistByPhoneNumber(String specialistPhone) {
+        return personRepository.findByPhoneNumberAndRole(specialistPhone, "ROLE_ADMIN").orElse(null);
+    }
 }

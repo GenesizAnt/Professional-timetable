@@ -127,6 +127,12 @@
 <div class="wrapper">
     <form th:method="POST" th:action="@{/auth/registration}" th:object="${person}">
         <h1>Регистрация</h1>
+        <div class="alert alert-danger text-center" role="alert" th:if="${param.errorNumber != null}">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                <use xlink:href="#exclamation-triangle-fill"/>
+            </svg>
+            <span style="color:firebrick" th:text="${param.errorNumber}"></span>
+        </div>
 
         <div class="input-box">
             <div class="input-field">
@@ -148,17 +154,32 @@
 
         <div class="input-box">
             <div class="input-field">
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Телефон" oninput="validatePhoneNumber()" maxlength="14"><i class='bx bxs-phone'></i>
+            </div>
+            <div class="input-field">
                 <input type="password" id="password" th:field="*{password}" placeholder="Пароль" required oninput="checkPasswordMatch()">
                 <i class='bx bxs-lock-alt'></i>
             </div>
+        </div>
+
+        <div class="input-box">
             <div class="input-field">
-                <input type="password" id="confirmPassword" placeholder="Подтвердите пароль" required oninput="checkPasswordMatch()">
-                <i class='bx bxs-lock-alt'></i>
+                <label for="role">Выберите роль:</label>
+                <select id="role" name="role" onchange="showSpecialistField()">
+                    <option value=""></option>
+                    <option value="client">Клиент</option>
+                    <option value="specialist">Специалист</option>
+                </select>
             </div>
-            <p id="passwordMatchMessage"></p>
+            <div class="input-field" id="specialistField" style="display: none;">
+                <input type="text" id="specialistPhone" name="specialistPhone" placeholder="Введите номер телефона специалиста" oninput="validatePhoneNumber()" maxlength="14">
+                <i class='bx bxs-phone'></i>
+            </div>
         </div>
 
         <label><input type="checkbox" onchange="checkPasswordMatch()">Согласие на обработку персональных данных</label>
+        <p id="passwordMatchMessage"></p>
+        <p id="phoneNumberError" style="color: red; display: none;">Пожалуйста, введите телефон в формате +7234567890</p>
 
         <button type="submit" class="btn" id="submitBtn">Зарегистрироваться</button>
     </form>
@@ -166,20 +187,42 @@
 
 
 <script>
+
+    function showSpecialistField() {
+        var role = document.getElementById("role").value;
+        var specialistField = document.getElementById("specialistField");
+
+        if (role === "specialist") {
+            specialistField.style.display = "none";
+        } else {
+            specialistField.style.display = "block";
+        }
+    }
+
+    function validatePhoneNumber() {
+        var phoneNumberValue = document.getElementById('phoneNumber').value;
+        var specialistPhoneValue = document.getElementById('specialistPhone').value;
+        var phoneNumberRegex = /^\+\d{1,3}\d{10}$/;
+
+        if (!phoneNumberRegex.test(phoneNumberValue)) {
+            document.getElementById('phoneNumberError').style.display = 'block';
+        } else {
+            document.getElementById('phoneNumberError').style.display = 'none';
+        }
+    }
+
     function checkPasswordMatch() {
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
         var agreeCheckbox = document.querySelector('input[type="checkbox"]');
 
         var message = document.getElementById("passwordMatchMessage");
         var submitButton = document.getElementById("submitBtn"); // предполагается, что кнопка отправки имеет идентификатор "submitBtn"
 
-        if (password === confirmPassword && agreeCheckbox.checked) {
+        if (agreeCheckbox.checked) {
             message.textContent = "";
             message.style.color = "green";
             submitButton.disabled = false; // Разблокировать кнопку отправки
         } else {
-            message.textContent = "Пароли не совпадают или галочка не установлена";
+            message.textContent = "Галочка не установлена";
             message.style.color = "red";
             submitButton.disabled = true; // Заблокировать кнопку отправки
         }

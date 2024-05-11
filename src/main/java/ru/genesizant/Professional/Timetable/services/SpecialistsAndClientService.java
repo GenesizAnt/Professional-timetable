@@ -8,9 +8,7 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.repositories.SpecialistsAndClientRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SpecialistsAndClientService {
@@ -48,5 +46,30 @@ public class SpecialistsAndClientService {
     // Найти пару Спец-Клиент по ИД клиента
     public Optional<SpecialistsAndClient> findByVisitorListId(Long idVisitor) {
         return specialistsAndClientRepository.findByVisitorListId(idVisitor);
+    }
+
+    public void newPair(Person newPerson, String specialistPhone) {
+        Map<String, String> fio = getFIO(specialistPhone);
+        Optional<Person> specialist = personService.findByFullName(
+                fio.get("username"),
+                fio.get("surname"),
+                fio.get("patronymic"));
+        Optional<Person> visitor = personService.findByFullName(newPerson.getUsername(), newPerson.getSurname(), newPerson.getPatronymic());
+
+        SpecialistsAndClient newAppointSpecialist = new SpecialistsAndClient();
+        newAppointSpecialist.setVisitorList(visitor.get());
+        newAppointSpecialist.setSpecialistList(specialist.get());
+        specialistsAndClientRepository.save(newAppointSpecialist);
+    }
+
+    private Map<String, String> getFIO(String specialistName) {
+        Map<String, String> fio = new HashMap<>();
+        String[] fioArray = specialistName.split(" ");
+        if (fioArray.length == 3) {
+            fio.put("surname", fioArray[0]); // Фамилия
+            fio.put("username", fioArray[1]); // Имя
+            fio.put("patronymic", fioArray[2]); // Отчество
+        }
+        return fio;
     }
 }
