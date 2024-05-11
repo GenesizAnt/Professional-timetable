@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
@@ -16,11 +17,13 @@ public class PersonService {
 
     private final PersonRepository personRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PersonService(PersonRepository personRepository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<Person> findByEmail(String email) {
@@ -67,5 +70,11 @@ public class PersonService {
     // найти запись по ФИО
     public Optional<Person> findByFullName(String username, String surname, String patronymic) {
         return personRepository.findByUsernameAndSurnameAndPatronymic(username, surname, patronymic);
+    }
+
+    public void setNewPassword(String text, Person person) {
+        String newPass = text.substring(text.indexOf("ь") + 1).trim();
+        person.setPassword(passwordEncoder.encode(newPass));
+        personRepository.save(person);
     }
 }

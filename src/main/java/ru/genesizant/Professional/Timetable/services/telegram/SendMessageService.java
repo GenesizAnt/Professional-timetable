@@ -3,6 +3,7 @@ package ru.genesizant.Professional.Timetable.services.telegram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.model.Person;
@@ -60,6 +61,15 @@ public class SendMessageService {
             throw new RuntimeException(e);
         }
     }
+
+//    public void deleteMsgWithPassword(Integer messageId, Long chatId) {
+//        DeleteMessage deleteMessage = new DeleteMessage(chatId.toString(), messageId);
+//        try {
+//            telegramBot.execute(deleteMessage);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private String enrollNewAppointmentMessage(UserTelegram recipient, UserTelegram sender, LocalDateTime localDateTime, StatusPerson statusPerson) {
         String responseMsg = "";

@@ -10,16 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.PersonService;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MainMessageService {
@@ -32,14 +26,16 @@ public class MainMessageService {
     private String regex;
 
     private final PersonService personService;
-    private final SpecialistAppointmentsService specialistAppointmentsService;
-    private final UserTelegramService userTelegramService;;
+    private final UserTelegramService userTelegramService;
+//    private final DeleteMessageService deleteMessageService;
+//    private final SendMessageService sendMessageService;
 
     @Autowired
-    public MainMessageService(PersonService personService, SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService) {
+    public MainMessageService(PersonService personService, UserTelegramService userTelegramService) {
         this.personService = personService;
-        this.specialistAppointmentsService = specialistAppointmentsService;
         this.userTelegramService = userTelegramService;
+//        this.deleteMessageService = deleteMessageService;
+//        this.sendMessageService = sendMessageService;
     }
 
     //Получает и обрабатывает сообщение отправленное в бот
@@ -49,6 +45,7 @@ public class MainMessageService {
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
+            Integer messageId = update.getMessage().getMessageId();
 
             String response;
             switch (text) {
@@ -63,14 +60,26 @@ public class MainMessageService {
                                 " использования всех функций бота необходимо ввести email, который был использован" +
                                 " в приложении \"Время профессионалов\" %s", name, ":blush:"));
                     } else {
-//                        response = String.format("Привет %s! Чем могу помочь?", name);
                         response = EmojiParser.parseToUnicode(String.format("Привет %s! Чем могу помочь? %s", name, ":blush:"));
                     }
                 }
-                case "/stop" -> response = String.format("До свидания %s!", name);
-                default -> {
-                    response = getResponse(text, chatId, name);
+                case "/changepassword" -> {
+                    UserTelegram user = userTelegramService.findById(chatId);
+                    response = "";
+                    if (user == null) {
+                        response = EmojiParser.parseToUnicode(String.format("Вы еще не зарегистрированы! В меню нажмите /start %s", ":blush:"));
+                    } else {
+                        if (user.isAgree()) {
+                            response = EmojiParser.parseToUnicode(String.format("%s, чтобы изменить пароль в новом сообщении" +
+                                    " укажите \"Пароль (пароль, который хотите установить)\" %s", name, ":blush:"));
+                        }
+                        if (!user.isAgree()) {
+                            response = EmojiParser.parseToUnicode(String.format("%s, Ваше подключение к боту еще не подтверждено. " +
+                                    "Для подтверждения перейдите на страницу \"Мой профиль\" в основном приложении  %s", name, ":blush:"));
+                        }
+                    }
                 }
+                default -> response = getResponse(text, chatId, name, messageId);
             }
             return getReceiveMessage(chatId, response);
         }
@@ -78,7 +87,7 @@ public class MainMessageService {
     }
 
     //Обработка разных сценариев неизвестного сообщения от пользователя
-    private String getResponse(String text, Long chatId, String name) {
+    private String getResponse(String text, Long chatId, String name, Integer messageId) {
         String response;
         if (text.matches(regex)) {
             if (personService.findByEmail(text.toLowerCase()).isPresent()) {
@@ -92,7 +101,6 @@ public class MainMessageService {
                     userTelegramService.save(userTelegram);
                     response = "Email успешно добавлен, теперь доступны уведомления";
                 } else {
-//                    if ()
                     response = String.format("%s, email уже был добавлен!", name);
                 }
             } else {
@@ -100,6 +108,11 @@ public class MainMessageService {
                         "пользователя в приложении \"Время профессионалов\". Ссылку на регистрацию можете" +
                         " попросить у вашего специалиста";
             }
+        } else if (text.startsWith("Пароль")) {
+            personService.setNewPassword(text, userTelegramService.findById(chatId).getPersonMainService());
+//            deleteMessageService.deleteMsgWithPassword(messageId, chatId);
+//            sendMessageService.deleteMsgWithPassword(messageId, chatId);
+            response = "Пароль изменен и зашифрован" + messageId;
         } else {
             response = "Не понимать тебя";
         }

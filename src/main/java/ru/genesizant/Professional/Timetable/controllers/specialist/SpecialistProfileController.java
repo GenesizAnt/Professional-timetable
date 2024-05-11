@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.visitors;
+package ru.genesizant.Professional.Timetable.controllers.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,27 +7,25 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
 @Controller
-@RequestMapping("/profile")
-public class VisitorProfileController {
+@RequestMapping("/spec_profile")
+public class SpecialistProfileController {
 
     private final JWTUtil jwtUtil;
     private final UserTelegramService userTelegramService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String PROFILE_VIEW_REDIRECT = "redirect:/profile/my_profile";
+    private final String PROFILE_SPEC_VIEW_REDIRECT = "redirect:/spec_profile/my_profile";
 
-    public VisitorProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService) {
+    public SpecialistProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService) {
         this.jwtUtil = jwtUtil;
         this.userTelegramService = userTelegramService;
     }
 
-    // Отображение страницы профиля клиента
+    // Отображение страницы профиля специалиста
     @GetMapping("/my_profile")
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
@@ -35,7 +33,7 @@ public class VisitorProfileController {
         } else {
             return ERROR_LOGIN;
         }
-        return "visitors/visitorprofile";
+        return "specialist/specialistprofile";
     }
 
     // Подтвердить аккаунт в ТГ боте
@@ -47,7 +45,7 @@ public class VisitorProfileController {
         UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
         userTelegram.setAgree(Boolean.TRUE);
         userTelegramService.save(userTelegram);
-        return PROFILE_VIEW_REDIRECT;
+        return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
     // Отметить подтверждение зарегистрированного аккаунта в ТГ боте - т.е. удалить его
@@ -57,7 +55,7 @@ public class VisitorProfileController {
             return ERROR_LOGIN;
         }
         userTelegramService.deleteByPersonId((Long) request.getSession().getAttribute("id"));
-        return PROFILE_VIEW_REDIRECT;
+        return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
 
@@ -74,7 +72,6 @@ public class VisitorProfileController {
                 model.addAttribute("username", userTelegram.getPersonusername());
             }
         }
-
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
 }
