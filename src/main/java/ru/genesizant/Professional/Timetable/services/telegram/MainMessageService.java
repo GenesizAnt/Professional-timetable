@@ -110,8 +110,6 @@ public class MainMessageService {
             }
         } else if (text.startsWith("Пароль")) {
             personService.setNewPassword(text, userTelegramService.findById(chatId).getPersonMainService());
-//            deleteMessageService.deleteMsgWithPassword(messageId, chatId);
-//            sendMessageService.deleteMsgWithPassword(messageId, chatId);
             response = "Пароль изменен и зашифрован" + messageId;
         } else {
             response = "Не понимать тебя";

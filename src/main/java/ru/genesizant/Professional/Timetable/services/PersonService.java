@@ -78,7 +78,7 @@ public class PersonService {
         personRepository.save(person);
     }
 
-    public Person findSpecialistByPhoneNumber(String specialistPhone) {
-        return personRepository.findByPhoneNumberAndRole(specialistPhone, "ROLE_ADMIN").orElse(null);
+    public Optional<Person> findSpecialistByPhoneNumber(String specialistPhone) {
+        return personRepository.findByPhoneNumberAndRole(specialistPhone, "ROLE_ADMIN");
     }
 }

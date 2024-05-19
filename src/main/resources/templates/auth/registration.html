@@ -131,7 +131,19 @@
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                 <use xlink:href="#exclamation-triangle-fill"/>
             </svg>
-            <span style="color:firebrick" th:text="${param.errorNumber}"></span>
+            <span style="color:firebrick" th:text="'Специалиста с таким номером телефона нет: ' + ${param.errorNumber}"></span>
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${param.errorMail != null}">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                <use xlink:href="#exclamation-triangle-fill"/>
+            </svg>
+            <span style="color:firebrick" th:text="'Пользователь с таким email уже существует: ' + ${param.errorMail}"></span>
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${param.errorPass != null}">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                <use xlink:href="#exclamation-triangle-fill"/>
+            </svg>
+            <span style="color:firebrick" th:text="${param.errorPass} + ' Пароль должен быть не менее 4 символов'"></span>
         </div>
 
         <div class="input-box">
@@ -172,14 +184,14 @@
                 </select>
             </div>
             <div class="input-field" id="specialistField" style="display: none;">
-                <input type="text" id="specialistPhone" name="specialistPhone" placeholder="Введите номер телефона специалиста" oninput="validatePhoneNumber()" maxlength="14">
+                <input type="text" id="specialistPhone" name="specialistPhone" placeholder="Номер телефона специалиста +7" oninput="validatePhoneNumber()" maxlength="14">
                 <i class='bx bxs-phone'></i>
             </div>
         </div>
 
         <label><input type="checkbox" onchange="checkPasswordMatch()">Согласие на обработку персональных данных</label>
         <p id="passwordMatchMessage"></p>
-        <p id="phoneNumberError" style="color: red; display: none;">Пожалуйста, введите телефон в формате +7234567890</p>
+        <p id="phoneNumberError" style="color: red; display: none;">Пожалуйста, введите телефон через +7</p>
 
         <button type="submit" class="btn" id="submitBtn">Зарегистрироваться</button>
     </form>

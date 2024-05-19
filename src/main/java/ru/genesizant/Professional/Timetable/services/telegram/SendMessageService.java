@@ -62,6 +62,21 @@ public class SendMessageService {
         }
     }
 
+    public void notifyNewClient(Person specialist, Person client) {
+        UserTelegram specialistTg = userTelegramService.findByPersonId(specialist.getId());
+        try {
+            telegramBot.execute(createMessage(specialistTg.getChatId(), newClientMessage(specialist, client)));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String newClientMessage(Person specialist, Person client) {
+        return String.format("%s, произошла регистрация нового клиента: %s",
+                specialist.getUsername(),
+                client.getFullName());
+    }
+
 //    public void deleteMsgWithPassword(Integer messageId, Long chatId) {
 //        DeleteMessage deleteMessage = new DeleteMessage(chatId.toString(), messageId);
 //        try {

@@ -19,7 +19,14 @@ import ru.genesizant.Professional.Timetable.config.security.PersonDetails;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.RegistrationService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
+import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 import ru.genesizant.Professional.Timetable.util.PersonValidator;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 
 @Controller
 @RequestMapping("/auth")
@@ -31,15 +38,17 @@ public class AuthController {
     private final ModelMapper modelMapper;
     private final PersonService personService;
     private final SpecialistsAndClientService specialistsAndClientService;
+    private final SendMessageService sendMessageService;
 
     @Autowired
-    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService, SpecialistsAndClientService specialistsAndClientService) {
+    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService, SpecialistsAndClientService specialistsAndClientService, SendMessageService sendMessageService) {
         this.personValidator = personValidator;
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
         this.personService = personService;
         this.specialistsAndClientService = specialistsAndClientService;
+        this.sendMessageService = sendMessageService;
     }
 
     @GetMapping("/login")
@@ -59,13 +68,20 @@ public class AuthController {
                                       @RequestParam String specialistPhone) {
 
         Person person = concertPerson(personDTO, role);
-        personValidator.validate(person, bindingResult);
-        if (bindingResult.hasErrors()) {
-            return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
+//        personValidator.validate(person, bindingResult);
+//        if (bindingResult.hasErrors()) {
+//            return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
+//        }
+        Optional<Person> specialist = personService.findSpecialistByPhoneNumber(specialistPhone);
+        if (specialist.isEmpty() && role.equals("client")) {
+//            bindingResult.rejectValue("errorNumber", "", "Некорректный номер телефона");
+            return "redirect:/auth/registration?errorNumber=" + URLEncoder.encode(specialistPhone, StandardCharsets.UTF_8);
         }
-        Person specialist = personService.findSpecialistByPhoneNumber(specialistPhone);
-        if (specialist == null) {
-            return "/auth/registration?errorNumber=";
+        if (personService.findByEmail(person.getEmail()).isPresent()) {
+            return "redirect:/auth/registration?errorMail=" + URLEncoder.encode(person.getEmail(), StandardCharsets.UTF_8);
+        }
+        if (person.getPassword().length() < 3) {
+            return "redirect:/auth/registration?errorPass=" + URLEncoder.encode("Внимание!", StandardCharsets.UTF_8);
         }
 
         String jwtToken = jwtUtil.generateToken(person.getEmail());
@@ -73,8 +89,9 @@ public class AuthController {
 
         registrationService.register(person, jwtToken);
 
-        if (specialistPhone != null) {
+        if (!specialistPhone.equals("") && role.equals("client")) {
             specialistsAndClientService.newPair(person, specialistPhone);
+            sendMessageService.notifyNewClient(specialist.get(), person);
         }
 
         return "redirect:/auth/login";
