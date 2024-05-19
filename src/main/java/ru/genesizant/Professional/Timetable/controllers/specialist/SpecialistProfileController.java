@@ -7,8 +7,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/spec_profile")
@@ -16,13 +22,15 @@ public class SpecialistProfileController {
 
     private final JWTUtil jwtUtil;
     private final UserTelegramService userTelegramService;
+    private final PersonService personService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String PROFILE_SPEC_VIEW_REDIRECT = "redirect:/spec_profile/my_profile";
 
-    public SpecialistProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService) {
+    public SpecialistProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService, PersonService personService) {
         this.jwtUtil = jwtUtil;
         this.userTelegramService = userTelegramService;
+        this.personService = personService;
     }
 
     // Отображение страницы профиля специалиста
@@ -61,6 +69,7 @@ public class SpecialistProfileController {
 
     private void displayPage(Model model, HttpServletRequest request) {
         UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
+        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
         if (userTelegram == null) {
             model.addAttribute("notacc", "");
         } else {
@@ -73,5 +82,26 @@ public class SpecialistProfileController {
             }
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
+        String currentUrl = request.getRequestURL().toString();
+        String baseUrl = extractBaseUrl(currentUrl);
+        model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + person.get().getPhoneNumber() + "&role=client");
+//        model.addAttribute("specialistPhone", "?regNumber=" + person.get().getPhoneNumber());
+    }
+
+    private String extractBaseUrl(String urlString) {
+        String baseUrl;
+        try {
+            URI uri = new URI(urlString);
+            int port = uri.getPort();
+            String domain = uri.getScheme() + "://" + uri.getHost();
+            if (port != -1) {
+                domain += ":" + port;
+            }
+            baseUrl = domain + "/";
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            baseUrl = "";
+        }
+        return baseUrl;
     }
 }

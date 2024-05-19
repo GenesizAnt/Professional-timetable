@@ -72,7 +72,7 @@ public class AuthController {
 //        if (bindingResult.hasErrors()) {
 //            return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
 //        }
-        Optional<Person> specialist = personService.findSpecialistByPhoneNumber(specialistPhone);
+        Optional<Person> specialist = personService.findSpecialistByPhoneNumber("+" + specialistPhone.trim());
         if (specialist.isEmpty() && role.equals("client")) {
 //            bindingResult.rejectValue("errorNumber", "", "Некорректный номер телефона");
             return "redirect:/auth/registration?errorNumber=" + URLEncoder.encode(specialistPhone, StandardCharsets.UTF_8);
@@ -90,7 +90,7 @@ public class AuthController {
         registrationService.register(person, jwtToken);
 
         if (!specialistPhone.equals("") && role.equals("client")) {
-            specialistsAndClientService.newPair(person, specialistPhone);
+            specialistsAndClientService.newPair(person, specialist.get());
             sendMessageService.notifyNewClient(specialist.get(), person);
         }
 

@@ -48,8 +48,8 @@ public class SpecialistsAndClientService {
         return specialistsAndClientRepository.findByVisitorListId(idVisitor);
     }
 
-    public void newPair(Person newPerson, String specialistPhone) {
-        Optional<Person> specialistByPhoneNumber = personService.findSpecialistByPhoneNumber(specialistPhone);
+    public void newPair(Person newPerson, Person specialist) {
+//        Optional<Person> specialistByPhoneNumber = personService.findSpecialistByPhoneNumber(specialistPhone);
 //        Map<String, String> fio = getFIO(specialistPhone);
 //        Optional<Person> specialist = personService.findByFullName(
 //                fio.get("username"),
@@ -59,7 +59,7 @@ public class SpecialistsAndClientService {
 
         SpecialistsAndClient newAppointSpecialist = new SpecialistsAndClient();
         newAppointSpecialist.setVisitorList(newPerson);
-        newAppointSpecialist.setSpecialistList(specialistByPhoneNumber.get());
+        newAppointSpecialist.setSpecialistList(specialist);
         specialistsAndClientRepository.save(newAppointSpecialist);
     }
 

@@ -239,6 +239,31 @@
             submitButton.disabled = true; // Заблокировать кнопку отправки
         }
     }
+
+    // Функция для получения параметров из URL
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    // Получаем параметры из URL
+    var phoneParam = getParameterByName('phone');
+    var roleParam = getParameterByName('role');
+
+    // Заполняем поле телефона, если параметр был передан
+    if (phoneParam) {
+        document.getElementById('specialistPhone').value = phoneParam;
+    }
+
+    // Выбираем роль, если параметр был передан
+    if (roleParam) {
+        document.getElementById('role').value = roleParam;
+    }
 </script>
 
 

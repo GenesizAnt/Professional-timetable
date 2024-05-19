@@ -64,10 +64,12 @@ public class SendMessageService {
 
     public void notifyNewClient(Person specialist, Person client) {
         UserTelegram specialistTg = userTelegramService.findByPersonId(specialist.getId());
-        try {
-            telegramBot.execute(createMessage(specialistTg.getChatId(), newClientMessage(specialist, client)));
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+        if (specialistTg != null) {
+            try {
+                telegramBot.execute(createMessage(specialistTg.getChatId(), newClientMessage(specialist, client)));
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
