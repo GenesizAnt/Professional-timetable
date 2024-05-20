@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class JWTUtil {
 
@@ -63,6 +65,7 @@ public class JWTUtil {
                 try {
                     validateTokenAndRetrieveClaim(jwtToken);
                 } catch (JWTVerificationException e) {
+                    log.error("ERROR ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id") + " " + e.getMessage());
                     return false;
                     //ToDo какую ошибку тут передать или ничего не надо???
                 }

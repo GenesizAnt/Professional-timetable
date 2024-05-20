@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -117,6 +119,7 @@ public class AuthController {
             session.setAttribute("email", personDetails.getEmail());
             session.setAttribute("id", personDetails.getId());
 
+            log.info("В приложение зашел пользователь" + personDetails.getUsername() + ". ID: " + personDetails.getId());
         } catch (Exception e) {
             return "redirect:/auth/login?error";
         }

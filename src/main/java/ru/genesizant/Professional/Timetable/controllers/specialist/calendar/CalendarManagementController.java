@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.calendar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/calendar")
 public class CalendarManagementController {
@@ -52,7 +54,7 @@ public class CalendarManagementController {
             displayPage(model, request);
 
         } else {
-            model.addAttribute("error", "Упс! Пора перелогиниться!");
+            model.addAttribute("error", "Упс! Непредвиденная ошибка. Переоткройте, пожалуйста приложение");
             return ERROR_LOGIN;
         }
         return "specialist/admission_calendar_view";
@@ -84,6 +86,7 @@ public class CalendarManagementController {
                                                             minInterval,
                                                             StatusAdmissionTime.AVAILABLE);
                 displayPage(model, request);
+                log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
             }
         } else {
             return encodeError("Для создания календаря нужно внести все данные по форме");
