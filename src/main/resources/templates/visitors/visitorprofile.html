@@ -13,8 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/67a92a6cb5.js" crossorigin="anonymous"></script>
-    <link rel="shortcut icon" href="/static/img/t.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/static/css/fontello.css">
+    <link rel="shortcut icon" href="/t.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/fontello.css">
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8"
@@ -60,7 +60,7 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-12">
-                <h1 th:text="'Привет, ' + ${name} + '! Это меню твоего профиля'"></h1>
+                <h1 th:text="${name} + ', это меню твоего профиля'"></h1>
             </div>
         </div>
     </div>
