@@ -3,6 +3,7 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_clien
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
+@Slf4j
 @Controller
 @RequestMapping("/enroll")
 public class EnrollClientController {
@@ -88,10 +90,9 @@ public class EnrollClientController {
         }
 
         if (clientId.isPresent() && !clientId.get().equals("")) {
-
             handleCustomerSelection(model, clientId, registeredStatus);
             displayPage(model, request);
-
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Выбрал клиента для записи:" + clientId);
         } else {
             return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
@@ -111,6 +112,7 @@ public class EnrollClientController {
         if (isValidPersonInformation(username, surname, patronymic)) {
             unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById((long) request.getSession().getAttribute("id")).get());
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". создает незарегистрированного пользователя");
         } else {
             return encodeError("Чтобы создать незарегистрированного в приложении клиента нужно указать ФИО полностью");
         }
@@ -142,17 +144,16 @@ public class EnrollClientController {
                         specialist,
                         visitor,
                         Boolean.FALSE, Boolean.FALSE);
-
                 sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meeting.get(), personFullName.getId(), (long) request.getSession().getAttribute("id"));
             } else if (registeredStatus.get().equals(UNREGISTERED)) {
                 personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
             }
             datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Записал клиента: " + selectedCustomerId + " на " + meeting.get());
         } else {
             return encodeError("Для записи нужно выбрать клиента, время и дату записи");
         }
-
         return ENROLL_VIEW_REDIRECT;
     }
 
@@ -185,7 +186,7 @@ public class EnrollClientController {
                 datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
             }
             displayPage(model, request);
-
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Запись клиента: " + selectedCustomerId + " на выбранную дату из таблицы: " + meetingDateTime);
         } else {
             return encodeError("Для записи нужно выбрать клиента, время и дату записи");
         }
@@ -206,6 +207,7 @@ public class EnrollClientController {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             specialistAppointmentsService.removeAppointment(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Отменяет запись на: " + meetingCancel.get());
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
@@ -234,28 +236,7 @@ public class EnrollClientController {
                 personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
 
         sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), (long) request.getSession().getAttribute("id"));
-
-//        Map<String, String> identityVisitor = getIdentificationMeetingPerson(fioPerson, (long) request.getSession().getAttribute("id")); //ToDo Чтобы не проверять через ФИО добавить в таблицу ид клинета, но не отрисовывать
-
-//        if (registeredStatus.get().equals(REGISTERED)) {
-//            PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-//            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
-//        } else if (registeredStatus.get().equals(UNREGISTERED)) {
-//            PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-//            datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullName, (long) request.getSession().getAttribute("id"), SPECIALIST);
-//        }
-
-
-//        (long) request.getSession().getAttribute("id")
-
-
-//        if (true) {
-//            datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), (long) request.getSession().getAttribute("id"));
-//            displayPage(model, request);
-//        } else {
-//            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
-//        }
-
+        log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
         return ENROLL_VIEW_REDIRECT;
     }
 

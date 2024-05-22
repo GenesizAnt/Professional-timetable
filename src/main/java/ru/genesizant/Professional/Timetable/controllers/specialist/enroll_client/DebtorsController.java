@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_clien
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/administration")
 public class DebtorsController {
@@ -56,6 +58,7 @@ public class DebtorsController {
         if (agreementId.isPresent() && !agreementId.get().equals("")) {
             specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил оплату по консультации с ID:" + agreementId.get());
         } else {
             return ERROR_LOGIN;
         }
@@ -72,6 +75,7 @@ public class DebtorsController {
         if (agreementId.isPresent() && !agreementId.get().equals("")) {
             specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.FALSE);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Отменил оплату по консультации с ID:" + agreementId.get());
         } else {
             return ERROR_LOGIN;
         }

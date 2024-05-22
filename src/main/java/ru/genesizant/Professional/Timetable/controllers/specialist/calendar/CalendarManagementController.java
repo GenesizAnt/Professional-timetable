@@ -105,6 +105,7 @@ public class CalendarManagementController {
         if (selectedDate.isPresent()) {
             datesAppointmentsService.deleteVisitDate(selectedDate.get());
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил полный день " + selectedDate.get());
         } else {
             return encodeError("Для удаления нужно выбрать дату");
         }
@@ -124,6 +125,7 @@ public class CalendarManagementController {
         if (startDateRange.isPresent() && endDateRange.isPresent()) {
             datesAppointmentsService.deleteByVisitDateBetween(startDateRange.get(), endDateRange.get());
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил диапазон дней из доступных для выбора дат");
         } else {
             return encodeError("Для удаления нужно выбрать диапазон дат");
         }
@@ -142,6 +144,7 @@ public class CalendarManagementController {
         if (!selectedTimeAdmission.equals("") && dateOne.isPresent()) {
             datesAppointmentsService.deleteTimeAdmission(dateOne.get(), selectedTimeAdmission);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил конкретное Время из доступного дня");
         } else {
             return encodeError("Для удаления нужно выбрать дату и время");
         }
@@ -161,6 +164,7 @@ public class CalendarManagementController {
         if (!startTimeAdmission.equals("") && !endTimeAdmission.equals("") && dateOne.isPresent()) {
             datesAppointmentsService.deleteTimeRangeAdmission(dateOne.get(), startTimeAdmission, endTimeAdmission);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил диапазон времени из доступного дня");
         } else {
             return encodeError("Для удаления нужно выбрать дату и время");
         }
@@ -180,6 +184,7 @@ public class CalendarManagementController {
         if (isValidSetTimeForm(date, timeAdmission, status)) {
             datesAppointmentsService.setStatusTimeAdmission(date.get(), timeAdmission, status);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности конкретного Времени из календаря доступного для выбора");
         } else {
             return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
         }
@@ -200,6 +205,7 @@ public class CalendarManagementController {
         if (isValidSetRangeTimeForm(date, startStartAdmission, endStartAdmission, status)) {
             datesAppointmentsService.setStatusRangeTimeAdmission(date.get(), startStartAdmission, endStartAdmission, status);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности Диапазона Времени из календаря доступного для выбора");
         } else {
             return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
         }
@@ -217,6 +223,7 @@ public class CalendarManagementController {
         if (date.isPresent()) {
             datesAppointmentsService.clearDateVisitBefore(date.get());
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил все даты из календаря до указанной даты - " + date.get());
         } else {
             return encodeError("Нужно выбрать дату, ДО которой будет очистка календаря");
         }
@@ -236,6 +243,7 @@ public class CalendarManagementController {
         if (isValidFormAddTimeAvailability(date, timeAvailability, status)) {
             datesAppointmentsService.addTimeAvailability(date.get(), timeAvailability, status);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь конкретное время, дату и статус доступное для приема");
         } else {
             return encodeError("Нужно выбрать дату, время и статус времени приема");
         }
@@ -257,6 +265,7 @@ public class CalendarManagementController {
         if (isValidFormAddRangeTimeAvailability(date, startTimeAvailability, endTimeAvailability, status, intervalHour)) {
             datesAppointmentsService.addRangeTimeAvailability(date.get(), startTimeAvailability, endTimeAvailability, intervalHour, status);
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь Диапазон времени, дату и статус доступное для приема");
         } else {
             return encodeError("Нужно выбрать дату, время, статус и интервал времени приема");
         }
@@ -275,7 +284,7 @@ public class CalendarManagementController {
             try {
                 allCalendar.add(objectMapper.writeValueAsString(calendarForView));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
             }
         }
 

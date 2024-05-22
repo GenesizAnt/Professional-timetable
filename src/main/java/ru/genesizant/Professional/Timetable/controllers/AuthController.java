@@ -119,7 +119,7 @@ public class AuthController {
             session.setAttribute("email", personDetails.getEmail());
             session.setAttribute("id", personDetails.getId());
 
-            log.info("В приложение зашел пользователь" + personDetails.getUsername() + ". ID: " + personDetails.getId());
+            log.info("В приложение зашел пользователь " + personDetails.getUsername() + ", ID: " + personDetails.getId());
         } catch (Exception e) {
             return "redirect:/auth/login?error";
         }
