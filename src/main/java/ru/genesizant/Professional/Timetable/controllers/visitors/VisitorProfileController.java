@@ -34,7 +34,7 @@ public class VisitorProfileController {
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
-            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел  на страницу профиля клиента");
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел на страницу профиля клиента");
         } else {
             return ERROR_LOGIN;
         }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeek;
 import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.*;
 
+@Slf4j
 @Service
 public class DatesAppointmentsService {
 
@@ -58,9 +60,7 @@ public class DatesAppointmentsService {
                 DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, getScheduleJSON(availableRecordingTime));
                 datesAppointmentsRepository.save(newRecord);
             }
-
         }
-
     }
 
 
@@ -149,7 +149,7 @@ public class DatesAppointmentsService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка получения расписания в формате Map<String, String> где Map<Время, Статус доступности>. Переданное расписание: " + scheduleTime + " Текст ошибки: " + e.getMessage());
         }
         return freeSchedule;
     }
@@ -216,7 +216,7 @@ public class DatesAppointmentsService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка получения расписания в формате Map<String, String> для клиента. Переданное расписание: " + scheduleTime + ". Для клиента: " + personFullNameRegistered + " Текст ошибки: " + e.getMessage());
         }
         return freeSchedule;
     }
@@ -227,7 +227,7 @@ public class DatesAppointmentsService {
         try {
             return objectMapper.writeValueAsString(availableRecordingTime);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка получения расписание из формата Map<String, String> расписание в JSON формате. Переданное расписание: " + availableRecordingTime + " Текст ошибки: " + e.getMessage());
             return null; //ToDo решить как убрать возврат нулл
         }
     }
@@ -361,7 +361,7 @@ public class DatesAppointmentsService {
         }
     }
 
-    //Добавить диапазон времени приема в определеный день
+    //Добавить диапазон времени приема в определенный день
     public void addRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, String intervalHour, StatusAdmissionTime status) {
         Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
         if (visitDate.isPresent()) {
@@ -395,7 +395,8 @@ public class DatesAppointmentsService {
                 datesAppointments.get().setScheduleTime(updatedScheduleTime);
                 datesAppointmentsRepository.save(datesAppointments.get());
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Ошибка записи (обозначить как забронированное время) Клиента на прием. Дата бронирования: " + meeting +
+                        "Клиент: " + personFullName + "ИД спеца: " + specialistId + " Текст ошибки: " + e.getMessage());
             }
         }
     }
@@ -415,7 +416,7 @@ public class DatesAppointmentsService {
                 datesAppointments.get().setScheduleTime(updatedScheduleTime);
                 datesAppointmentsRepository.save(datesAppointments.get());
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Ошибка отмены записи Клиента на прием. Дата бронирования: " + meeting + "ИД спеца: " + specialistId + " Текст ошибки: " + e.getMessage());
             }
         }
     }
@@ -433,7 +434,7 @@ public class DatesAppointmentsService {
             try {
                 fiveNearestDates.add(objectMapper.writeValueAsString(calendarForView));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
             }
         }
         return fiveNearestDates;

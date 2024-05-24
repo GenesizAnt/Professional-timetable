@@ -52,7 +52,6 @@ public class PersonService {
             allUsers.add(
                     modelMapper.map(personRepository.findById(person.getId()), PersonFullName.class)
             );
-
         }
         return allUsers;
     }

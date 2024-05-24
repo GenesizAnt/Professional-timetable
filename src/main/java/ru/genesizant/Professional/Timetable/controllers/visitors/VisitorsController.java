@@ -70,6 +70,7 @@ public class VisitorsController {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел на страницу меню по специалисту");
         } else {
             return ERROR_LOGIN;
         }
@@ -103,6 +104,7 @@ public class VisitorsController {
         for (int i = 0; i < allCalendar.size(); i++) {
             model.addAttribute("day" + i, allCalendar.get(i));
         }
+        log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел на отдельную страницу с отображением только календаря - 20 дней");
         return "visitors/full_calendar";
     }
 
@@ -130,7 +132,7 @@ public class VisitorsController {
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(specialistId), VISITOR);
             sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, (Long) request.getSession().getAttribute("id"), Long.valueOf(specialistId));
             displayPage(model, request);
-
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Записался через кнопку в таблице на: " + meeting);
         } else {
             return encodeError("Если Вы видите это сообщение, то произошла неизвестная ошибка");
         }
@@ -155,6 +157,7 @@ public class VisitorsController {
             datesAppointmentsService.enrollVisitorNewAppointments(meeting.get(), personFullNameRegistered, Long.valueOf(selectedSpecialistId), VISITOR);
             sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting.get(), (Long) request.getSession().getAttribute("id"), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Записался через кнопку на странице на: " + meeting);
         } else {
             return encodeError("Для записи нужно выбрать ДАТУ и ВРЕМЯ приема");
         }
@@ -175,6 +178,7 @@ public class VisitorsController {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             specialistAppointmentsService.removeAppointment(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Отменил запись на: " + meetingCancel);
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }

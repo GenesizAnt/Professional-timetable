@@ -23,7 +23,7 @@ public class UserTelegramService {
 
     public boolean isUserEmailEmpty(Long chatId) {
         Optional<UserTelegram> userOptional = userTelegramRepository.findById(chatId);
-        return !userOptional.isPresent() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
+        return userOptional.isEmpty() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
     }
 
     public UserTelegram findByPersonId(Long id) {

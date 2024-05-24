@@ -40,15 +40,15 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        SendMessage sendMessage = mainMessageService.messageReceiver(update);
         try {
-            SendMessage sendMessage = mainMessageService.messageReceiver(update);
             if (sendMessage.getText().startsWith("Пароль изменен и зашифрован")) {
                 deleteMsgWithPassword(Integer.parseInt(sendMessage.getText().replaceAll("\\D", "")), Long.valueOf(sendMessage.getChatId()));
                 sendMessage.setText("Пароль изменен и зашифрован");
             }
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка отправка сообщения: " + sendMessage.getText() + ". Текст ошибки: " + e.getMessage());
         }
     }
 
@@ -57,19 +57,19 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(deleteMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.error("Ошибка удаления сообщения в чате: " + deleteMessage.getChatId() + ". Текст ошибки: " + e.getMessage());
         }
     }
 
     @Scheduled(cron = "0 */15 * * * *") // это 15 минут - "* */15 * * * *"
     public void notifySendler() {
+        List<SendMessage> messageList = notifyMessageService.messageReceiver();
         try {
-            List<SendMessage> messageList = notifyMessageService.messageReceiver();
             for (SendMessage sendMessage : messageList) {
                 execute(sendMessage);
             }
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка отправки сообщений по расписанию: " + messageList + ". Текст ошибки: " + e.getMessage());
         }
     }
 
