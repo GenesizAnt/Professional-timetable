@@ -42,6 +42,7 @@ public class DebtorsController {
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу для подтверждения оплат от клиентов");
         } else {
             return ERROR_LOGIN;
         }

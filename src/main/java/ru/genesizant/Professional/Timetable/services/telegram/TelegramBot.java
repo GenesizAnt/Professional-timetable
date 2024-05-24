@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
 
@@ -31,7 +33,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             this.execute(new SetMyCommands(listMenuCommand(), new BotCommandScopeDefault(),null));
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка установки меню бота, пункты меню такие: " + listMenuCommand());
         }
 
     }

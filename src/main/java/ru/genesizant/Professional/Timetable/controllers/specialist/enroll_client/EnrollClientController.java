@@ -72,7 +72,7 @@ public class EnrollClientController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             displayPage(model, request);
-
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу для Записи Клиента");
         } else {
             return ERROR_LOGIN;
         }
@@ -315,7 +315,7 @@ public class EnrollClientController {
             try {
                 allCalendar.add(objectMapper.writeValueAsString(calendarForView));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
             }
         }
 

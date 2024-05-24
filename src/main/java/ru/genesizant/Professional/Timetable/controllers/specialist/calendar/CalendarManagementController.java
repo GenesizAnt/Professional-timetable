@@ -52,7 +52,7 @@ public class CalendarManagementController {
         if (jwtUtil.isValidJWTAndSession(request)) {
 
             displayPage(model, request);
-
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу управления календарем");
         } else {
             model.addAttribute("error", "Упс! Непредвиденная ошибка. Переоткройте, пожалуйста приложение");
             return ERROR_LOGIN;

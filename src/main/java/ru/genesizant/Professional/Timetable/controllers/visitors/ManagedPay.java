@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/managed")
 public class ManagedPay {
@@ -44,6 +46,7 @@ public class ManagedPay {
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел  на страницу управления оплатами");
         } else {
             return ERROR_LOGIN;
         }
@@ -60,6 +63,7 @@ public class ManagedPay {
         if (agreementId.isPresent() && !agreementId.get().equals("")) {
             specialistAppointmentsService.agreementVisitorPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтверждение оплаты на консультацию: " + agreementId);
         } else {
             return ERROR_LOGIN;
         }

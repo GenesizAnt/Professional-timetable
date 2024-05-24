@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,19 +10,16 @@ import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 
+@Slf4j
 @Controller
 @RequestMapping("/specialist")
 public class SpecialistController {
 
     private final JWTUtil jwtUtil;
-    private final PersonService personService;
-    private final DatesAppointmentsService datesAppointmentsService;
 
     @Autowired
-    public SpecialistController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService) {
+    public SpecialistController(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.personService = personService;
-        this.datesAppointmentsService = datesAppointmentsService;
     }
 
     //Отображение меню специалиста, что он может делать
@@ -29,16 +27,8 @@ public class SpecialistController {
     public String getStartMenu(Model model, HttpServletRequest request) {
 
         if (jwtUtil.isValidJWTAndSession(request)) {
-
             model.addAttribute("name", request.getSession().getAttribute("name"));
-
-//            List<Person> specialists = personService.getPersonByRoleList("ROLE_ADMIN");
-
-//            model.addAttribute("name", request.getSession().getAttribute("name"));
-//            model.addAttribute("specialists", specialists);
-//            (long) request.getSession().getAttribute("id")
-
-
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу отображения меню специалиста");
         } else {
             model.addAttribute("error", "Упс! Пора перелогиниться!");
             return "redirect:/auth/login?error";

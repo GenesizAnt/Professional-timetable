@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
+@Slf4j
 @Service
 public class SendMessageService {
 
@@ -43,7 +45,7 @@ public class SendMessageService {
                         cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
             }
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка отправки сообщения об отмене встречи на: " + localDateTime + " у специалиста " + specialistId);
         }
     }
 
@@ -58,7 +60,7 @@ public class SendMessageService {
                         enrollNewAppointmentMessage(visitor, specialist, localDateTime, SPECIALIST)));
             }
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка отправки сообщения о новой встрече на: " + localDateTime + " у специалиста " + specialistId + " и клиента " + visitorId);
         }
     }
 
@@ -68,7 +70,7 @@ public class SendMessageService {
             try {
                 telegramBot.execute(createMessage(specialistTg.getChatId(), newClientMessage(specialist, client)));
             } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+                log.error("Ошибка отправки сообщения о новом клиенте: " + client.getId() + " у специалиста " + specialist.getId());
             }
         }
     }

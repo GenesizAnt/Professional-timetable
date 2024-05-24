@@ -3,6 +3,7 @@ package ru.genesizant.Professional.Timetable.controllers.visitors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
+@Slf4j
 @Controller
 @RequestMapping("/visitors")
 public class VisitorsController {
@@ -93,7 +95,7 @@ public class VisitorsController {
             try {
                 allCalendar.add(objectMapper.writeValueAsString(calendarForView));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
             }
         }
         model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());

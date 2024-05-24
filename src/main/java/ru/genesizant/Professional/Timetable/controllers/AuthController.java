@@ -95,7 +95,7 @@ public class AuthController {
             specialistsAndClientService.newPair(person, specialist.get());
             sendMessageService.notifyNewClient(specialist.get(), person);
         }
-
+        log.info("Зарегистрирован новый клиент: " + person);
         return "redirect:/auth/login";
     }
 
@@ -121,6 +121,7 @@ public class AuthController {
 
             log.info("В приложение зашел пользователь " + personDetails.getUsername() + ", ID: " + personDetails.getId());
         } catch (Exception e) {
+            log.error("Ошибка декодирования токена: " + jwtToken);
             return "redirect:/auth/login?error";
         }
 

@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
 import com.vdurmont.emoji.EmojiParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import ru.genesizant.Professional.Timetable.services.PersonService;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class MainMessageService {
 
@@ -46,6 +48,8 @@ public class MainMessageService {
             Long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
             Integer messageId = update.getMessage().getMessageId();
+
+            log.info("Получено сообщение: " + text + " , от " + chatId + " " + name );
 
             String response;
             switch (text) {

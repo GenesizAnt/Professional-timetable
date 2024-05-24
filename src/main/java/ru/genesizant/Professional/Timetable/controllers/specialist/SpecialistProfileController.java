@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/spec_profile")
 public class SpecialistProfileController {
@@ -38,6 +40,7 @@ public class SpecialistProfileController {
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу профиля специалиста");
         } else {
             return ERROR_LOGIN;
         }
@@ -46,13 +49,14 @@ public class SpecialistProfileController {
 
     // Подтвердить аккаунт в ТГ боте
     @GetMapping("/agreeTG")
-    public String agreeTG(Model model, HttpServletRequest request) {
+    public String agreeTG(HttpServletRequest request) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
         UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
         userTelegram.setAgree(Boolean.TRUE);
         userTelegramService.save(userTelegram);
+        log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтвердить аккаунт в ТГ боте");
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
@@ -63,6 +67,7 @@ public class SpecialistProfileController {
             return ERROR_LOGIN;
         }
         userTelegramService.deleteByPersonId((Long) request.getSession().getAttribute("id"));
+        log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку отметить подтверждение зарегистрированного аккаунта в ТГ боте");
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 

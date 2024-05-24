@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
+@Slf4j
 @Controller
 @RequestMapping("/profile")
 public class VisitorProfileController {
@@ -32,6 +34,7 @@ public class VisitorProfileController {
     public String listDebtors(Model model, HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
             displayPage(model, request);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел  на страницу профиля клиента");
         } else {
             return ERROR_LOGIN;
         }
@@ -47,6 +50,7 @@ public class VisitorProfileController {
         UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
         userTelegram.setAgree(Boolean.TRUE);
         userTelegramService.save(userTelegram);
+        log.info("Клиент: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтверждение акк в ТГ");
         return PROFILE_VIEW_REDIRECT;
     }
 
@@ -57,6 +61,7 @@ public class VisitorProfileController {
             return ERROR_LOGIN;
         }
         userTelegramService.deleteByPersonId((Long) request.getSession().getAttribute("id"));
+        log.info("Клиент: " + request.getSession().getAttribute("id") + ". Нажал кнопку отметить подтверждение зарегистрированного аккаунта в ТГ боте ");
         return PROFILE_VIEW_REDIRECT;
     }
 
