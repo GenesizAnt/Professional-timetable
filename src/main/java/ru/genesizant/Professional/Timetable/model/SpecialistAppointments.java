@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
@@ -15,6 +18,9 @@ import java.util.List;
 
 @Comment("Записи приемов специалиста")
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "specialistappointments")
 public class SpecialistAppointments {
 
@@ -74,126 +80,4 @@ public class SpecialistAppointments {
     @OneToMany(mappedBy = "appointmentsNotes")
     private List<SpecialistNotes> specialistNotesList;
 
-    public SpecialistAppointments() {
-    }
-
-    public boolean isPrepayment() {
-        return prepayment;
-    }
-
-    public void setPrepayment(boolean prepayment) {
-        this.prepayment = prepayment;
-    }
-
-    public List<StatisticalAnalysis> getStatisticalAnalysesList() {
-        return statisticalAnalysesList;
-    }
-
-    public void setStatisticalAnalysesList(List<StatisticalAnalysis> statisticalAnalysesList) {
-        this.statisticalAnalysesList = statisticalAnalysesList;
-    }
-
-    public List<SpecialistNotes> getSpecialistNotesList() {
-        return specialistNotesList;
-    }
-
-    public void setSpecialistNotesList(List<SpecialistNotes> specialistNotesList) {
-        this.specialistNotesList = specialistNotesList;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Person getSpecialistAppointments() {
-        return specialistAppointments;
-    }
-
-    public void setSpecialistAppointments(Person specialistAppointments) {
-        this.specialistAppointments = specialistAppointments;
-    }
-
-    public Person getVisitorAppointments() {
-        return visitorAppointments;
-    }
-
-    public void setVisitorAppointments(Person visitorAppointments) {
-        this.visitorAppointments = visitorAppointments;
-    }
-
-    public ProfessionalServices getProfessionalServices() {
-        return professionalServices;
-    }
-
-    public void setProfessionalServices(ProfessionalServices professionalServices) {
-        this.professionalServices = professionalServices;
-    }
-
-    public boolean isConsultationSuccessful() {
-        return consultationSuccessful;
-    }
-
-    public void setConsultationSuccessful(boolean consultationSuccessful) {
-        this.consultationSuccessful = consultationSuccessful;
-    }
-
-    public String getVisitType() {
-        return visitType;
-    }
-
-    public void setVisitType(String visitType) {
-        this.visitType = visitType;
-    }
-
-    public LocalDate getVisitDate() {
-        return visitDate;
-    }
-
-    public void setVisitDate(LocalDate visitDate) {
-        this.visitDate = visitDate;
-    }
-
-    public LocalTime getAppointmentTime() {
-        return appointmentTime;
-    }
-
-    public void setAppointmentTime(LocalTime appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
-
-    public BigDecimal getConsultationFee() {
-        return consultationFee;
-    }
-
-    public void setConsultationFee(BigDecimal consultationFee) {
-        this.consultationFee = consultationFee;
-    }
-
-    public boolean isPrepaymentVisitor() {
-        return prepaymentVisitor;
-    }
-
-    public void setPrepaymentVisitor(boolean prepaymentVisitor) {
-        this.prepaymentVisitor = prepaymentVisitor;
-    }
-
-    public boolean isNotify24hours() {
-        return notify24hours;
-    }
-
-    public void setNotify24hours(boolean notify24hours) {
-        this.notify24hours = notify24hours;
-    }
-
-    public boolean isNotify3hours() {
-        return notify3hours;
-    }
-
-    public void setNotify3hours(boolean notify3hours) {
-        this.notify3hours = notify3hours;
-    }
 }

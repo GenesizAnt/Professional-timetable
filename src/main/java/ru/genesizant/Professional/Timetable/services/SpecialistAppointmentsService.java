@@ -1,7 +1,6 @@
 package ru.genesizant.Professional.Timetable.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
@@ -14,13 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class SpecialistAppointmentsService {
-    SpecialistAppointmentsRepository specialistAppointmentsRepository;
 
-    @Autowired
-    public SpecialistAppointmentsService(SpecialistAppointmentsRepository specialistAppointmentsRepository) {
-        this.specialistAppointmentsRepository = specialistAppointmentsRepository;
-    }
+    private final SpecialistAppointmentsRepository specialistAppointmentsRepository;
 
     //ToDo возможно сделать через оптионал????
     public List<SpecialistAppointments> findAllAppointments() {

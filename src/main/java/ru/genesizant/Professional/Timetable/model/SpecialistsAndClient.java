@@ -4,12 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.util.List;
 
 @Comment("Связка Специлист-Клиент")
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "specialistsandclient")
 public class SpecialistsAndClient {
 
@@ -25,31 +31,4 @@ public class SpecialistsAndClient {
     @ManyToOne
     @JoinColumn(name = "visitorid", referencedColumnName = "id")
     private Person visitorList;
-
-    public SpecialistsAndClient() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Person getSpecialistList() {
-        return specialistList;
-    }
-
-    public void setSpecialistList(Person specialistList) {
-        this.specialistList = specialistList;
-    }
-
-    public Person getVisitorList() {
-        return visitorList;
-    }
-
-    public void setVisitorList(Person visitorList) {
-        this.visitorList = visitorList;
-    }
 }

@@ -1,12 +1,18 @@
 package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
 
 @Comment("Таблица открытых дат для записей у специалиста")
+@NoArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "datesappointments")
 public class DatesAppointments {
 
@@ -30,41 +36,5 @@ public class DatesAppointments {
         visitDate = startDateObject;
         specialistDateAppointments = personSpecialist;
         scheduleTime = availableRecordingTime;
-    }
-
-    public DatesAppointments() {
-
-    }
-
-    public String getScheduleTime() {
-        return scheduleTime;
-    }
-
-    public void setScheduleTime(String scheduleTime) {
-        this.scheduleTime = scheduleTime;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Person getSpecialistDateAppointments() {
-        return specialistDateAppointments;
-    }
-
-    public void setSpecialistDateAppointments(Person specialist_date_appointments) {
-        this.specialistDateAppointments = specialist_date_appointments;
-    }
-
-    public LocalDate getVisitDate() {
-        return visitDate;
-    }
-
-    public void setVisitDate(LocalDate visitDate) {
-        this.visitDate = visitDate;
     }
 }

@@ -2,6 +2,9 @@ package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
@@ -10,6 +13,9 @@ import java.time.LocalDateTime;
 
 @Comment("Заметки специалиста по проведенным приемам")
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "specialistnotes")
 public class SpecialistNotes {
 
@@ -34,46 +40,4 @@ public class SpecialistNotes {
     @Column(name = "note_description")
     private String noteDescription;
 
-    public SpecialistNotes() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Person getSpecialist_notes() {
-        return specialist_notes;
-    }
-
-    public void setSpecialist_notes(Person specialist_notes) {
-        this.specialist_notes = specialist_notes;
-    }
-
-    public Person getVisitor_notes() {
-        return visitor_notes;
-    }
-
-    public void setVisitor_notes(Person visitor_notes) {
-        this.visitor_notes = visitor_notes;
-    }
-
-    public SpecialistAppointments getAppointmentsNotes() {
-        return appointmentsNotes;
-    }
-
-    public void setAppointmentsNotes(SpecialistAppointments appointmentsNotes) {
-        this.appointmentsNotes = appointmentsNotes;
-    }
-
-    public String getNoteDescription() {
-        return noteDescription;
-    }
-
-    public void setNoteDescription(String noteDescription) {
-        this.noteDescription = noteDescription;
-    }
 }

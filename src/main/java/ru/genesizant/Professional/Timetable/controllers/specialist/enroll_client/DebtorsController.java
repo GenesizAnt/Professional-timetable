@@ -2,8 +2,8 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_clien
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,21 +21,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/administration")
 public class DebtorsController {
 
     private final JWTUtil jwtUtil;
-    private final SpecialistAppointmentsService specialistAppointmentsService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ENROLL_VIEW_REDIRECT = "redirect:/administration/proof_clients";
 
-    @Autowired
-    public DebtorsController(JWTUtil jwtUtil, SpecialistAppointmentsService specialistAppointmentsService) {
-        this.jwtUtil = jwtUtil;
-        this.specialistAppointmentsService = specialistAppointmentsService;
-    }
+    private final SpecialistAppointmentsService specialistAppointmentsService;
 
     //Отображение страницы для подтверждения оплат от клиентов
     @GetMapping("/proof_clients")

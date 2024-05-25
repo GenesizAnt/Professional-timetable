@@ -2,6 +2,9 @@ package ru.genesizant.Professional.Timetable.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
@@ -11,6 +14,9 @@ import java.time.LocalDateTime;
 
 @Comment("Статистика - пока показывает только время")
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "statisticalanalysis")
 public class StatisticalAnalysis {
 
@@ -31,38 +37,4 @@ public class StatisticalAnalysis {
     @Column(name = "duration_appointment")     //ToDo https://qaa-engineer.ru/kak-ispolzovat-tip-interval-v-postgresql/
     private Duration durationAppointment;
 
-    public StatisticalAnalysis() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Person getSpecialist_statistical() {
-        return specialist_statistical;
-    }
-
-    public void setSpecialist_statistical(Person specialist_statistical) {
-        this.specialist_statistical = specialist_statistical;
-    }
-
-    public SpecialistAppointments getSpecialistAppointments() {
-        return specialistAppointments;
-    }
-
-    public void setSpecialistAppointments(SpecialistAppointments specialistAppointments) {
-        this.specialistAppointments = specialistAppointments;
-    }
-
-    public Duration getDurationAppointment() {
-        return durationAppointment;
-    }
-
-    public void setDurationAppointment(Duration durationAppointment) {
-        this.durationAppointment = durationAppointment;
-    }
 }

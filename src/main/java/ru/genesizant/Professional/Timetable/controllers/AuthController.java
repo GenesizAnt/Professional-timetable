@@ -5,9 +5,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -27,31 +27,19 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
-
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final PersonValidator personValidator;
-    private final RegistrationService registrationService;
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
-    private final PersonService personService;
-    private final SpecialistsAndClientService specialistsAndClientService;
     private final SendMessageService sendMessageService;
 
-    @Autowired
-    public AuthController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, ModelMapper modelMapper, PersonService personService, SpecialistsAndClientService specialistsAndClientService, SendMessageService sendMessageService) {
-        this.personValidator = personValidator;
-        this.registrationService = registrationService;
-        this.jwtUtil = jwtUtil;
-        this.modelMapper = modelMapper;
-        this.personService = personService;
-        this.specialistsAndClientService = specialistsAndClientService;
-        this.sendMessageService = sendMessageService;
-    }
+    private final RegistrationService registrationService;
+    private final PersonService personService;
+    private final SpecialistsAndClientService specialistsAndClientService;
 
     @GetMapping("/login")
     public String loginPage() {

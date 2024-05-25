@@ -74,7 +74,7 @@ public class TestController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
-        System.out.println(personDetails.getPerson());
+        System.out.println(personDetails.person());
         return "admin";
     }
 

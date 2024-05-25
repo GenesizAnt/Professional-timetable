@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
@@ -25,17 +25,12 @@ import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayW
 import static ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class DatesAppointmentsService {
 
     private final DatesAppointmentsRepository datesAppointmentsRepository;
     private final ObjectMapper objectMapper;
-
-    @Autowired
-    public DatesAppointmentsService(DatesAppointmentsRepository datesAppointmentsRepository, ObjectMapper objectMapper) {
-        this.datesAppointmentsRepository = datesAppointmentsRepository;
-        this.objectMapper = objectMapper;
-    }
 
     //Добавить в БД доступные даты и время на будущее (заполнение календаря на будущий период)
     public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 import java.time.Duration;
@@ -12,6 +15,9 @@ import java.util.List;
 
 @Comment("Услуги специалиста")
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "professionalservices")
 public class ProfessionalServices {
 
@@ -40,55 +46,4 @@ public class ProfessionalServices {
 
     @OneToMany(mappedBy = "professionalServices")
     private List<SpecialistAppointments> listServicesRendered;
-
-    public ProfessionalServices() {
-    }
-
-    public List<SpecialistAppointments> getListServicesRendered() {
-        return listServicesRendered;
-    }
-
-    public void setListServicesRendered(List<SpecialistAppointments> listServicesRendered) {
-        this.listServicesRendered = listServicesRendered;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public Duration getDurationService() {
-        return durationService;
-    }
-
-    public void setDurationService(Duration durationService) {
-        this.durationService = durationService;
-    }
-
-    public Person getOwnerService() {
-        return ownerService;
-    }
-
-    public void setOwnerService(Person ownerService) {
-        this.ownerService = ownerService;
-    }
 }

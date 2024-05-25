@@ -3,9 +3,9 @@ package ru.genesizant.Professional.Timetable.controllers.visitors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,34 +33,23 @@ import java.util.*;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/visitors")
 public class VisitorsController {
 
     private final JWTUtil jwtUtil;
-    private final PersonService personService;
-    private final DatesAppointmentsService datesAppointmentsService;
     private final ModelMapper modelMapper;
-    private final SpecialistsAndClientService specialistsAndClientService;
-    private final SpecialistAppointmentsService specialistAppointmentsService;
     private final SendMessageService sendMessageService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String ERROR_VALIDATE_FORM = "redirect:/visitors/my_specialist_menu?error=";
     private final String ENROLL_VIEW_REDIRECT = "redirect:/visitors/my_specialist_menu";
 
-    @Autowired
-    public VisitorsController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ModelMapper modelMapper, SpecialistsAndClientService specialistsAndClientService, SpecialistAppointmentsService specialistAppointmentsService, SendMessageService sendMessageService, ObjectMapper objectMapper) {
-        this.jwtUtil = jwtUtil;
-        this.personService = personService;
-        this.datesAppointmentsService = datesAppointmentsService;
-        this.modelMapper = modelMapper;
-        this.specialistsAndClientService = specialistsAndClientService;
-        this.specialistAppointmentsService = specialistAppointmentsService;
-        this.sendMessageService = sendMessageService;
-        this.objectMapper = objectMapper;
-    }
+    private final PersonService personService;
+    private final DatesAppointmentsService datesAppointmentsService;
+    private final SpecialistsAndClientService specialistsAndClientService;
+    private final SpecialistAppointmentsService specialistAppointmentsService;
 
     //ToDo в разделе Мой профиль - добавить окно с выбором специалистов за которыми закреплен клиент, чтобы клиент мог переключаться между ними (специалистами)
 
@@ -255,6 +244,7 @@ public class VisitorsController {
     }
 
     private String encodeError(String error) {
+        String ERROR_VALIDATE_FORM = "redirect:/visitors/my_specialist_menu?error=";
         return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 }

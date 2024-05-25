@@ -1,8 +1,8 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
 import com.vdurmont.emoji.EmojiParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class MainMessageService {
 
@@ -29,16 +30,6 @@ public class MainMessageService {
 
     private final PersonService personService;
     private final UserTelegramService userTelegramService;
-//    private final DeleteMessageService deleteMessageService;
-//    private final SendMessageService sendMessageService;
-
-    @Autowired
-    public MainMessageService(PersonService personService, UserTelegramService userTelegramService) {
-        this.personService = personService;
-        this.userTelegramService = userTelegramService;
-//        this.deleteMessageService = deleteMessageService;
-//        this.sendMessageService = sendMessageService;
-    }
 
     //Получает и обрабатывает сообщение отправленное в бот
     public SendMessage messageReceiver(Update update) {

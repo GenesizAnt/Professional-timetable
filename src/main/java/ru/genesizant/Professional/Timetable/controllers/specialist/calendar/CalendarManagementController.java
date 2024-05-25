@@ -2,8 +2,8 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.calendar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,26 +24,19 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/calendar")
 public class CalendarManagementController {
 
     private final JWTUtil jwtUtil;
-    private final PersonService personService;
-    private final DatesAppointmentsService datesAppointmentsService;
     private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
     private final String CALENDAR_VIEW_REDIRECT = "redirect:/calendar/admission_calendar_view";
 
-    @Autowired
-    public CalendarManagementController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, ObjectMapper objectMapper) {
-        this.jwtUtil = jwtUtil;
-        this.personService = personService;
-        this.datesAppointmentsService = datesAppointmentsService;
-        this.objectMapper = objectMapper;
-    }
+    private final PersonService personService;
+    private final DatesAppointmentsService datesAppointmentsService;
 
     //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
     @GetMapping("/admission_calendar_view")
@@ -302,6 +295,7 @@ public class CalendarManagementController {
     }
 
     private String encodeError(String error) {
+        String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
         return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 

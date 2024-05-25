@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,22 +19,18 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/spec_profile")
 public class SpecialistProfileController {
 
     private final JWTUtil jwtUtil;
-    private final UserTelegramService userTelegramService;
-    private final PersonService personService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String PROFILE_SPEC_VIEW_REDIRECT = "redirect:/spec_profile/my_profile";
 
-    public SpecialistProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService, PersonService personService) {
-        this.jwtUtil = jwtUtil;
-        this.userTelegramService = userTelegramService;
-        this.personService = personService;
-    }
+    private final UserTelegramService userTelegramService;
+    private final PersonService personService;
 
     // Отображение страницы профиля специалиста
     @GetMapping("/my_profile")

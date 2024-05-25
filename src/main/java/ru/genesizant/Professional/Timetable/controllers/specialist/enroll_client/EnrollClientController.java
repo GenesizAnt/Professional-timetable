@@ -3,9 +3,9 @@ package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_clien
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,41 +30,28 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
-import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.UNREGISTERED;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/enroll")
 public class EnrollClientController {
 
     private final JWTUtil jwtUtil;
     private final PersonService personService;
-    private final DatesAppointmentsService datesAppointmentsService;
-    private final SpecialistsAndClientService specialistsAndClientService;
-    private final ModelMapper modelMapper;
-    private final UnregisteredPersonService unregisteredPersonService;
-    private final SpecialistAppointmentsService specialistAppointmentsService;
-    private final SendMessageService sendMessageService;
-    private final ObjectMapper objectMapper;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String ERROR_VALIDATE_FORM = "redirect:/enroll/enroll_page?error=";
     private final String ENROLL_VIEW_REDIRECT = "redirect:/enroll/enroll_page";
+    private final SendMessageService sendMessageService;
+    private final ObjectMapper objectMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public EnrollClientController(JWTUtil jwtUtil, PersonService personService, DatesAppointmentsService datesAppointmentsService, SpecialistsAndClientService specialistsAndClientService, ModelMapper modelMapper, UnregisteredPersonService unregisteredPersonService, SpecialistAppointmentsService specialistAppointmentsService, SendMessageService sendMessageService, ObjectMapper objectMapper) {
-        this.jwtUtil = jwtUtil;
-        this.personService = personService;
-        this.datesAppointmentsService = datesAppointmentsService;
-        this.specialistsAndClientService = specialistsAndClientService;
-        this.modelMapper = modelMapper;
-        this.unregisteredPersonService = unregisteredPersonService;
-        this.specialistAppointmentsService = specialistAppointmentsService;
-        this.sendMessageService = sendMessageService;
-        this.objectMapper = objectMapper;
-    }
+    private final DatesAppointmentsService datesAppointmentsService;
+    private final SpecialistsAndClientService specialistsAndClientService;
+    private final UnregisteredPersonService unregisteredPersonService;
+    private final SpecialistAppointmentsService specialistAppointmentsService;
 
     //Отображение страницы для Записи Клиента
     @GetMapping("/enroll_page")
@@ -348,6 +335,7 @@ public class EnrollClientController {
     }
 
     private String encodeError(String error) {
+        String ERROR_VALIDATE_FORM = "redirect:/enroll/enroll_page?error=";
         return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 

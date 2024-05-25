@@ -1,14 +1,12 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,16 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class NotifyMessageService {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final UserTelegramService userTelegramService;
-
-    public NotifyMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService) {
-        this.specialistAppointmentsService = specialistAppointmentsService;
-        this.userTelegramService = userTelegramService;
-    }
 
     public List<SendMessage> messageReceiver() {
         return new ArrayList<>(sendNotifyReminderAppointment());

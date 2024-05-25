@@ -2,8 +2,8 @@ package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,23 +23,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/managed")
 public class ManagedPay {
 
-    private final JWTUtil jwtUtil;
-    private final SpecialistAppointmentsService specialistAppointmentsService;
-    private final SpecialistsAndClientService specialistsAndClientService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
-    private final String ENROLL_VIEW_REDIRECT = "redirect:/managed/managed_pay";
+    private final JWTUtil jwtUtil;
 
-    @Autowired
-    public ManagedPay(JWTUtil jwtUtil, SpecialistAppointmentsService specialistAppointmentsService, SpecialistsAndClientService specialistsAndClientService) {
-        this.jwtUtil = jwtUtil;
-        this.specialistAppointmentsService = specialistAppointmentsService;
-        this.specialistsAndClientService = specialistsAndClientService;
-    }
+    private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final SpecialistsAndClientService specialistsAndClientService;
 
     // Отображение страницы управление оплатами
     @GetMapping("/managed_pay")
@@ -67,6 +61,7 @@ public class ManagedPay {
         } else {
             return ERROR_LOGIN;
         }
+        String ENROLL_VIEW_REDIRECT = "redirect:/managed/managed_pay";
         return ENROLL_VIEW_REDIRECT;
     }
 

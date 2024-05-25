@@ -8,13 +8,7 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import java.util.Collection;
 import java.util.Collections;
 
-public class PersonDetails implements UserDetails {
-
-    private final Person person;
-
-    public PersonDetails(Person person) {
-        this.person = person;
-    }
+public record PersonDetails(Person person) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -57,10 +51,6 @@ public class PersonDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Person getPerson() {
-        return this.person;
     }
 
     public String getJwtToken() {

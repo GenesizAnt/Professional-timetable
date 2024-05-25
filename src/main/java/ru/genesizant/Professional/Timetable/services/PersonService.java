@@ -1,7 +1,7 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
@@ -13,18 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PersonService {
 
     private final PersonRepository personRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public PersonService(PersonRepository personRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
-        this.personRepository = personRepository;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public Optional<Person> findByEmail(String email) {
         return personRepository.findByEmail(email);

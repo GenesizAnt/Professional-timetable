@@ -1,10 +1,9 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.model.Person;
@@ -13,25 +12,18 @@ import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsServi
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class SendMessageService {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final UserTelegramService userTelegramService;
     private final TelegramBot telegramBot;
-
-    @Autowired
-    public SendMessageService(SpecialistAppointmentsService specialistAppointmentsService, UserTelegramService userTelegramService, TelegramBot telegramBot) {
-        this.specialistAppointmentsService = specialistAppointmentsService;
-        this.userTelegramService = userTelegramService;
-        this.telegramBot = telegramBot;
-    }
 
     public void notifyCancellation(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
         SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);

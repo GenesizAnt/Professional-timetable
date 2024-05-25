@@ -1,6 +1,7 @@
 package ru.genesizant.Professional.Timetable.controllers.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -8,26 +9,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/profile")
 public class VisitorProfileController {
 
-    private final JWTUtil jwtUtil;
-    private final UserTelegramService userTelegramService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
+    private final JWTUtil jwtUtil;
     private final String PROFILE_VIEW_REDIRECT = "redirect:/profile/my_profile";
 
-    public VisitorProfileController(JWTUtil jwtUtil, UserTelegramService userTelegramService) {
-        this.jwtUtil = jwtUtil;
-        this.userTelegramService = userTelegramService;
-    }
+    private final UserTelegramService userTelegramService;
 
     // Отображение страницы профиля клиента
     @GetMapping("/my_profile")

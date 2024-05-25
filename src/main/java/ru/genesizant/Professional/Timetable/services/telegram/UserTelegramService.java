@@ -1,21 +1,16 @@
 package ru.genesizant.Professional.Timetable.services.telegram;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserTelegramService {
 
     private final UserTelegramRepository userTelegramRepository;
-
-    @Autowired
-    public UserTelegramService(UserTelegramRepository userTelegramRepository) {
-        this.userTelegramRepository = userTelegramRepository;
-    }
 
     public boolean isUserNotFoundById(Long chatId) {
         return userTelegramRepository.findById(chatId).isEmpty();

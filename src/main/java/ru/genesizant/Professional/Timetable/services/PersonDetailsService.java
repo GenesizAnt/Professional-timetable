@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,13 +12,10 @@ import ru.genesizant.Professional.Timetable.config.security.PersonDetails;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PersonDetailsService implements UserDetailsService {
 
     private final PersonRepository personRepository;
-
-    public PersonDetailsService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

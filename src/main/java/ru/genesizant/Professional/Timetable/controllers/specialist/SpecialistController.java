@@ -1,26 +1,20 @@
 package ru.genesizant.Professional.Timetable.controllers.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.PersonService;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/specialist")
 public class SpecialistController {
 
     private final JWTUtil jwtUtil;
-
-    @Autowired
-    public SpecialistController(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     //Отображение меню специалиста, что он может делать
     @GetMapping("/start_menu_specialist")

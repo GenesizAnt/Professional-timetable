@@ -1,7 +1,7 @@
 package ru.genesizant.Professional.Timetable.services;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
@@ -11,18 +11,13 @@ import ru.genesizant.Professional.Timetable.repositories.SpecialistsAndClientRep
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class SpecialistsAndClientService {
 
-    private final SpecialistsAndClientRepository specialistsAndClientRepository;
     private final ModelMapper modelMapper;
-    private final PersonService personService;
 
-    @Autowired
-    public SpecialistsAndClientService(SpecialistsAndClientRepository specialistsAndClientRepository, ModelMapper modelMapper, PersonService personService) {
-        this.specialistsAndClientRepository = specialistsAndClientRepository;
-        this.modelMapper = modelMapper;
-        this.personService = personService;
-    }
+    private final SpecialistsAndClientRepository specialistsAndClientRepository;
+    private final PersonService personService;
 
     //Список закрепленных за специалистом клиентов
     public List<PersonFullName> getClientsBySpecialistList(long id) {
