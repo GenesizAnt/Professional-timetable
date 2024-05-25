@@ -238,8 +238,8 @@ public class DatesAppointmentsService {
     }
 
     //Удалить конкретное Время из доступного дня
-    public void deleteTimeAdmission(LocalDate date, String selectedTimeAdmission) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void deleteTimeAdmission(LocalDate date, String selectedTimeAdmission, long specialistId) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(selectedTimeAdmission)) {
@@ -255,8 +255,8 @@ public class DatesAppointmentsService {
     }
 
     //Удалить диапазон Времени из доступного дня
-    public void deleteTimeRangeAdmission(LocalDate date, String startTimeAdmission, String endTimeAdmission) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void deleteTimeRangeAdmission(LocalDate date, String startTimeAdmission, String endTimeAdmission, long specialistId) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
@@ -282,8 +282,8 @@ public class DatesAppointmentsService {
     }
 
     //Установить указанный статус консультации на конкретную дату и время
-    public void setStatusTimeAdmission(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void setStatusTimeAdmission(LocalDate date, String timeAdmission, StatusAdmissionTime status, long specialistId) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(timeAdmission)) {
@@ -299,8 +299,8 @@ public class DatesAppointmentsService {
     }
 
     //Установить указанный статус консультации на диапазон дат и время
-    public void setStatusRangeTimeAdmission(LocalDate date, String startTimeAdmission, String endTimeStartAdmission, StatusAdmissionTime status) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void setStatusRangeTimeAdmission(LocalDate date, String startTimeAdmission, String endTimeStartAdmission, StatusAdmissionTime status, long specialistId) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (time.containsKey(startTimeAdmission) && time.containsKey(endTimeStartAdmission)) { //ToDo сделать метод для проверки на входит ли заданный диапазон времени в существующее время или просто удалить все что входит в диапазон который задал юзер
@@ -340,8 +340,8 @@ public class DatesAppointmentsService {
     }
 
     //Добавить время приема в определенный день
-    public void addTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void addTimeAvailability(long specialistId, LocalDate date, String timeAvailability, StatusAdmissionTime status) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime());
             if (!time.containsKey(timeAvailability)) {
@@ -357,8 +357,8 @@ public class DatesAppointmentsService {
     }
 
     //Добавить диапазон времени приема в определенный день
-    public void addRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, String intervalHour, StatusAdmissionTime status) {
-        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDate(date);
+    public void addRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, String intervalHour, StatusAdmissionTime status, Long specialistId) {
+        Optional<DatesAppointments> visitDate = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(date, specialistId);
         if (visitDate.isPresent()) {
             Map<String, String> time = getAvailableTime(visitDate.get().getScheduleTime()); //ToDo сделать проверку на добавление доступного диапазона времени
             time.putAll(availableRecordingTime(startTimeAvailability, endTimeAvailability, intervalHour, status));

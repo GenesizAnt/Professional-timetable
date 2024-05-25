@@ -16,7 +16,7 @@ public interface DatesAppointmentsRepository extends JpaRepository<DatesAppointm
     List<DatesAppointments> findAllBySpecialistDateAppointmentsIdOrderById(long id);
 
     //Получить Конкретную дату и конкретного Спеца
-    Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate date, long id);
+    Optional<DatesAppointments> findByVisitDateAndSpecialistDateAppointmentsIdOrderById(LocalDate date, long specialistId);
 
     //Удалить полный День из доступных для выбора дат
     @Transactional

@@ -60,4 +60,5 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
                                                                 @Param("visitDate") LocalDate visitDate,
                                                                 @Param("appointmentTime") LocalTime appointmentTime);
 
+    List<SpecialistAppointments> findBySpecialistAppointmentsId(Long specialistId);
 }

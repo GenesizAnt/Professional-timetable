@@ -72,12 +72,12 @@ public class CalendarManagementController {
                 return encodeError("Нельзя добавить календарь в уже существующих датах");
             } else {
                 datesAppointmentsService.addFreeDateSchedule(personSpecialist,
-                                                            startDate,
-                                                            endDate,
-                                                            startTime,
-                                                            endTime,
-                                                            minInterval,
-                                                            StatusAdmissionTime.AVAILABLE);
+                        startDate,
+                        endDate,
+                        startTime,
+                        endTime,
+                        minInterval,
+                        StatusAdmissionTime.AVAILABLE);
                 displayPage(model, request);
                 log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
             }
@@ -135,7 +135,7 @@ public class CalendarManagementController {
         }
 
         if (!selectedTimeAdmission.equals("") && dateOne.isPresent()) {
-            datesAppointmentsService.deleteTimeAdmission(dateOne.get(), selectedTimeAdmission);
+            datesAppointmentsService.deleteTimeAdmission(dateOne.get(), selectedTimeAdmission, (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил конкретное Время из доступного дня");
         } else {
@@ -155,7 +155,7 @@ public class CalendarManagementController {
         }
 
         if (!startTimeAdmission.equals("") && !endTimeAdmission.equals("") && dateOne.isPresent()) {
-            datesAppointmentsService.deleteTimeRangeAdmission(dateOne.get(), startTimeAdmission, endTimeAdmission);
+            datesAppointmentsService.deleteTimeRangeAdmission(dateOne.get(), startTimeAdmission, endTimeAdmission, (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил диапазон времени из доступного дня");
         } else {
@@ -175,7 +175,7 @@ public class CalendarManagementController {
         }
 
         if (isValidSetTimeForm(date, timeAdmission, status)) {
-            datesAppointmentsService.setStatusTimeAdmission(date.get(), timeAdmission, status);
+            datesAppointmentsService.setStatusTimeAdmission(date.get(), timeAdmission, status, (long) request.getSession().getAttribute("id"));
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности конкретного Времени из календаря доступного для выбора");
         } else {
@@ -196,7 +196,7 @@ public class CalendarManagementController {
         }
 
         if (isValidSetRangeTimeForm(date, startStartAdmission, endStartAdmission, status)) {
-            datesAppointmentsService.setStatusRangeTimeAdmission(date.get(), startStartAdmission, endStartAdmission, status);
+            datesAppointmentsService.setStatusRangeTimeAdmission(date.get(), startStartAdmission, endStartAdmission, status, (Long) request.getSession().getAttribute("id"));
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности Диапазона Времени из календаря доступного для выбора");
         } else {
@@ -234,7 +234,7 @@ public class CalendarManagementController {
         }
 
         if (isValidFormAddTimeAvailability(date, timeAvailability, status)) {
-            datesAppointmentsService.addTimeAvailability(date.get(), timeAvailability, status);
+            datesAppointmentsService.addTimeAvailability((long) request.getSession().getAttribute("id"), date.get(), timeAvailability, status);
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь конкретное время, дату и статус доступное для приема");
         } else {
@@ -256,7 +256,7 @@ public class CalendarManagementController {
         }
 
         if (isValidFormAddRangeTimeAvailability(date, startTimeAvailability, endTimeAvailability, status, intervalHour)) {
-            datesAppointmentsService.addRangeTimeAvailability(date.get(), startTimeAvailability, endTimeAvailability, intervalHour, status);
+            datesAppointmentsService.addRangeTimeAvailability(date.get(), startTimeAvailability, endTimeAvailability, intervalHour, status, (Long) request.getSession().getAttribute("id"));
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь Диапазон времени, дату и статус доступное для приема");
         } else {
@@ -304,7 +304,7 @@ public class CalendarManagementController {
     }
 
     private boolean isValidSetTimeForm(Optional<LocalDate> date, String timeAdmission, StatusAdmissionTime status) {
-        return timeAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
+        return !timeAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
     }
 
     private boolean isValidSetRangeTimeForm(Optional<LocalDate> date, String startStartAdmission, String endStartAdmission, StatusAdmissionTime status) {
@@ -314,6 +314,7 @@ public class CalendarManagementController {
     private boolean isValidFormAddTimeAvailability(Optional<LocalDate> date, String timeAvailability, StatusAdmissionTime status) {
         return date.isPresent() && !timeAvailability.equals("") && !status.getStatus().equals("");
     }
+
     private boolean isValidFormAddRangeTimeAvailability(Optional<LocalDate> date, String startTimeAvailability, String endTimeAvailability, StatusAdmissionTime status, String intervalHour) {
         return date.isPresent() && !startTimeAvailability.equals("") && !endTimeAvailability.equals("") && !status.getStatus().equals("") && !intervalHour.equals("");
     }

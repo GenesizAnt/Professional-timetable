@@ -114,4 +114,8 @@ public class SpecialistAppointmentsService {
         return specialistAppointmentsRepository.
                 getAppointmentsSpecificDay(specialistId, meeting.toLocalDate(), meeting.toLocalTime()).orElse(null);
     }
+
+    public List<SpecialistAppointments> findAllAppointmentsBySpecialist(Long specialistId) {
+        return specialistAppointmentsRepository.findBySpecialistAppointmentsId(specialistId);
+    }
 }

@@ -209,7 +209,7 @@ public class VisitorsController {
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
         List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
 
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist(assignedToSpecialist.get().getSpecialistList().getId());
 //        List<LocalDateTime> times = new ArrayList<>();
         List<AgreementAppointmentDTO> times = new ArrayList<>();
         List<AgreementAppointmentDTO> needAgree = new ArrayList<>();

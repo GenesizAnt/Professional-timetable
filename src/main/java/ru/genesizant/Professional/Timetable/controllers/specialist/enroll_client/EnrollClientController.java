@@ -261,7 +261,7 @@ public class EnrollClientController {
     private void displayPage(Model model, HttpServletRequest request) {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
         List<LocalDateTime> times = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {

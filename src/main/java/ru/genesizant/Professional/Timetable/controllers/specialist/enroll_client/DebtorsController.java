@@ -80,7 +80,7 @@ public class DebtorsController {
     }
 
     private void displayPage(Model model, HttpServletRequest request) {
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointments();
+        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
         List<AgreementAppointmentDTO> needPay = new ArrayList<>();
         List<AgreementAppointmentDTO> agreePay = new ArrayList<>();
         List<AgreementAppointmentDTO> maybePay = new ArrayList<>();
