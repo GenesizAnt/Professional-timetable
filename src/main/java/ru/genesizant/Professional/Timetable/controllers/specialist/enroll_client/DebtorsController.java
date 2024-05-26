@@ -56,8 +56,6 @@ public class DebtorsController {
             specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил оплату по консультации с ID:" + agreementId.get());
-        } else {
-            return ERROR_LOGIN;
         }
         return ENROLL_VIEW_REDIRECT;
     }
@@ -73,8 +71,6 @@ public class DebtorsController {
             specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.FALSE);
             displayPage(model, request);
             log.info("Спец: " + request.getSession().getAttribute("id") + ". Отменил оплату по консультации с ID:" + agreementId.get());
-        } else {
-            return ERROR_LOGIN;
         }
         return ENROLL_VIEW_REDIRECT;
     }
