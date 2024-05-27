@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
@@ -163,9 +164,12 @@ public class VisitorsController {
             return ERROR_LOGIN;
         }
         if (meetingCancel.isPresent()) {
-            sendMessageService.notifyCancellation(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
-            specialistAppointmentsService.removeAppointment(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
+            SpecialistAppointments appointmentsCancel = specialistAppointmentsService.getAppointmentsSpecificDay(Long.valueOf(selectedSpecialistId), meetingCancel.get());
+            if (appointmentsCancel != null) {
+                specialistAppointmentsService.removeAppointment(appointmentsCancel);
+            }
+            sendMessageService.notifyCancellation(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
             log.info("Клиент: " + request.getSession().getAttribute("id") + ". Отменил запись на: " + meetingCancel);
         } else {

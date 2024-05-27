@@ -27,17 +27,27 @@ public class SendMessageService {
 
     public void notifyCancellation(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
         SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
-        try {
-            switch (statusPerson) {
-                case VISITOR -> telegramBot.execute(createMessage(userTelegramService.findByPersonId(
-                        specialistId).getChatId(),
-                        cancellationMessage(appointmentsSpecificDay, VISITOR)));
-                case SPECIALIST -> telegramBot.execute(createMessage(userTelegramService.findByPersonId(
-                        appointmentsSpecificDay.getVisitorAppointments().getId()).getChatId(),
-                        cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+        if (appointmentsSpecificDay != null) {
+            UserTelegram specialist = userTelegramService.findByPersonId(specialistId);
+            UserTelegram visitor = userTelegramService.findByPersonId(appointmentsSpecificDay.getVisitorAppointments().getId());
+            try {
+                switch (statusPerson) {
+                    case VISITOR -> {
+                        if (specialist != null) {
+                            telegramBot.execute(createMessage(specialist.getChatId(),
+                                    cancellationMessage(appointmentsSpecificDay, VISITOR)));
+                        }
+                    }
+                    case SPECIALIST -> {
+                        if (visitor != null) {
+                            telegramBot.execute(createMessage(visitor.getChatId(),
+                                    cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+                        }
+                    }
+                }
+            } catch (TelegramApiException e) {
+                log.error("Ошибка отправки сообщения об отмене встречи на: " + localDateTime + " у специалиста " + specialistId);
             }
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения об отмене встречи на: " + localDateTime + " у специалиста " + specialistId);
         }
     }
 
@@ -46,10 +56,18 @@ public class SendMessageService {
         UserTelegram visitor = userTelegramService.findByPersonId(visitorId);
         try {
             switch (statusPerson) {
-                case VISITOR -> telegramBot.execute(createMessage(specialist.getChatId(),
-                        enrollNewAppointmentMessage(specialist, visitor, localDateTime, VISITOR)));
-                case SPECIALIST -> telegramBot.execute(createMessage(visitor.getChatId(),
-                        enrollNewAppointmentMessage(visitor, specialist, localDateTime, SPECIALIST)));
+                case VISITOR -> {
+                    if (specialist != null) {
+                        telegramBot.execute(createMessage(specialist.getChatId(),
+                                enrollNewAppointmentMessage(specialist, visitor, localDateTime, VISITOR)));
+                    }
+                }
+                case SPECIALIST -> {
+                    if (visitor != null) {
+                        telegramBot.execute(createMessage(visitor.getChatId(),
+                                enrollNewAppointmentMessage(visitor, specialist, localDateTime, SPECIALIST)));
+                    }
+                }
             }
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки сообщения о новой встрече на: " + localDateTime + " у специалиста " + specialistId + " и клиента " + visitorId);

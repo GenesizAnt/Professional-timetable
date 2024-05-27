@@ -79,7 +79,7 @@
                                 <div class="modal-body">
                                     <form th:method="POST" th:action="@{/managed/make_payment}">
                                         <select class="form-select" aria-label="Select Client" name="agreementId" required>
-                                            <option value="">Список клиентов</option>
+                                            <option value="">Список консультаций</option>
                                             <option th:each="client : ${needPay}"
                                                     th:value="${client.idAppointment}"
                                                     th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment}">

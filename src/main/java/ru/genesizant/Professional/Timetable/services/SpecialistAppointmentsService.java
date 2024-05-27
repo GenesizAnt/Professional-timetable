@@ -110,6 +110,10 @@ public class SpecialistAppointmentsService {
                 meeting.toLocalTime());
     }
 
+    public void removeAppointment(SpecialistAppointments appointmentsCancel) {
+        specialistAppointmentsRepository.delete(appointmentsCancel);
+    }
+
     public SpecialistAppointments getAppointmentsSpecificDay(Long specialistId, LocalDateTime meeting) {
         return specialistAppointmentsRepository.
                 getAppointmentsSpecificDay(specialistId, meeting.toLocalDate(), meeting.toLocalTime()).orElse(null);
@@ -118,4 +122,6 @@ public class SpecialistAppointmentsService {
     public List<SpecialistAppointments> findAllAppointmentsBySpecialist(Long specialistId) {
         return specialistAppointmentsRepository.findBySpecialistAppointmentsId(specialistId);
     }
+
+
 }
