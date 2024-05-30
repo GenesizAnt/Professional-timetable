@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.SpecialistPay;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
@@ -31,6 +35,7 @@ public class SpecialistProfileController {
 
     private final UserTelegramService userTelegramService;
     private final PersonService personService;
+    private final SpecialistPayService specialistPayService;
 
     // Отображение страницы профиля специалиста
     @GetMapping("/my_profile")
@@ -68,10 +73,21 @@ public class SpecialistProfileController {
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
+    @PostMapping("/setlinkpay")
+    public String processForm(@RequestParam("linkpay") String linkpay, HttpServletRequest request) {
+        if (!jwtUtil.isValidJWTAndSession(request)) {
+            return ERROR_LOGIN;
+        }
+        specialistPayService.saveNewLinkPay(linkpay, (Long) request.getSession().getAttribute("id"));
+        log.info("Спец: " + request.getSession().getAttribute("id") + ". Обновил ссылку для оплаты");
+        return PROFILE_SPEC_VIEW_REDIRECT;
+    }
+
 
     private void displayPage(Model model, HttpServletRequest request) {
         UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
         Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
+        Optional<SpecialistPay> specialistPay = specialistPayService.findBySpecialistPay((Long) request.getSession().getAttribute("id"));
         if (userTelegram == null) {
             model.addAttribute("notacc", "");
         } else {
@@ -83,6 +99,7 @@ public class SpecialistProfileController {
                 model.addAttribute("username", userTelegram.getPersonusername());
             }
         }
+        specialistPay.ifPresent(pay -> model.addAttribute("link", pay.getLinkPay()));
         model.addAttribute("name", request.getSession().getAttribute("name"));
         String currentUrl = request.getRequestURL().toString();
         String baseUrl = extractBaseUrl(currentUrl);

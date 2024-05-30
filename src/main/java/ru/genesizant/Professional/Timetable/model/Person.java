@@ -92,6 +92,9 @@ public class Person {
     @OneToOne(mappedBy = "personMainService")
     private UserTelegram userTelegram;
 
+    @OneToMany(mappedBy = "specialistPay")
+    private List<SpecialistPay> specialistPays;
+
     public String getFullName() {
         return surname + " " + username + " " + patronymic;
     }

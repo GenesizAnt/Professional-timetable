@@ -33,6 +33,17 @@
             <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
         </symbol>
     </svg>
+
+    <style>
+        .mb-3.row, p {
+            background-color: #f7f7f7; /* Цвет фона */
+            padding: 15px; /* Внутренний отступ */
+            border-radius: 8px; /* Закругленные углы */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
+    </style>
+
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -88,9 +99,102 @@
     </div>
 </div>
 
-
 <p>Ссылка для приглашения клиента : <span th:text="${baseUrl}"></span></p>
 
+<div class="mb-3 row">
+    <label for="linkPayS" class="col-sm-2 col-form-label">Текущая ссылка для оплаты</label>
+    <div class="col-sm-10">
+        <a id="linkPayS" th:href="${link}" th:text="${link}"></a>
+    </div>
+</div>
+<div class="mb-3 row">
+    <label for="linkpay" class="col-sm-2 col-form-label">Установить новую ссылку</label>
+    <form class="col-sm-10" th:method="POST" th:action="@{/spec_profile/setlinkpay}">
+        <input type="text" class="form-control" id="linkpay" name="linkpay">
+        <button type="submit" class="btn">Сохранить</button>
+    </form>
+</div>
+
+<!--<div class="container">-->
+<!--    <div class="row">-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#listAssigned">-->
+<!--                    <h6 class="text-center">Подтверждение оплаты</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="listAssignedLabel">Выбери консультацию для подтверждения оплаты</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/managed/make_payment}">-->
+<!--                                    <select class="form-select" aria-label="Select Client" name="agreementId" required>-->
+<!--                                        <option value="">Список консультаций</option>-->
+<!--                                        <option th:each="client : ${needPay}"-->
+<!--                                                th:value="${client.idAppointment}"-->
+<!--                                                th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment}">-->
+<!--                                        </option>-->
+<!--                                    </select>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"-->
+<!--                                            role="button">Подтвердить оплату</button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
+            <!--                <div class="col-md-6 col-sm-12 text-center">-->
+            <!--                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>-->
+            <!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+            <!--                            data-bs-target="#listUnregistered">-->
+            <!--                        <h6 class="text-center">Уже оплаченные</h6>-->
+            <!--                    </button>-->
+            <!--                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"-->
+            <!--                         aria-hidden="true">-->
+            <!--                        <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
+            <!--                            <div class="modal-content">-->
+            <!--                                <div class="modal-header bg-success text-white">-->
+            <!--                                    <h5 class="modal-title" id="listUnregisteredLabel">Список оплаченных консультаций</h5>-->
+            <!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+            <!--                                            aria-label="Close"></button>-->
+            <!--                                </div>-->
+            <!--                                <div class="modal-body">-->
+            <!--                                    <form th:method="POST" th:action="@{/administration/no_agreement}">-->
+            <!--                                        <select class="form-select" size="10" aria-label="Select Client"-->
+            <!--                                                name="agreementId" required>-->
+            <!--                                            <option value="">Выбери консультацию необходимую к оплате</option>-->
+            <!--                                            <option th:each="client : ${agreePay}"-->
+            <!--                                                    th:value="${client.idAppointment}"-->
+            <!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
+            <!--                                            </option>-->
+            <!--                                        </select>-->
+            <!--                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
+            <!--                                                role="button">Необходимо оплатить!</button>-->
+            <!--                                    </form>-->
+            <!--                                </div>-->
+            <!--                                <div class="modal-footer">-->
+            <!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+            <!--                                    </button>-->
+            <!--                                </div>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                    <div class="line"></div>-->
+            <!--                </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 </body>
 </html>

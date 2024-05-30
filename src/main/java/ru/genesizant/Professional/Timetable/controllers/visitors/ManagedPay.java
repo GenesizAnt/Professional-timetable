@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
+import ru.genesizant.Professional.Timetable.model.SpecialistPay;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
+import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class ManagedPay {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final SpecialistsAndClientService specialistsAndClientService;
+    private final SpecialistPayService specialistPayService;
 
     // Отображение страницы управление оплатами
     @GetMapping("/managed_pay")
@@ -68,6 +71,7 @@ public class ManagedPay {
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"),  assignedToSpecialist.get().getSpecialistList().getId());
+        Optional<SpecialistPay> specialistPay = specialistPayService.findBySpecialistPay(assignedToSpecialist.get().getSpecialistList().getId());
         List<AgreementAppointmentDTO> needPay = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
@@ -81,6 +85,7 @@ public class ManagedPay {
             }
             model.addAttribute("needPay", needPay);
         }
+        specialistPay.ifPresent(pay -> model.addAttribute("link", pay.getLinkPay()));
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
 }
