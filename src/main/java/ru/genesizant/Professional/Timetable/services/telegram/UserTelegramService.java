@@ -21,9 +21,8 @@ public class UserTelegramService {
         return userOptional.isEmpty() || userOptional.get().getEmail() == null || userOptional.get().getEmail().isEmpty();
     }
 
-    public UserTelegram findByPersonId(Long id) {
-        Optional<UserTelegram> userTelegram = userTelegramRepository.findByPersonMainService_Id(id);
-        return userTelegram.orElse(null);
+    public Optional<UserTelegram> findByPersonId(Long id) {
+        return userTelegramRepository.findByPersonMainService_Id(id);
     }
 
     public void save(UserTelegram userTelegram) {

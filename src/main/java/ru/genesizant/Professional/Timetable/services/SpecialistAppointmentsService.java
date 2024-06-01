@@ -27,17 +27,16 @@ public class SpecialistAppointmentsService {
         return all;
     }
 
-    //ToDo возможно сделать через оптионал????
     //ToDo возможно переименовать????
     //ToDo не оптимальный запрос! Каждый раз тянутся ВСЕ приемы, а нужно проверять еще не состоявшиеся
     // Все приемы которые есть у пары Специалист+Клиент
     public List<SpecialistAppointments> findAppointmentsByVisitor(Long idVisitor, Long idSpecialist) {
-        List<SpecialistAppointments> appointments = specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
-        if (appointments.isEmpty()) {
-            return List.of();
-        }
-        return appointments;
-//        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
+//        List<SpecialistAppointments> appointments = specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
+//        if (appointments.isEmpty()) {
+//            return List.of();
+//        }
+//        return appointments;
+        return specialistAppointmentsRepository.findByVisitorAppointmentsIdAndSpecialistAppointmentsIdOrderById(idVisitor, idSpecialist);
     }
 
     //Создать встречу
@@ -114,9 +113,8 @@ public class SpecialistAppointmentsService {
         specialistAppointmentsRepository.delete(appointmentsCancel);
     }
 
-    public SpecialistAppointments getAppointmentsSpecificDay(Long specialistId, LocalDateTime meeting) {
-        return specialistAppointmentsRepository.
-                getAppointmentsSpecificDay(specialistId, meeting.toLocalDate(), meeting.toLocalTime()).orElse(null);
+    public Optional<SpecialistAppointments> getAppointmentsSpecificDay(Long specialistId, LocalDateTime meeting) {
+        return specialistAppointmentsRepository.getAppointmentsSpecificDay(specialistId, meeting.toLocalDate(), meeting.toLocalTime());
     }
 
     public List<SpecialistAppointments> findAllAppointmentsBySpecialist(Long specialistId) {

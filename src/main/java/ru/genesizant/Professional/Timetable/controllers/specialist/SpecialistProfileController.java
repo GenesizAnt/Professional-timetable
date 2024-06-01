@@ -20,6 +20,8 @@ import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramServic
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -55,16 +57,20 @@ public class SpecialistProfileController {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
-        UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
-        userTelegram.setAgree(Boolean.TRUE);
-        userTelegramService.save(userTelegram);
-        log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтвердить аккаунт в ТГ боте");
+        Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
+        if (userTelegram.isPresent()) {
+            userTelegram.get().setAgree(Boolean.TRUE);
+            userTelegramService.save(userTelegram.get());
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтвердить аккаунт в ТГ боте");
+        } else {
+            return encodeError("Не найден аккаунт в ТГ-боте, перейдите в бот и зарегистрируйтесь https://t.me/TimeProfessionalBot");
+        }
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
     // Отметить подтверждение зарегистрированного аккаунта в ТГ боте - т.е. удалить его
     @GetMapping("/cancelTG")
-    public String cancelTG(Model model, HttpServletRequest request) {
+    public String cancelTG(HttpServletRequest request) {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
@@ -85,25 +91,25 @@ public class SpecialistProfileController {
 
 
     private void displayPage(Model model, HttpServletRequest request) {
-        UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
+        Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
         Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
         Optional<SpecialistPay> specialistPay = specialistPayService.findBySpecialistPay((Long) request.getSession().getAttribute("id"));
-        if (userTelegram == null) {
+        if (userTelegram.isEmpty()) {
             model.addAttribute("notacc", "");
         } else {
-            if (userTelegram.isAgree()) {
+            if (userTelegram.get().isAgree()) {
                 model.addAttribute("agree", "подтвержден");
             }
-            if (!userTelegram.isAgree()) {
+            if (!userTelegram.get().isAgree()) {
                 model.addAttribute("notagree", "не подтвержден");
-                model.addAttribute("username", userTelegram.getPersonusername());
+                model.addAttribute("username", userTelegram.get().getPersonusername());
             }
         }
         specialistPay.ifPresent(pay -> model.addAttribute("link", pay.getLinkPay()));
         model.addAttribute("name", request.getSession().getAttribute("name"));
         String currentUrl = request.getRequestURL().toString();
         String baseUrl = extractBaseUrl(currentUrl);
-        model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + person.get().getPhoneNumber() + "&role=client");
+        person.ifPresent(value -> model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + value.getPhoneNumber() + "&role=client"));
 //        model.addAttribute("specialistPhone", "?regNumber=" + person.get().getPhoneNumber());
     }
 
@@ -122,5 +128,10 @@ public class SpecialistProfileController {
             baseUrl = "";
         }
         return baseUrl;
+    }
+
+    private String encodeError(String error) {
+        String ERROR_VALIDATE_FORM = "redirect:/spec_profile/my_profile?error=";
+        return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 }

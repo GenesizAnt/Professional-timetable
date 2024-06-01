@@ -2,6 +2,7 @@ package ru.genesizant.Professional.Timetable.services;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
@@ -26,8 +27,12 @@ public class PersonService {
 
     public void updateJwtToken(String email, String newJwtToken) {
         Optional<Person> person = personRepository.findByEmail(email);
-        person.get().setJwtToken(newJwtToken);
-        personRepository.save(person.get());
+        if (person.isPresent()) {
+            person.get().setJwtToken(newJwtToken);
+            personRepository.save(person.get());
+        } else {
+            throw new UsernameNotFoundException("User not found!");
+        }
     }
 
     public List<Person> getPersonByRoleList(String role) {

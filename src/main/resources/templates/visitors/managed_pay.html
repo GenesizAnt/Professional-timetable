@@ -56,7 +56,8 @@
 
 <div class="alert alert-info text-center" role="alert">
 <!--    <h4><a href="https://www.tinkoff.ru/rm/krylova.aleksandra81/TpyvA97346" class="alert-link">Внести оплату</a></h4>-->
-    <h4><a id="linkPayC" th:href="${link}">Внести оплату</a></h4>
+    <h4 th:if="${link == null or link == ''}">Специалист еще не указал ссылку для оплаты</h4>
+    <h4 th:unless="${link == null or link == ''}"><a id="linkPayC" th:href="${link}">Внести оплату</a></h4>
 </div>
 
 <section class="chooseclient">
@@ -67,14 +68,14 @@
                     <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>
                     <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
                             data-bs-target="#listAssigned">
-                        <h6 class="text-center">Подтверждение оплаты</h6>
+                        <h6 class="text-center">Уведомление специалиста об оплате</h6>
                     </button>
                     <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"
                          aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listAssignedLabel">Выбери консультацию для подтверждения оплаты</h5>
+                                    <h5 class="modal-title" id="listAssignedLabel">Выберите консультацию, которую вы оплатили (отображаются только подтвержденные специалистом встречи)</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">

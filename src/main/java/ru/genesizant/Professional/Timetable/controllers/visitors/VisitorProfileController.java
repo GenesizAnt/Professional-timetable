@@ -12,6 +12,10 @@ import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -43,10 +47,14 @@ public class VisitorProfileController {
         if (!jwtUtil.isValidJWTAndSession(request)) {
             return ERROR_LOGIN;
         }
-        UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
-        userTelegram.setAgree(Boolean.TRUE);
-        userTelegramService.save(userTelegram);
-        log.info("Клиент: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтверждение акк в ТГ");
+        Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
+        if (userTelegram.isPresent()) {
+            userTelegram.get().setAgree(Boolean.TRUE);
+            userTelegramService.save(userTelegram.get());
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Нажал кнопку подтверждение акк в ТГ");
+        } else {
+            return encodeError("Не найден аккаунт в ТГ-боте, перейдите в бот и зарегистрируйтесь https://t.me/TimeProfessionalBot");
+        }
         return PROFILE_VIEW_REDIRECT;
     }
 
@@ -63,19 +71,24 @@ public class VisitorProfileController {
 
 
     private void displayPage(Model model, HttpServletRequest request) {
-        UserTelegram userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
-        if (userTelegram == null) {
+        Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
+        if (userTelegram.isEmpty()) {
             model.addAttribute("notacc", "");
         } else {
-            if (userTelegram.isAgree()) {
+            if (userTelegram.get().isAgree()) {
                 model.addAttribute("agree", "подтвержден");
             }
-            if (!userTelegram.isAgree()) {
+            if (!userTelegram.get().isAgree()) {
                 model.addAttribute("notagree", "не подтвержден");
-                model.addAttribute("username", userTelegram.getPersonusername());
+                model.addAttribute("username", userTelegram.get().getPersonusername());
             }
         }
 
         model.addAttribute("name", request.getSession().getAttribute("name"));
+    }
+
+    private String encodeError(String error) {
+        String ERROR_VALIDATE_FORM = "redirect:/profile/my_profile?error=";
+        return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 }

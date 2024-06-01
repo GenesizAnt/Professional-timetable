@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.model.DatesAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
@@ -74,27 +73,30 @@ public class VisitorsController {
             return ERROR_LOGIN;
         }
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
-        String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
-        List<String> allCalendar = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        List<LocalDate> nearestDates = schedule.keySet().stream()
-                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
-                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
-        for (LocalDate nearestDate : nearestDates) {
-            String[][] calendarForView = datesAppointmentsService.getCalendarForClient(fullName, nearestDate, schedule.get(nearestDate));
-            try {
-                allCalendar.add(objectMapper.writeValueAsString(calendarForView));
-            } catch (Exception e) {
-                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
+        Map<LocalDate, Map<String, String>> schedule;
+        if (assignedToSpecialist.isPresent()) {
+            schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+            String fullName = assignedToSpecialist.get().getVisitorList().getFullName();
+            List<String> allCalendar = new ArrayList<>();
+            LocalDate now = LocalDate.now();
+            List<LocalDate> nearestDates = schedule.keySet().stream()
+                    .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+                    .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
+            for (LocalDate nearestDate : nearestDates) {
+                String[][] calendarForView = datesAppointmentsService.getCalendarForClient(fullName, nearestDate, schedule.get(nearestDate));
+                try {
+                    allCalendar.add(objectMapper.writeValueAsString(calendarForView));
+                } catch (Exception e) {
+                    log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
+                }
             }
+            model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+            model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+            for (int i = 0; i < allCalendar.size(); i++) {
+                model.addAttribute("day" + i, allCalendar.get(i));
+            }
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел на отдельную страницу с отображением только календаря - 20 дней");
         }
-        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
-        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-        for (int i = 0; i < allCalendar.size(); i++) {
-            model.addAttribute("day" + i, allCalendar.get(i));
-        }
-        log.info("Клиент: " + request.getSession().getAttribute("id") + ". Перешел на отдельную страницу с отображением только календаря - 20 дней");
         return "visitors/full_calendar";
     }
 
@@ -165,13 +167,11 @@ public class VisitorsController {
         }
         if (meetingCancel.isPresent()) {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel.get(), Long.valueOf(selectedSpecialistId));
-            SpecialistAppointments appointmentsCancel = specialistAppointmentsService.getAppointmentsSpecificDay(Long.valueOf(selectedSpecialistId), meetingCancel.get());
-            if (appointmentsCancel != null) {
-                specialistAppointmentsService.removeAppointment(appointmentsCancel);
-            }
+            Optional<SpecialistAppointments> appointmentsCancel = specialistAppointmentsService.getAppointmentsSpecificDay(Long.valueOf(selectedSpecialistId), meetingCancel.get());
+            appointmentsCancel.ifPresent(specialistAppointmentsService::removeAppointment);
             sendMessageService.notifyCancellation(VISITOR, meetingCancel.get(), Long.valueOf(selectedSpecialistId));
             displayPage(model, request);
-            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Отменил запись на: " + meetingCancel);
+            log.info("Клиент: " + request.getSession().getAttribute("id") + ". Отменил запись на: " + meetingCancel.get());
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
@@ -210,11 +210,15 @@ public class VisitorsController {
 
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
-        List<String> nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
-
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist(assignedToSpecialist.get().getSpecialistList().getId());
-//        List<LocalDateTime> times = new ArrayList<>();
+        List<SpecialistAppointments> appointmentsList = List.of();
+        List<String> nearestDates = List.of();
+        if (assignedToSpecialist.isPresent()) {
+            Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+            nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+            appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist(assignedToSpecialist.get().getSpecialistList().getId());
+            model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+            model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+        }
         List<AgreementAppointmentDTO> times = new ArrayList<>();
         List<AgreementAppointmentDTO> needAgree = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
@@ -234,9 +238,6 @@ public class VisitorsController {
         model.addAttribute("visitDates", times);
         model.addAttribute("needAgree", needAgree);
 
-
-        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
         //ToDo решить почему не работает с пустым списком как это исправить!!!!!!!!!!!!!!!!!!!!!!!!!!!! - на этот метод поставить оптионал datesAppointmentsService.getFiveNearestDates
         if (!nearestDates.isEmpty()) {
             model.addAttribute("day1", nearestDates.get(0));

@@ -12,6 +12,7 @@ import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsServi
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
@@ -26,22 +27,22 @@ public class SendMessageService {
     private final TelegramBot telegramBot;
 
     public void notifyCancellation(StatusPerson statusPerson, LocalDateTime localDateTime, Long specialistId) {
-        SpecialistAppointments appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
-        if (appointmentsSpecificDay != null) {
-            UserTelegram specialist = userTelegramService.findByPersonId(specialistId);
-            UserTelegram visitor = userTelegramService.findByPersonId(appointmentsSpecificDay.getVisitorAppointments().getId());
+        Optional<SpecialistAppointments> appointmentsSpecificDay = specialistAppointmentsService.getAppointmentsSpecificDay(specialistId, localDateTime);
+        if (appointmentsSpecificDay.isPresent()) {
+            Optional<UserTelegram> specialist = userTelegramService.findByPersonId(specialistId);
+            Optional<UserTelegram> visitor = userTelegramService.findByPersonId(appointmentsSpecificDay.get().getVisitorAppointments().getId());
             try {
                 switch (statusPerson) {
                     case VISITOR -> {
-                        if (specialist != null) {
-                            telegramBot.execute(createMessage(specialist.getChatId(),
-                                    cancellationMessage(appointmentsSpecificDay, VISITOR)));
+                        if (specialist.isPresent()) {
+                            telegramBot.execute(createMessage(specialist.get().getChatId(),
+                                    cancellationMessage(appointmentsSpecificDay.get(), VISITOR)));
                         }
                     }
                     case SPECIALIST -> {
-                        if (visitor != null) {
-                            telegramBot.execute(createMessage(visitor.getChatId(),
-                                    cancellationMessage(appointmentsSpecificDay, SPECIALIST)));
+                        if (visitor.isPresent()) {
+                            telegramBot.execute(createMessage(visitor.get().getChatId(),
+                                    cancellationMessage(appointmentsSpecificDay.get(), SPECIALIST)));
                         }
                     }
                 }
@@ -52,33 +53,31 @@ public class SendMessageService {
     }
 
     public void notifyEnrollNewAppointment(StatusPerson statusPerson, LocalDateTime localDateTime, Long visitorId, Long specialistId) {
-        UserTelegram specialist = userTelegramService.findByPersonId(specialistId);
-        UserTelegram visitor = userTelegramService.findByPersonId(visitorId);
-        try {
-            switch (statusPerson) {
-                case VISITOR -> {
-                    if (specialist != null) {
-                        telegramBot.execute(createMessage(specialist.getChatId(),
-                                enrollNewAppointmentMessage(specialist, visitor, localDateTime, VISITOR)));
+        Optional<UserTelegram> specialist = userTelegramService.findByPersonId(specialistId);
+        Optional<UserTelegram> visitor = userTelegramService.findByPersonId(visitorId);
+        if (visitor.isPresent() && specialist.isPresent()) {
+            try {
+                switch (statusPerson) {
+                    case VISITOR -> {
+                        telegramBot.execute(createMessage(specialist.get().getChatId(),
+                                enrollNewAppointmentMessage(specialist.get(), visitor.get(), localDateTime, VISITOR)));
+                    }
+                    case SPECIALIST -> {
+                        telegramBot.execute(createMessage(visitor.get().getChatId(),
+                                enrollNewAppointmentMessage(visitor.get(), specialist.get(), localDateTime, SPECIALIST)));
                     }
                 }
-                case SPECIALIST -> {
-                    if (visitor != null) {
-                        telegramBot.execute(createMessage(visitor.getChatId(),
-                                enrollNewAppointmentMessage(visitor, specialist, localDateTime, SPECIALIST)));
-                    }
-                }
+            } catch (TelegramApiException e) {
+                log.error("Ошибка отправки сообщения о новой встрече на: " + localDateTime + " у специалиста " + specialistId + " и клиента " + visitorId);
             }
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения о новой встрече на: " + localDateTime + " у специалиста " + specialistId + " и клиента " + visitorId);
         }
     }
 
     public void notifyNewClient(Person specialist, Person client) {
-        UserTelegram specialistTg = userTelegramService.findByPersonId(specialist.getId());
-        if (specialistTg != null) {
+        Optional<UserTelegram> specialistTg = userTelegramService.findByPersonId(specialist.getId());
+        if (specialistTg.isPresent()) {
             try {
-                telegramBot.execute(createMessage(specialistTg.getChatId(), newClientMessage(specialist, client)));
+                telegramBot.execute(createMessage(specialistTg.get().getChatId(), newClientMessage(specialist, client)));
             } catch (TelegramApiException e) {
                 log.error("Ошибка отправки сообщения о новом клиенте: " + client.getId() + " у специалиста " + specialist.getId());
             }

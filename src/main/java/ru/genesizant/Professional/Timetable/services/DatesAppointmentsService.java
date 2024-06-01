@@ -501,7 +501,7 @@ public class DatesAppointmentsService {
         return false;
     }
 
-    public Optional<DatesAppointments> getAppointmentsByDate(@NotNull LocalDateTime meetingCancel) {
-        return datesAppointmentsRepository.findByVisitDate(meetingCancel.toLocalDate());
-    }
+//    public Optional<DatesAppointments> getAppointmentsByDate(@NotNull LocalDateTime meetingCancel) {
+//        return datesAppointmentsRepository.findByVisitDate(meetingCancel.toLocalDate());
+//    }
 }

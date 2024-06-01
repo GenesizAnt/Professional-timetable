@@ -79,7 +79,7 @@ public class EnrollClientController {
         if (clientId.isPresent() && !clientId.get().equals("")) {
             handleCustomerSelection(model, clientId, registeredStatus);
             displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Выбрал клиента для записи:" + clientId);
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Выбрал клиента для записи:" + clientId.get());
         } else {
             return encodeError("Для работы с клиентом нужно сначала его выбрать!");
         }
@@ -218,12 +218,17 @@ public class EnrollClientController {
         //ToDo вынести метод в другое место? контролер решает две задачи
         //ToDo ужас твориться с таблицей надо перепроверить все поля, например дата и продолжительность
         //ToDo переименовать поле appointmenttime в Сикуль - нижнее подчеркивание
-        specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
-                personService.findById((long) request.getSession().getAttribute("id")).get(),
-                personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
+        if (!identificationMeetingPerson.isEmpty()) {
+            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+                    personService.findById((long) request.getSession().getAttribute("id")).get(),
+                    personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
 
-        sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), (long) request.getSession().getAttribute("id"));
-        log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
+            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), (long) request.getSession().getAttribute("id"));
+            log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
+        } else {
+            log.error("Спец: " + request.getSession().getAttribute("id") + ". Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения" + personFullName);
+            return encodeError("Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения");
+        }
         return ENROLL_VIEW_REDIRECT;
     }
 
@@ -246,12 +251,14 @@ public class EnrollClientController {
                 fioPerson.getUsername(),
                 fioPerson.getSurname(),
                 fioPerson.getPatronymic());
-        Optional<SpecialistsAndClient> specialistsAndClient = specialistsAndClientService.findByVisitorListId(person.get().getId());
-        if (specialistsAndClient.isPresent()) {
-            identityVisitor.put("id", person.get().getId().toString());
-            identityVisitor.put("name", fioPerson.getUsername());
-            identityVisitor.put("surname", fioPerson.getSurname());
-            identityVisitor.put("patronymic", fioPerson.getPatronymic());
+        if (person.isPresent()) {
+            Optional<SpecialistsAndClient> specialistsAndClient = specialistsAndClientService.findByVisitorListId(person.get().getId());
+            if (specialistsAndClient.isPresent()) {
+                identityVisitor.put("id", person.get().getId().toString());
+                identityVisitor.put("name", fioPerson.getUsername());
+                identityVisitor.put("surname", fioPerson.getSurname());
+                identityVisitor.put("patronymic", fioPerson.getPatronymic());
+            }
         }
         return identityVisitor;
     }

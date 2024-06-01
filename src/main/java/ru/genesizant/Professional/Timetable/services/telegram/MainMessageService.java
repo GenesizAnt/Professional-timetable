@@ -15,6 +15,7 @@ import ru.genesizant.Professional.Timetable.services.PersonService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -85,12 +86,13 @@ public class MainMessageService {
     private String getResponse(String text, Long chatId, String name, Integer messageId) {
         String response;
         if (text.matches(regex)) {
-            if (personService.findByEmail(text.toLowerCase()).isPresent()) {
+            Optional<Person> personByEmail = personService.findByEmail(text.toLowerCase());
+            if (personByEmail.isPresent()) {
                 if (userTelegramService.isUserEmailEmpty(chatId)) {
                     //Получение email из текста сообщения и обновление ТГ пользователя
                     UserTelegram userTelegram = userTelegramService.findById(chatId);
                     userTelegram.setEmail(text);
-                    Person person = personService.findByEmail(text).get();
+                    Person person = personByEmail.get();
                     userTelegram.setPersonMainService(person);
                     userTelegram.setRole(person.getRole());
                     userTelegramService.save(userTelegram);

@@ -22,13 +22,14 @@ import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/managed")
-public class ManagedPay {
+public class ManagedPayController {
 
     @Value("${error_login}")
     private String ERROR_LOGIN;
@@ -64,14 +65,17 @@ public class ManagedPay {
         } else {
             return ERROR_LOGIN;
         }
-        String ENROLL_VIEW_REDIRECT = "redirect:/managed/managed_pay";
-        return ENROLL_VIEW_REDIRECT;
+        return "redirect:/managed/managed_pay";
     }
 
     private void displayPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"),  assignedToSpecialist.get().getSpecialistList().getId());
-        Optional<SpecialistPay> specialistPay = specialistPayService.findBySpecialistPay(assignedToSpecialist.get().getSpecialistList().getId());
+        List<SpecialistAppointments> appointmentsList = List.of();
+        Optional<SpecialistPay> specialistPay = Optional.empty();
+        if (assignedToSpecialist.isPresent()) {
+            appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"), assignedToSpecialist.get().getSpecialistList().getId());
+            specialistPay = specialistPayService.findBySpecialistPay(assignedToSpecialist.get().getSpecialistList().getId());
+        }
         List<AgreementAppointmentDTO> needPay = new ArrayList<>();
         if (!appointmentsList.isEmpty()) {
             for (SpecialistAppointments appointments : appointmentsList) {
