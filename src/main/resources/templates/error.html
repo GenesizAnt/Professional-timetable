@@ -28,6 +28,9 @@
 <div class="centered-text">
     <h1>Упс! Непредвиденная ошибка!</h1>
 </div>
+<div class="centered-text" th:if="${error}" style="color: red">
+    <p th:text="${error}"></p>
+</div>
 <svg id="error" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="400px"
      height="400px" viewBox="0 0 400 400" xml:space="preserve">
 		<g id="svg-mask">

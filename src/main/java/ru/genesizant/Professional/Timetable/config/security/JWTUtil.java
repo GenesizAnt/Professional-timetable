@@ -27,6 +27,7 @@ public class JWTUtil {
     //Генерация токена с жизненным циклом 60 минут, после клиенту нужно перелогиниться
     public String generateToken(String email) {
         Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+//        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(5).toInstant());
 
         return JWT.create()
                 .withSubject("User details") //sub (subject) — определяет тему токена.
@@ -65,7 +66,6 @@ public class JWTUtil {
                 try {
                     validateTokenAndRetrieveClaim(jwtToken);
                 } catch (JWTVerificationException e) {
-                    log.error("ERROR ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id") + " " + e.getMessage());
                     return false;
                     //ToDo какую ошибку тут передать или ничего не надо???
                 }

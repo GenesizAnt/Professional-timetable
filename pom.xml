@@ -123,6 +123,14 @@
 					</image>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-archetype-plugin</artifactId>
+				<version>3.2.1</version>
+				<configuration>
+					<properties>true</properties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
