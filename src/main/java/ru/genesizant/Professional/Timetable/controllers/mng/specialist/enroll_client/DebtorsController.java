@@ -67,7 +67,6 @@ public class DebtorsController {
     @ModelAttribute(name = "specialist")
     public Person specialist(HttpServletRequest request) {
         if (jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
         } else {
             log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
@@ -77,44 +76,38 @@ public class DebtorsController {
 
     //Отображение страницы для подтверждения оплат от клиентов
     @GetMapping("/proof_clients")
-    public String listDebtors(@ModelAttribute Person person, HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-//            displayPage(model, request);
-            System.out.println(person);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу для подтверждения оплат от клиентов");
-        } else {
-            return ERROR_LOGIN;
-        }
+    public String listDebtors(@ModelAttribute("specialist") Person person, HttpServletRequest request) {
+            log.info("Спец: " + person.getFullName() + ". Перешел на страницу для подтверждения оплат от клиентов");
         return "specialist/list_debtors";
     }
 
     //Кнопка для подтверждения оплаты по конкретному клиенту
     @PostMapping("/agreement")
-    public String agreementAppointment(@ModelAttribute Person person, HttpServletRequest request,
-                                       @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-        if (agreementId.isPresent() && !agreementId.get().equals("")) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.TRUE);
+    public String agreementAppointment(@ModelAttribute("specialist") Person person, HttpServletRequest request,
+                                       @RequestParam("agreementId") String agreementId) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+        if (!agreementId.isEmpty()) {
+            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId), Boolean.TRUE);
 //            displayPage(model, request);
-            System.out.println(person);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Подтвердил оплату по консультации с ID:" + agreementId.get());
+//            System.out.println(person);
+            log.info("Спец: " + person.getFullName() + ". Подтвердил оплату по консультации с ID:" + agreementId);
         }
         return ENROLL_VIEW_REDIRECT;
     }
 
     //Кнопка для ОТМЕНЫ подтверждения оплаты по конкретному клиенту
     @PostMapping("/no_agreement")
-    public String noAgreementAppointment(Model model, HttpServletRequest request,
-                                       @RequestParam("agreementId") Optional<@NotNull String> agreementId) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-        if (agreementId.isPresent() && !agreementId.get().equals("")) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId.get()), Boolean.FALSE);
+    public String noAgreementAppointment(@ModelAttribute("specialist") Person person, HttpServletRequest request,
+                                       @RequestParam("agreementId") String agreementId) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+        if (!agreementId.isEmpty()) {
+            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId), Boolean.FALSE);
 //            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Отменил оплату по консультации с ID:" + agreementId.get());
+            log.info("Спец: " + person.getFullName() + ". Отменил оплату по консультации с ID:" + agreementId);
         }
         return ENROLL_VIEW_REDIRECT;
     }

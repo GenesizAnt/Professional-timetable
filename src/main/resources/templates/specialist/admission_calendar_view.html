@@ -214,7 +214,7 @@
                             <div class="modal-body">
                                 <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
                                     <label for="selectedDate">Выберите дату:</label>
-                                    <input type="date" id="selectedDate" name="selectedDate">
+                                    <input type="date" id="selectedDate" name="selectedDate" required>
                                     <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
                                         Удалить
                                     </button>

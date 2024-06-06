@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.controllers.mng.specialist.calendar;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -7,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
@@ -38,234 +36,8 @@ public class CalendarManagementController {
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
 
-    //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
-    @GetMapping("/admission_calendar_view")
-    public String addAdmissionCalendarView(Model model, HttpServletRequest request) {
-
-        if (jwtUtil.isValidJWTAndSession(request)) {
-
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Перешел на страницу управления календарем");
-        } else {
-            model.addAttribute("error", "Упс! Непредвиденная ошибка. Переоткройте, пожалуйста приложение");
-            return ERROR_LOGIN;
-        }
-        return "specialist/admission_calendar_view";
-    }
-
-    // Кнопка для автоматического заполнения календаря на будущий период
-    @PostMapping("/admission_calendar_update")
-    public String addAdmissionCalendarUpdate(Model model, HttpServletRequest request,
-                                             @RequestParam("startDate") String startDate,
-                                             @RequestParam("endDate") String endDate,
-                                             @RequestParam("startTime") String startTime,
-                                             @RequestParam("endTime") String endTime,
-                                             @RequestParam("minInterval") String minInterval) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        Person personSpecialist = findLoggedInPerson(request);
-
-        if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
-            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, personSpecialist.getId())) {
-                return encodeError("Нельзя добавить календарь в уже существующих датах");
-            } else {
-                datesAppointmentsService.addFreeDateSchedule(personSpecialist,
-                        startDate,
-                        endDate,
-                        startTime,
-                        endTime,
-                        minInterval,
-                        StatusAdmissionTime.AVAILABLE);
-                displayPage(model, request);
-                log.info("Спец: " + request.getSession().getAttribute("id") + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
-            }
-        } else {
-            return encodeError("Для создания календаря нужно внести все данные по форме");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Удалить полный День из доступных для выбора дат
-    @PostMapping("/dateFormDelete")
-    public String selectedDateFormDelete(Model model, HttpServletRequest request,
-                                         @RequestParam("selectedDate") Optional<LocalDate> selectedDate) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (selectedDate.isPresent()) {
-            datesAppointmentsService.deleteVisitDate(selectedDate.get());
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил полный день " + selectedDate.get());
-        } else {
-            return encodeError("Для удаления нужно выбрать дату");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-
-    //Удалить Диапазон Дней из доступных для выбора дат
-    @PostMapping("/dateRangeFormDelete")
-    public String selectedDateRangeFormDelete(Model model, HttpServletRequest request,
-                                              @RequestParam("startDateRange") Optional<LocalDate> startDateRange,
-                                              @RequestParam("endDateRange") Optional<LocalDate> endDateRange) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (startDateRange.isPresent() && endDateRange.isPresent()) {
-            datesAppointmentsService.deleteByVisitDateBetween(startDateRange.get(), endDateRange.get());
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил диапазон дней из доступных для выбора дат");
-        } else {
-            return encodeError("Для удаления нужно выбрать диапазон дат");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Удалить конкретное Время из доступного дня
-    @PostMapping("/timeAdmissionFormDelete")
-    public String selectedTimeAdmissionFormDelete(Model model, HttpServletRequest request,
-                                                  @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
-                                                  @RequestParam("dateOne") Optional<LocalDate> dateOne) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (!selectedTimeAdmission.equals("") && dateOne.isPresent()) {
-            datesAppointmentsService.deleteTimeAdmission(dateOne.get(), selectedTimeAdmission, (long) request.getSession().getAttribute("id"));
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил конкретное Время из доступного дня");
-        } else {
-            return encodeError("Для удаления нужно выбрать дату и время");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Удалить диапазон Времени из доступного дня
-    @PostMapping("/timeAdmissionRangeFormDelete")
-    public String selectedTimeAdmissionRangeFormDelete(Model model, HttpServletRequest request,
-                                                       @RequestParam("startTimeAdmission") String startTimeAdmission,
-                                                       @RequestParam("endTimeAdmission") String endTimeAdmission,
-                                                       @RequestParam("dateRange") Optional<LocalDate> dateOne) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (!startTimeAdmission.equals("") && !endTimeAdmission.equals("") && dateOne.isPresent()) {
-            datesAppointmentsService.deleteTimeRangeAdmission(dateOne.get(), startTimeAdmission, endTimeAdmission, (long) request.getSession().getAttribute("id"));
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил диапазон времени из доступного дня");
-        } else {
-            return encodeError("Для удаления нужно выбрать дату и время");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Изменить статус доступности конкретного Времени из календаря доступного для выбора
-    @PostMapping("/setTimeAvailabilityStatus")
-    public String setTimeAvailabilityStatus(Model model, HttpServletRequest request,
-                                            @RequestParam("date") Optional<LocalDate> date,
-                                            @RequestParam("timeAdmission") String timeAdmission,
-                                            @RequestParam("selectedOption") StatusAdmissionTime status) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (isValidSetTimeForm(date, timeAdmission, status)) {
-            datesAppointmentsService.setStatusTimeAdmission(date.get(), timeAdmission, status, (long) request.getSession().getAttribute("id"));
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности конкретного Времени из календаря доступного для выбора");
-        } else {
-            return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Изменить статус доступности Диапазона Времени из календаря доступного для выбора
-    @PostMapping("/setRangeTimeAvailabilityStatus")
-    public String setRangeTimeAvailabilityStatus(Model model, HttpServletRequest request,
-                                                 @RequestParam("date") Optional<LocalDate> date,
-                                                 @RequestParam("startStartAdmission") String startStartAdmission,
-                                                 @RequestParam("endStartAdmission") String endStartAdmission,
-                                                 @RequestParam("selectedOption") StatusAdmissionTime status) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (isValidSetRangeTimeForm(date, startStartAdmission, endStartAdmission, status)) {
-            datesAppointmentsService.setStatusRangeTimeAdmission(date.get(), startStartAdmission, endStartAdmission, status, (Long) request.getSession().getAttribute("id"));
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Изменил статус доступности Диапазона Времени из календаря доступного для выбора");
-        } else {
-            return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Удалить все Даты из календаря до указанной даты
-    @PostMapping("/dateBeforeClear")
-    public String dateBeforeClear(Model model, HttpServletRequest request,
-                                  @RequestParam("selectedDateBeforeClear") Optional<LocalDate> date) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (date.isPresent()) {
-            datesAppointmentsService.clearDateVisitBefore(date.get());
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Удалил все даты из календаря до указанной даты - " + date.get());
-        } else {
-            return encodeError("Нужно выбрать дату, ДО которой будет очистка календаря");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Добавить в календарь конкретное время, дату и статус доступное для приема
-    @PostMapping("/addTimeAvailability")
-    public String addTimeAvailability(Model model, HttpServletRequest request,
-                                      @RequestParam("timeAvailability") String timeAvailability,
-                                      @RequestParam("dateAddTime") Optional<LocalDate> date,
-                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (isValidFormAddTimeAvailability(date, timeAvailability, status)) {
-            datesAppointmentsService.addTimeAvailability((long) request.getSession().getAttribute("id"), date.get(), timeAvailability, status);
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь конкретное время, дату и статус доступное для приема");
-        } else {
-            return encodeError("Нужно выбрать дату, время и статус времени приема");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    //Добавить в календарь Диапазон времени, дату и статус доступное для приема
-    @PostMapping("/addRangeTimeAvailability")
-    public String addRangeTimeAvailability(Model model, HttpServletRequest request,
-                                           @RequestParam("startAddTimeAdmission") String startTimeAvailability,
-                                           @RequestParam("endAddTimeAdmission") String endTimeAvailability,
-                                           @RequestParam("minIntervalAdd") String intervalHour,
-                                           @RequestParam("dateRangeAdd") Optional<LocalDate> date,
-                                           @RequestParam("selectedOption") StatusAdmissionTime status) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
-            return ERROR_LOGIN;
-        }
-
-        if (isValidFormAddRangeTimeAvailability(date, startTimeAvailability, endTimeAvailability, status, intervalHour)) {
-            datesAppointmentsService.addRangeTimeAvailability(date.get(), startTimeAvailability, endTimeAvailability, intervalHour, status, (Long) request.getSession().getAttribute("id"));
-            displayPage(model, request);
-            log.info("Спец: " + request.getSession().getAttribute("id") + ". Добавил в календарь Диапазон времени, дату и статус доступное для приема");
-        } else {
-            return encodeError("Нужно выбрать дату, время, статус и интервал времени приема");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
-
-    private void displayPage(Model model, HttpServletRequest request) {
+    @ModelAttribute
+    public void getPayloadPage(Model model, HttpServletRequest request) {
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
         List<String> allCalendar = new ArrayList<>();
         LocalDate now = LocalDate.now();
@@ -288,11 +60,273 @@ public class CalendarManagementController {
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
 
-    private Person findLoggedInPerson(HttpServletRequest request) {
-        return Optional.ofNullable((Long) request.getSession().getAttribute("id"))
-                .flatMap(personService::findById)
-                .orElseThrow(() -> new RuntimeException("Person not found"));
+    @ModelAttribute(name = "specialist")
+    public Person specialist(HttpServletRequest request) {
+        if (jwtUtil.isValidJWTAndSession(request)) {
+            return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
+        } else {
+            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
+            throw new JWTVerificationException("");
+        }
     }
+
+    //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
+    @GetMapping("/admission_calendar_view")
+    public String addAdmissionCalendarView(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
+
+//        if (jwtUtil.isValidJWTAndSession(request)) {
+
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу управления календарем");
+//        } else {
+//            model.addAttribute("error", "Упс! Непредвиденная ошибка. Переоткройте, пожалуйста приложение");
+//            return ERROR_LOGIN;
+//        }
+        return "specialist/admission_calendar_view";
+    }
+
+    // Кнопка для автоматического заполнения календаря на будущий период
+    @PostMapping("/admission_calendar_update")
+    public String addAdmissionCalendarUpdate(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                             @RequestParam("startDate") String startDate,
+                                             @RequestParam("endDate") String endDate,
+                                             @RequestParam("startTime") String startTime,
+                                             @RequestParam("endTime") String endTime,
+                                             @RequestParam("minInterval") String minInterval) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+//        Person personSpecialist = findLoggedInPerson(request);
+
+        if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
+            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, specialist.getId())) {
+                return encodeError("Нельзя добавить календарь в уже существующих датах");
+            } else {
+                datesAppointmentsService.addFreeDateSchedule(specialist,
+                        startDate,
+                        endDate,
+                        startTime,
+                        endTime,
+                        minInterval,
+                        StatusAdmissionTime.AVAILABLE);
+//                displayPage(model, request);
+                log.info("Спец: " + specialist.getFullName() + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
+            }
+        } else {
+            return encodeError("Для создания календаря нужно внести все данные по форме");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Удалить полный День из доступных для выбора дат
+    @PostMapping("/dateFormDelete")
+    public String selectedDateFormDelete(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                         @RequestParam("selectedDate") LocalDate selectedDate) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (selectedDate != null) {
+            datesAppointmentsService.deleteVisitDate(selectedDate);
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил полный день " + selectedDate);
+        } else {
+            return encodeError("Для удаления нужно выбрать дату");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+
+    //Удалить Диапазон Дней из доступных для выбора дат
+    @PostMapping("/dateRangeFormDelete")
+    public String selectedDateRangeFormDelete(@ModelAttribute("specialist") Person specialist,
+                                              @RequestParam("startDateRange") LocalDate startDateRange,
+                                              @RequestParam("endDateRange") LocalDate endDateRange) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (startDateRange != null && endDateRange != null) {
+            datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил диапазон дней из доступных для выбора дат");
+        } else {
+            return encodeError("Для удаления нужно выбрать диапазон дат");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Удалить конкретное Время из доступного дня
+    @PostMapping("/timeAdmissionFormDelete")
+    public String selectedTimeAdmissionFormDelete(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                                  @RequestParam("selectedTimeAdmission") String selectedTimeAdmission,
+                                                  @RequestParam("dateOne") LocalDate dateOne) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (!selectedTimeAdmission.isEmpty() && dateOne != null) {
+            datesAppointmentsService.deleteTimeAdmission(dateOne, selectedTimeAdmission, specialist.getId());
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил конкретное Время из доступного дня");
+        } else {
+            return encodeError("Для удаления нужно выбрать дату и время");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Удалить диапазон Времени из доступного дня
+    @PostMapping("/timeAdmissionRangeFormDelete")
+    public String selectedTimeAdmissionRangeFormDelete(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                                       @RequestParam("startTimeAdmission") String startTimeAdmission,
+                                                       @RequestParam("endTimeAdmission") String endTimeAdmission,
+                                                       @RequestParam("dateRange") LocalDate dateOne) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (!startTimeAdmission.isEmpty() && !endTimeAdmission.isEmpty()  && dateOne != null) {
+            datesAppointmentsService.deleteTimeRangeAdmission(dateOne, startTimeAdmission, endTimeAdmission, specialist.getId());
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил диапазон времени из доступного дня");
+        } else {
+            return encodeError("Для удаления нужно выбрать дату и время");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Изменить статус доступности конкретного Времени из календаря доступного для выбора
+    @PostMapping("/setTimeAvailabilityStatus")
+    public String setTimeAvailabilityStatus(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                            @RequestParam("date") LocalDate date,
+                                            @RequestParam("timeAdmission") String timeAdmission,
+                                            @RequestParam("selectedOption") StatusAdmissionTime status) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (isValidSetTimeForm(date, timeAdmission, status)) {
+            datesAppointmentsService.setStatusTimeAdmission(date, timeAdmission, status, specialist.getId());
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Изменил статус доступности конкретного Времени из календаря доступного для выбора");
+        } else {
+            return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Изменить статус доступности Диапазона Времени из календаря доступного для выбора
+    @PostMapping("/setRangeTimeAvailabilityStatus")
+    public String setRangeTimeAvailabilityStatus(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                                 @RequestParam("date") LocalDate date,
+                                                 @RequestParam("startStartAdmission") String startStartAdmission,
+                                                 @RequestParam("endStartAdmission") String endStartAdmission,
+                                                 @RequestParam("selectedOption") StatusAdmissionTime status) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (isValidSetRangeTimeForm(date, startStartAdmission, endStartAdmission, status)) {
+            datesAppointmentsService.setStatusRangeTimeAdmission(date, startStartAdmission, endStartAdmission, status, specialist.getId());
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Изменил статус доступности Диапазона Времени из календаря доступного для выбора");
+        } else {
+            return encodeError("Чтобы установить доступность времени нужно выбрать Время, Дату и Статус");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Удалить все Даты из календаря до указанной даты
+    @PostMapping("/dateBeforeClear")
+    public String dateBeforeClear(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                  @RequestParam("selectedDateBeforeClear") LocalDate date) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (date != null) {
+            datesAppointmentsService.clearDateVisitBefore(date);
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил все даты из календаря до указанной даты - " + date);
+        } else {
+            return encodeError("Нужно выбрать дату, ДО которой будет очистка календаря");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Добавить в календарь конкретное время, дату и статус доступное для приема
+    @PostMapping("/addTimeAvailability")
+    public String addTimeAvailability(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                      @RequestParam("timeAvailability") String timeAvailability,
+                                      @RequestParam("dateAddTime") LocalDate date,
+                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (isValidFormAddTimeAvailability(date, timeAvailability, status)) {
+            datesAppointmentsService.addTimeAvailability(specialist.getId(), date, timeAvailability, status);
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Добавил в календарь конкретное время, дату и статус доступное для приема");
+        } else {
+            return encodeError("Нужно выбрать дату, время и статус времени приема");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    //Добавить в календарь Диапазон времени, дату и статус доступное для приема
+    @PostMapping("/addRangeTimeAvailability")
+    public String addRangeTimeAvailability(@ModelAttribute("specialist") Person specialist, HttpServletRequest request,
+                                           @RequestParam("startAddTimeAdmission") String startTimeAvailability,
+                                           @RequestParam("endAddTimeAdmission") String endTimeAvailability,
+                                           @RequestParam("minIntervalAdd") String intervalHour,
+                                           @RequestParam("dateRangeAdd") LocalDate date,
+                                           @RequestParam("selectedOption") StatusAdmissionTime status) {
+//        if (!jwtUtil.isValidJWTAndSession(request)) {
+//            return ERROR_LOGIN;
+//        }
+
+        if (isValidFormAddRangeTimeAvailability(date, startTimeAvailability, endTimeAvailability, status, intervalHour)) {
+            datesAppointmentsService.addRangeTimeAvailability(
+                    date,startTimeAvailability, endTimeAvailability,
+                    intervalHour, status, specialist.getId());
+//            displayPage(model, request);
+            log.info("Спец: " + specialist.getFullName() + ". Добавил в календарь Диапазон времени, дату и статус доступное для приема");
+        } else {
+            return encodeError("Нужно выбрать дату, время, статус и интервал времени приема");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+//    private void displayPage(Model model, HttpServletRequest request) {
+//        Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
+//        List<String> allCalendar = new ArrayList<>();
+//        LocalDate now = LocalDate.now();
+//        List<LocalDate> nearestDates = schedule.keySet().stream()
+//                .filter(date -> !date.isBefore(now)) // исключаем даты, предшествующие текущей дате
+//                .sorted(Comparator.comparingLong(date -> ChronoUnit.DAYS.between(now, date))).toList();
+//        for (LocalDate nearestDate : nearestDates) {
+//            String[][] calendarForView = datesAppointmentsService.getCalendarForClient("specialist", nearestDate, schedule.get(nearestDate));
+//            try {
+//                allCalendar.add(objectMapper.writeValueAsString(calendarForView));
+//            } catch (Exception e) {
+//                log.error("Ошибка формирования JSON из календаря:" + Arrays.deepToString(calendarForView) + ". Текст сообщения - " + e.getMessage());
+//            }
+//        }
+//
+//        // allCalendar каждый элемент это строковое предоставление массива данных определенного дня в формате [["23.04.2024","Вторник"],["Время","Бронь","Статус"],["10:00","---","Доступно".......
+//        for (int i = 0; i < allCalendar.size(); i++) {
+//            model.addAttribute("day" + i, allCalendar.get(i));
+//        }
+//        model.addAttribute("name", request.getSession().getAttribute("name"));
+//    }
+
+//    private Person findLoggedInPerson(HttpServletRequest request) {
+//        return Optional.ofNullable((Long) request.getSession().getAttribute("id"))
+//                .flatMap(personService::findById)
+//                .orElseThrow(() -> new RuntimeException("Person not found"));
+//    }
 
     private String encodeError(String error) {
         String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
@@ -300,22 +334,22 @@ public class CalendarManagementController {
     }
 
     private boolean isValidFormAddCalendarAdmission(String startDate, String endDate, String startTime, String endTime, String minInterval) {
-        return !startDate.equals("") && !endDate.equals("") && !startTime.equals("") && !endTime.equals("") && !minInterval.equals("");
+        return !startDate.isEmpty() && !endDate.isEmpty() && !startTime.isEmpty() && !endTime.isEmpty() && !minInterval.isEmpty();
     }
 
-    private boolean isValidSetTimeForm(Optional<LocalDate> date, String timeAdmission, StatusAdmissionTime status) {
-        return !timeAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
+    private boolean isValidSetTimeForm(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
+        return !timeAdmission.isEmpty() && !status.getStatus().isEmpty() && date != null;
     }
 
-    private boolean isValidSetRangeTimeForm(Optional<LocalDate> date, String startStartAdmission, String endStartAdmission, StatusAdmissionTime status) {
-        return startStartAdmission.equals("") && endStartAdmission.equals("") && !status.getStatus().equals("") && date.isPresent();
+    private boolean isValidSetRangeTimeForm(LocalDate date, String startStartAdmission, String endStartAdmission, StatusAdmissionTime status) {
+        return startStartAdmission.isEmpty() && endStartAdmission.isEmpty() && !status.getStatus().isEmpty() && date != null;
     }
 
-    private boolean isValidFormAddTimeAvailability(Optional<LocalDate> date, String timeAvailability, StatusAdmissionTime status) {
-        return date.isPresent() && !timeAvailability.equals("") && !status.getStatus().equals("");
+    private boolean isValidFormAddTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
+        return date != null && !timeAvailability.isEmpty() && !status.getStatus().isEmpty();
     }
 
-    private boolean isValidFormAddRangeTimeAvailability(Optional<LocalDate> date, String startTimeAvailability, String endTimeAvailability, StatusAdmissionTime status, String intervalHour) {
-        return date.isPresent() && !startTimeAvailability.equals("") && !endTimeAvailability.equals("") && !status.getStatus().equals("") && !intervalHour.equals("");
+    private boolean isValidFormAddRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, StatusAdmissionTime status, String intervalHour) {
+        return date != null && !startTimeAvailability.isEmpty() && !endTimeAvailability.isEmpty() && !status.getStatus().isEmpty() && !intervalHour.isEmpty();
     }
 }

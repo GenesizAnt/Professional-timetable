@@ -44,31 +44,31 @@ public class LoggingAspect {
 //
 //    }
 
-    @Around("anyControllerLogging()")
-    public Object beforeAnyController(ProceedingJoinPoint point) throws Throwable {
-        log.info("======BEFORE======");
-        log.info("getKind {}", point.getKind());
-        log.info("getSignature {}", point.getSignature());
-        log.info("getTarget {}", point.getTarget());
-        log.info("getSourceLocation {}", point.getSourceLocation());
-        log.info("getStaticPart {}", point.getStaticPart());
-        log.info("getThis {}", point.getThis());
-        log.info("getClass {}", point.getClass());
-        Object[] args = point.getArgs();
-        for (Object arg : args) {
-            if (arg instanceof Map<?,?>) {
-                for (Map.Entry<?,?> obj : ((Map<?, ?>) arg).entrySet()) {
-                    System.out.println("Ключ: " + obj.getKey() + " : " + obj.getValue());
-                }
-            }
-            if (arg instanceof SecurityContextHolderAwareRequestWrapper) { //jwtToken
-                String jwtToken = (String) ((SecurityContextHolderAwareRequestWrapper) arg).getSession().getAttribute("jwtToken");
-            }
-        }
-        log.info("======AFTER======");
-        var result = point.proceed(args);
-        return result;
-    }
+//    @Around("anyControllerLogging()")
+//    public Object beforeAnyController(ProceedingJoinPoint point) throws Throwable {
+//        log.info("======BEFORE======");
+//        log.info("getKind {}", point.getKind());
+//        log.info("getSignature {}", point.getSignature());
+//        log.info("getTarget {}", point.getTarget());
+//        log.info("getSourceLocation {}", point.getSourceLocation());
+//        log.info("getStaticPart {}", point.getStaticPart());
+//        log.info("getThis {}", point.getThis());
+//        log.info("getClass {}", point.getClass());
+//        Object[] args = point.getArgs();
+//        for (Object arg : args) {
+//            if (arg instanceof Map<?,?>) {
+//                for (Map.Entry<?,?> obj : ((Map<?, ?>) arg).entrySet()) {
+//                    System.out.println("Ключ: " + obj.getKey() + " : " + obj.getValue());
+//                }
+//            }
+//            if (arg instanceof SecurityContextHolderAwareRequestWrapper) { //jwtToken
+//                String jwtToken = (String) ((SecurityContextHolderAwareRequestWrapper) arg).getSession().getAttribute("jwtToken");
+//            }
+//        }
+//        log.info("======AFTER======");
+//        var result = point.proceed(args);
+//        return result;
+//    }
 
 
 //    Установить для конкретного класса
