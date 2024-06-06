@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client;
+package ru.genesizant.Professional.Timetable.controllers.mng.specialist.enroll_client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

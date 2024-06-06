@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.visitors;
+package ru.genesizant.Professional.Timetable.controllers.mng.visitors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;

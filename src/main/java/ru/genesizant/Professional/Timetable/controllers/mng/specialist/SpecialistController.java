@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist;
+package ru.genesizant.Professional.Timetable.controllers.mng.specialist;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

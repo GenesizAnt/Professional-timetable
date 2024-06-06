@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.calendar;
+package ru.genesizant.Professional.Timetable.controllers.mng.specialist.calendar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

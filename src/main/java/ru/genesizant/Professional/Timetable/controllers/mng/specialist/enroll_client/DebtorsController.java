@@ -1,4 +1,4 @@
-package ru.genesizant.Professional.Timetable.controllers.specialist.enroll_client;
+package ru.genesizant.Professional.Timetable.controllers.mng.specialist.enroll_client;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
