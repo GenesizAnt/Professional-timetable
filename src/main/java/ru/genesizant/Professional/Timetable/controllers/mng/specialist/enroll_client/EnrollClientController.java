@@ -41,7 +41,6 @@ import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor
 public class EnrollClientController {
 
     private final JWTUtil jwtUtil;
-    private final PersonService personService;
     @Value("${error_login}")
     private String ERROR_LOGIN;
     private final String ENROLL_VIEW_REDIRECT = "redirect:/enroll/enroll_page";
@@ -49,6 +48,7 @@ public class EnrollClientController {
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
 
+    private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final UnregisteredPersonService unregisteredPersonService;
@@ -166,7 +166,7 @@ public class EnrollClientController {
             return ERROR_LOGIN;
         }
 
-        if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus)) {
+        if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus) && !specialistAppointmentsService.isAppointmentExist(specialist.getId(), meeting)) {
             //ToDo сделать Валид для проверки что время не забронированно
             PersonFullName visitorFullName = null;
             Person visitor = null;
@@ -193,7 +193,7 @@ public class EnrollClientController {
 //            displayPage(model, request);
             log.info("Спец: " + specialist.getFullName() + ". Записал клиента: " + selectedCustomerId + " на " + meeting);
         } else {
-            return encodeError("Для записи нужно выбрать клиента, время и дату записи");
+            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
         }
         return ENROLL_VIEW_REDIRECT;
     }

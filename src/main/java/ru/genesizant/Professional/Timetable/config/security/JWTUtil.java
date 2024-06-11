@@ -73,4 +73,17 @@ public class JWTUtil {
         }
         return true;
     }
+
+    public boolean isValidJWTAndSession(Object jwt) {
+        String jwtToken = (String) jwt;
+        if (jwtToken != null) {
+            try {
+                validateTokenAndRetrieveClaim(jwtToken);
+            } catch (JWTVerificationException e) {
+                return false;
+                //ToDo какую ошибку тут передать или ничего не надо???
+            }
+        }
+        return false;
+    }
 }

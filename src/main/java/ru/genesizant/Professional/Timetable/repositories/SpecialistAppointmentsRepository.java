@@ -61,4 +61,6 @@ public interface SpecialistAppointmentsRepository extends JpaRepository<Speciali
                                                                 @Param("appointmentTime") LocalTime appointmentTime);
 
     List<SpecialistAppointments> findBySpecialistAppointmentsId(Long specialistId);
+
+    boolean existsBySpecialistAppointments_IdAndVisitDateAndAndAppointmentTime(Long id, LocalDate toLocalDate, LocalTime toLocalTime);
 }

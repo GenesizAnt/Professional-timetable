@@ -122,4 +122,7 @@ public class SpecialistAppointmentsService {
     }
 
 
+    public boolean isAppointmentExist(Long id, LocalDateTime meeting) {
+        return specialistAppointmentsRepository.existsBySpecialistAppointments_IdAndVisitDateAndAndAppointmentTime(id, meeting.toLocalDate(), meeting.toLocalTime());
+    }
 }

@@ -1,5 +1,6 @@
 package ru.genesizant.Professional.Timetable.aspect;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -27,22 +28,34 @@ public class LoggingAspect {
     private final JWTUtil jwtUtil;
 
 //    @Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(org.springframework.web.bind.annotation.ModelAttribute)")
-    @Pointcut("within(ru.genesizant.Professional.Timetable.controllers.mng..*)")
-    public void anyControllerLogging() {
 
-    }
+    @Pointcut("execution(* ru.genesizant.Professional.Timetable.controllers.mng..*(..)) " +
+            "&& (@annotation(org.springframework.web.bind.annotation.ModelAttribute))")
+    public void specialistOrVisitorPointcut() {}
 
-//    @Before("anyControllerLogging()")
-//    public void beforeAnyController(JoinPoint joinPoint) {
-//        log.info("======BEFORE======");
-////        log.info("{}", joinPoint.getArgs());
-//        Object[] args = joinPoint.getArgs();
+    @Before("specialistOrVisitorPointcut()")
+    public void beforeAnyController(JoinPoint joinPoint) {
+        log.info("======BEFORE======");
+        Object[] args1 = joinPoint.getArgs();
+        SecurityContextHolderAwareRequestWrapper o = null;
+        for (Object arg : args1) {
+            if (arg instanceof SecurityContextHolderAwareRequestWrapper) {
+                o = (SecurityContextHolderAwareRequestWrapper) arg;
+            }
+        }
+
+
+
+        Object jwtToken = o.getSession().getAttribute("jwtToken");
+        this.jwtUtil.isValidJWTAndSession(jwtToken);
+//        log.info("{}", joinPoint.getArgs());
+        Object[] args = joinPoint.getArgs();
 //        for (Object arg : args) {
 //            System.out.println(arg);
 //        }
-//        log.info("======AFTER======");
-//
-//    }
+        log.info("======AFTER======");
+
+    }
 
 //    @Around("anyControllerLogging()")
 //    public Object beforeAnyController(ProceedingJoinPoint point) throws Throwable {
