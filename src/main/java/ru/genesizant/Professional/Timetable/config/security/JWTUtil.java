@@ -10,12 +10,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.Model;
-import ru.genesizant.Professional.Timetable.model.Person;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -27,7 +24,7 @@ public class JWTUtil {
     //Генерация токена с жизненным циклом 60 минут, после клиенту нужно перелогиниться
     public String generateToken(String email) {
         Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
-//        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(5).toInstant());
+//        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(10).toInstant());
 
         return JWT.create()
                 .withSubject("User details") //sub (subject) — определяет тему токена.
@@ -57,7 +54,7 @@ public class JWTUtil {
         return jwt.getClaim("email").asString();
     }
 
-    public boolean isValidJWTAndSession(HttpServletRequest request) {
+    public boolean isValidJWTInRun(HttpServletRequest request) {
         HttpSession session = request.getSession(false); // Получение текущей сессии, если сессия не существует, вернет null
 
         if (session != null) {
@@ -67,23 +64,21 @@ public class JWTUtil {
                     validateTokenAndRetrieveClaim(jwtToken);
                 } catch (JWTVerificationException e) {
                     return false;
-                    //ToDo какую ошибку тут передать или ничего не надо???
                 }
             }
         }
         return true;
     }
 
-    public boolean isValidJWTAndSession(Object jwt) {
-        String jwtToken = (String) jwt;
+    public boolean isValidJWTInRun(String jwt) {
+        String jwtToken = jwt;
         if (jwtToken != null) {
             try {
                 validateTokenAndRetrieveClaim(jwtToken);
             } catch (JWTVerificationException e) {
                 return false;
-                //ToDo какую ошибку тут передать или ничего не надо???
             }
         }
-        return false;
+        return true;
     }
 }

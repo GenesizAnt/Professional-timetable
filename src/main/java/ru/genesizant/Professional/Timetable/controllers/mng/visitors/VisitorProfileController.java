@@ -11,19 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
-import ru.genesizant.Professional.Timetable.model.SpecialistPay;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegramService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -59,21 +53,21 @@ public class VisitorProfileController {
     }
 
     @ModelAttribute(name = "visitor")
-    public Person visitor(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+    public Person getVisitor(HttpServletRequest request) {
+//        if (jwtUtil.isValidJWTInRun(request)) {
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-        } else {
-            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-            throw new JWTVerificationException("");
-        }
+//        } else {
+//            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
+//            throw new JWTVerificationException("");
+//        }
     }
 
     // Отображение страницы профиля клиента
     @GetMapping("/my_profile")
-    public String listDebtors(@ModelAttribute("visitor") Person visitor, HttpServletRequest request) {
+    public String visitorProfile(@ModelAttribute("visitor") Person visitor) {
 //        if (jwtUtil.isValidJWTAndSession(request)) {
 //            displayPage(model, request);
-            log.info("Клиент: " + visitor.getFullName() + ". Перешел на страницу профиля клиента");
+//            log.info("Клиент: " + visitor.getFullName() + ". Перешел на страницу профиля клиента");
 //        } else {
 //            return ERROR_LOGIN;
 //        }

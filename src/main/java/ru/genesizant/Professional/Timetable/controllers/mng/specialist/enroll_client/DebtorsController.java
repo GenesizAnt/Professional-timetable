@@ -65,19 +65,14 @@ public class DebtorsController {
     }
 
     @ModelAttribute(name = "specialist")
-    public Person specialist(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
-            return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-        } else {
-            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-            throw new JWTVerificationException("");
-        }
+    public Person getSpecialist(HttpServletRequest request) {
+        return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
     }
 
     //Отображение страницы для подтверждения оплат от клиентов
     @GetMapping("/proof_clients")
-    public String listDebtors(@ModelAttribute("specialist") Person person, HttpServletRequest request) {
-            log.info("Спец: " + person.getFullName() + ". Перешел на страницу для подтверждения оплат от клиентов");
+    public String listDebtors(@ModelAttribute("specialist") Person person) {
+//        log.info("Спец: " + person.getFullName() + ". Перешел на страницу для подтверждения оплат от клиентов");
         return "specialist/list_debtors";
     }
 
@@ -100,7 +95,7 @@ public class DebtorsController {
     //Кнопка для ОТМЕНЫ подтверждения оплаты по конкретному клиенту
     @PostMapping("/no_agreement")
     public String noAgreementAppointment(@ModelAttribute("specialist") Person person, HttpServletRequest request,
-                                       @RequestParam("agreementId") String agreementId) {
+                                         @RequestParam("agreementId") String agreementId) {
 //        if (!jwtUtil.isValidJWTAndSession(request)) {
 //            return ERROR_LOGIN;
 //        }

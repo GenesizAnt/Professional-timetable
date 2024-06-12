@@ -3,7 +3,6 @@ package ru.genesizant.Professional.Timetable.controllers.mng.specialist.enroll_c
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -93,22 +92,22 @@ public class EnrollClientController {
     }
 
     @ModelAttribute(name = "specialist")
-    public Person specialist(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+    public Person getSpecialist(HttpServletRequest request) {
+//        if (jwtUtil.isValidJWTInRun(request)) {
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-        } else {
-            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-            throw new JWTVerificationException("");
-        }
+//        } else {
+//            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
+//            throw new JWTVerificationException("");
+//        }
     }
 
     //Отображение страницы для Записи Клиента
     @GetMapping("/enroll_page")
-    public String addAdmissionCalendarUpdate(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) { //ToDo showEnrollPage
+    public String addAdmissionCalendarUpdate(@ModelAttribute("specialist") Person specialist) { //ToDo showEnrollPage
 //        if (jwtUtil.isValidJWTAndSession(request)) {
 
 //            displayPage(model, request);
-            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу для Записи Клиента");
+//            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу для Записи Клиента");
 //        } else {
 //            return ERROR_LOGIN;
 //        }
@@ -162,7 +161,7 @@ public class EnrollClientController {
                                        @RequestParam("meeting") LocalDateTime meeting,
                                        @RequestParam("selectedCustomerId") String selectedCustomerId,
                                        @RequestParam("registeredStatus") StatusRegisteredVisitor registeredStatus) {
-        if (!jwtUtil.isValidJWTAndSession(request)) {
+        if (!jwtUtil.isValidJWTInRun(request)) {
             return ERROR_LOGIN;
         }
 

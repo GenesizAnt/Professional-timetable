@@ -9,11 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistPay;
-import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
@@ -23,9 +20,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -66,21 +60,21 @@ public class SpecialistProfileController {
         person.ifPresent(value -> model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + value.getPhoneNumber() + "&role=client"));
     }
     @ModelAttribute(name = "specialist")
-    public Person specialist(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+    public Person getSpecialist(HttpServletRequest request) {
+//        if (jwtUtil.isValidJWTInRun(request)) {
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-        } else {
-            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-            throw new JWTVerificationException("");
-        }
+//        } else {
+//            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
+//            throw new JWTVerificationException("");
+//        }
     }
 
     // Отображение страницы профиля специалиста
     @GetMapping("/my_profile")
-    public String listDebtors(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
+    public String listDebtorsS(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
 //        if (jwtUtil.isValidJWTAndSession(request)) {
 //            displayPage(model, request);
-            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу профиля специалиста");
+//            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу профиля специалиста");
 //        } else {
 //            return ERROR_LOGIN;
 //        }

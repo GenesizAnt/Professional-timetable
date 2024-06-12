@@ -81,7 +81,7 @@ public class TestController {
     @GetMapping("/super")
     public String showUserInfo(Model model, HttpServletRequest request) {
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
+        if (jwtUtil.isValidJWTInRun(request)) {
 
             List<PersonFullName> users = personService.findAllPersonFullName();
 
@@ -100,7 +100,7 @@ public class TestController {
                                @RequestParam("clientId") String clientId,
                                @RequestParam("role") String selectedRole) {
 
-        if (jwtUtil.isValidJWTAndSession(request)) {
+        if (jwtUtil.isValidJWTInRun(request)) {
 
             List<PersonFullName> users = personService.findAllPersonFullName();
 

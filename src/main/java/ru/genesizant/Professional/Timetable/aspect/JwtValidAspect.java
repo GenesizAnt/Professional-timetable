@@ -1,60 +1,55 @@
 package ru.genesizant.Professional.Timetable.aspect;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Component;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
-
-import javax.sql.rowset.Joinable;
-import java.util.Arrays;
-import java.util.Map;
+import ru.genesizant.Professional.Timetable.model.Person;
 
 @Slf4j
 @RequiredArgsConstructor
 @Aspect
 @Component
-public class LoggingAspect {
+public class JwtValidAspect {
 
     private final JWTUtil jwtUtil;
+    @Pointcut("execution(public String listDebtorsS(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String addAdmissionCalendarView(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String addAdmissionCalendarUpdate(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String getStartMenu(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String listDebtorsV(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String visitorProfile(ru.genesizant.Professional.Timetable.model.Person)) ||" +
+            "execution(public String getMySpecialistMenu(ru.genesizant.Professional.Timetable.model.Person))")
+    public void jwtValidPointcut() {}
 
-//    @Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(org.springframework.web.bind.annotation.ModelAttribute)")
-
-    @Pointcut("execution(* ru.genesizant.Professional.Timetable.controllers.mng..*(..)) " +
-            "&& (@annotation(org.springframework.web.bind.annotation.ModelAttribute))")
-    public void specialistOrVisitorPointcut() {}
-
-    @Before("specialistOrVisitorPointcut()")
-    public void beforeAnyController(JoinPoint joinPoint) {
-        log.info("======BEFORE======");
-        Object[] args1 = joinPoint.getArgs();
-        SecurityContextHolderAwareRequestWrapper o = null;
-        for (Object arg : args1) {
-            if (arg instanceof SecurityContextHolderAwareRequestWrapper) {
-                o = (SecurityContextHolderAwareRequestWrapper) arg;
-            }
+    @Around("jwtValidPointcut()")
+    public Object jwtControl(ProceedingJoinPoint joinPoint) throws Throwable {
+        Person person = (Person) joinPoint.getArgs()[0];
+//        Person person = (Person) args[0];
+        if (!jwtUtil.isValidJWTInRun(person.getJwtToken())) {
+            log.error("Ошибка валидации JWT токена у пользователя - " + person.getFullName() + " id: " + person.getId());
+            throw new JWTVerificationException("Закончилось безопасное время использования приложения, нужно обновить доступ, перезапустите приложение");
         }
+        log.info("Пользователь: " + person.getFullName() + ". Перешел на страницу " + joinPoint.getSignature().getName());
+        return joinPoint.proceed();
 
 
-
-        Object jwtToken = o.getSession().getAttribute("jwtToken");
-        this.jwtUtil.isValidJWTAndSession(jwtToken);
-//        log.info("{}", joinPoint.getArgs());
-        Object[] args = joinPoint.getArgs();
+//        Object[] args = joinPoint.getArgs();
 //        for (Object arg : args) {
-//            System.out.println(arg);
+//            if (arg instanceof Person person) {
+//                if (!jwtUtil.isValidJWTInRun(person.getJwtToken())) {
+//                    log.error("Ошибка валидации JWT токена у пользователя - " + person.getFullName() + " id: " + person.getId());
+//                    throw new JWTVerificationException("Закончилось безопасное время использования приложения, нужно обновить доступ, перезапустите приложение");
+//                }
+//                log.info("Пользователь: " + person.getFullName() + ". Перешел на страницу " + joinPoint.getSignature().getName());
+//            }
 //        }
-        log.info("======AFTER======");
-
+//        return joinPoint.proceed();
     }
 
 //    @Around("anyControllerLogging()")

@@ -2,7 +2,6 @@ package ru.genesizant.Professional.Timetable.controllers.mng.visitors;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +18,9 @@ import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
-import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -68,8 +65,8 @@ public class ManagedPayController {
     }
 
     @ModelAttribute(name = "visitor")
-    public Person visitor(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+    public Person getVisitor(HttpServletRequest request) {
+        if (jwtUtil.isValidJWTInRun(request)) {
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
         } else {
             log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
@@ -79,10 +76,10 @@ public class ManagedPayController {
 
     // Отображение страницы управление оплатами
     @GetMapping("/managed_pay")
-    public String listDebtors(@ModelAttribute("visitor") Person visitor, Model model, HttpServletRequest request) {
+    public String listDebtorsV(@ModelAttribute("visitor") Person visitor) {
 //        if (jwtUtil.isValidJWTAndSession(request)) {
 //            displayPage(model, request);
-            log.info("Клиент: " + visitor.getFullName() + ". Перешел  на страницу управления оплатами");
+//            log.info("Клиент: " + visitor.getFullName() + ". Перешел  на страницу управления оплатами");
 //        } else {
 //            return ERROR_LOGIN;
 //        }

@@ -61,23 +61,23 @@ public class CalendarManagementController {
     }
 
     @ModelAttribute(name = "specialist")
-    public Person specialist(HttpServletRequest request) {
-        if (jwtUtil.isValidJWTAndSession(request)) {
+    public Person getSpecialist(HttpServletRequest request) {
+//        if (jwtUtil.isValidJWTInRun(request)) {
             return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-        } else {
-            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-            throw new JWTVerificationException("");
-        }
+//        } else {
+//            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
+//            throw new JWTVerificationException("");
+//        }
     }
 
     //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
     @GetMapping("/admission_calendar_view")
-    public String addAdmissionCalendarView(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
+    public String addAdmissionCalendarView(@ModelAttribute("specialist") Person specialist) {
 
 //        if (jwtUtil.isValidJWTAndSession(request)) {
 
 //            displayPage(model, request);
-            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу управления календарем");
+//            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу управления календарем");
 //        } else {
 //            model.addAttribute("error", "Упс! Непредвиденная ошибка. Переоткройте, пожалуйста приложение");
 //            return ERROR_LOGIN;
