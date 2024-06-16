@@ -30,53 +30,13 @@ public class JwtValidAspect {
     @Around("jwtValidPointcut()")
     public Object jwtControl(ProceedingJoinPoint joinPoint) throws Throwable {
         Person person = (Person) joinPoint.getArgs()[0];
-//        Person person = (Person) args[0];
         if (!jwtUtil.isValidJWTInRun(person.getJwtToken())) {
             log.error("Ошибка валидации JWT токена у пользователя - " + person.getFullName() + " id: " + person.getId());
             throw new JWTVerificationException("Закончилось безопасное время использования приложения, нужно обновить доступ, перезапустите приложение");
         }
         log.info("Пользователь: " + person.getFullName() + ". Перешел на страницу " + joinPoint.getSignature().getName());
         return joinPoint.proceed();
-
-
-//        Object[] args = joinPoint.getArgs();
-//        for (Object arg : args) {
-//            if (arg instanceof Person person) {
-//                if (!jwtUtil.isValidJWTInRun(person.getJwtToken())) {
-//                    log.error("Ошибка валидации JWT токена у пользователя - " + person.getFullName() + " id: " + person.getId());
-//                    throw new JWTVerificationException("Закончилось безопасное время использования приложения, нужно обновить доступ, перезапустите приложение");
-//                }
-//                log.info("Пользователь: " + person.getFullName() + ". Перешел на страницу " + joinPoint.getSignature().getName());
-//            }
-//        }
-//        return joinPoint.proceed();
     }
-
-//    @Around("anyControllerLogging()")
-//    public Object beforeAnyController(ProceedingJoinPoint point) throws Throwable {
-//        log.info("======BEFORE======");
-//        log.info("getKind {}", point.getKind());
-//        log.info("getSignature {}", point.getSignature());
-//        log.info("getTarget {}", point.getTarget());
-//        log.info("getSourceLocation {}", point.getSourceLocation());
-//        log.info("getStaticPart {}", point.getStaticPart());
-//        log.info("getThis {}", point.getThis());
-//        log.info("getClass {}", point.getClass());
-//        Object[] args = point.getArgs();
-//        for (Object arg : args) {
-//            if (arg instanceof Map<?,?>) {
-//                for (Map.Entry<?,?> obj : ((Map<?, ?>) arg).entrySet()) {
-//                    System.out.println("Ключ: " + obj.getKey() + " : " + obj.getValue());
-//                }
-//            }
-//            if (arg instanceof SecurityContextHolderAwareRequestWrapper) { //jwtToken
-//                String jwtToken = (String) ((SecurityContextHolderAwareRequestWrapper) arg).getSession().getAttribute("jwtToken");
-//            }
-//        }
-//        log.info("======AFTER======");
-//        var result = point.proceed(args);
-//        return result;
-//    }
 
 
 //    Установить для конкретного класса

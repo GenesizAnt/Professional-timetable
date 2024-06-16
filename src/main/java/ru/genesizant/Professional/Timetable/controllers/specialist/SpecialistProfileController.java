@@ -1,6 +1,5 @@
-package ru.genesizant.Professional.Timetable.controllers.mng.specialist;
+package ru.genesizant.Professional.Timetable.controllers.specialist;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +27,6 @@ import java.util.*;
 @RequestMapping("/spec_profile")
 public class SpecialistProfileController {
 
-    private final JWTUtil jwtUtil;
-    @Value("${error_login}")
-    private String ERROR_LOGIN;
     private final String PROFILE_SPEC_VIEW_REDIRECT = "redirect:/spec_profile/my_profile";
 
     private final UserTelegramService userTelegramService;
@@ -61,32 +57,18 @@ public class SpecialistProfileController {
     }
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {
-//        if (jwtUtil.isValidJWTInRun(request)) {
-            return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
-//        } else {
-//            log.error("Ошибка валидации JWT токена у пользователя - " + request.getSession().getAttribute("id"));
-//            throw new JWTVerificationException("");
-//        }
+        return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
     }
 
     // Отображение страницы профиля специалиста
     @GetMapping("/my_profile")
-    public String listDebtorsS(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
-//        if (jwtUtil.isValidJWTAndSession(request)) {
-//            displayPage(model, request);
-//            log.info("Спец: " + specialist.getFullName() + ". Перешел на страницу профиля специалиста");
-//        } else {
-//            return ERROR_LOGIN;
-//        }
+    public String listDebtorsS(@ModelAttribute("specialist") Person specialist) {
         return "specialist/specialistprofile";
     }
 
     // Подтвердить аккаунт в ТГ боте
     @GetMapping("/agreeTG")
     public String agreeTG(@ModelAttribute("specialist") Person specialist) {
-//        if (!jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
-//        }
         Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId(specialist.getId());
         if (userTelegram.isPresent()) {
             userTelegram.get().setAgree(Boolean.TRUE);
@@ -100,48 +82,18 @@ public class SpecialistProfileController {
 
     // Отметить подтверждение зарегистрированного аккаунта в ТГ боте - т.е. удалить его
     @GetMapping("/cancelTG")
-    public String cancelTG(@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
-//        if (!jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
-//        }
+    public String cancelTG(@ModelAttribute("specialist") Person specialist) {
         userTelegramService.deleteByPersonId(specialist.getId());
         log.info("Спец: " + specialist.getFullName() + ". Нажал кнопку отметить подтверждение зарегистрированного аккаунта в ТГ боте");
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
     @PostMapping("/setlinkpay")
-    public String processForm(@RequestParam("linkpay") String linkpay,@ModelAttribute("specialist") Person specialist, HttpServletRequest request) {
-//        if (!jwtUtil.isValidJWTAndSession(request)) {
-//            return ERROR_LOGIN;
-//        }
-        specialistPayService.saveNewLinkPay(linkpay, (Long) request.getSession().getAttribute("id"));
+    public String processForm(@RequestParam("linkpay") String linkpay,@ModelAttribute("specialist") Person specialist) {
+        specialistPayService.saveNewLinkPay(linkpay, specialist.getId());
         log.info("Спец: " + specialist.getFullName() + ". Обновил ссылку для оплаты");
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
-
-
-//    private void displayPage(Model model, HttpServletRequest request) {
-//        Optional<UserTelegram> userTelegram = userTelegramService.findByPersonId((Long) request.getSession().getAttribute("id"));
-//        Optional<Person> person = personService.findById((Long) request.getSession().getAttribute("id"));
-//        Optional<SpecialistPay> specialistPay = specialistPayService.findBySpecialistPay((Long) request.getSession().getAttribute("id"));
-//        if (userTelegram.isEmpty()) {
-//            model.addAttribute("notacc", "");
-//        } else {
-//            if (userTelegram.get().isAgree()) {
-//                model.addAttribute("agree", "подтвержден");
-//            }
-//            if (!userTelegram.get().isAgree()) {
-//                model.addAttribute("notagree", "не подтвержден");
-//                model.addAttribute("username", userTelegram.get().getPersonusername());
-//            }
-//        }
-//        specialistPay.ifPresent(pay -> model.addAttribute("link", pay.getLinkPay()));
-//        model.addAttribute("name", request.getSession().getAttribute("name"));
-//        String currentUrl = request.getRequestURL().toString();
-//        String baseUrl = extractBaseUrl(currentUrl);
-//        person.ifPresent(value -> model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + value.getPhoneNumber() + "&role=client"));
-////        model.addAttribute("specialistPhone", "?regNumber=" + person.get().getPhoneNumber());
-//    }
 
     private String extractBaseUrl(String urlString) {
         String baseUrl;

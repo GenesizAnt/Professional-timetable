@@ -42,15 +42,7 @@ public class JWTUtil {
                 .withSubject("User details")
                 .withIssuer("Professional-Timetable")
                 .build();
-
         DecodedJWT jwt = verifier.verify(token);
-
-//        Map<String, String> claims = new HashMap<>();
-//        claims.put("username", jwt.getClaim("username").asString());
-//        claims.put("email", jwt.getClaim("email").asString());
-//        claims.put("phoneNumber", jwt.getClaim("phoneNumber").asString());
-//
-//        return claims;
         return jwt.getClaim("email").asString();
     }
 
@@ -71,10 +63,9 @@ public class JWTUtil {
     }
 
     public boolean isValidJWTInRun(String jwt) {
-        String jwtToken = jwt;
-        if (jwtToken != null) {
+        if (jwt != null) {
             try {
-                validateTokenAndRetrieveClaim(jwtToken);
+                validateTokenAndRetrieveClaim(jwt);
             } catch (JWTVerificationException e) {
                 return false;
             }

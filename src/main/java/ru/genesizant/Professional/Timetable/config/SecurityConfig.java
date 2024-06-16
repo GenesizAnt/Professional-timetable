@@ -33,8 +33,8 @@ public class SecurityConfig {
         httpSecurity //.csrf(CsrfConfigurer::disable) //если не отправляется токен с формы
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/super").hasRole("SUPER")
-                        .requestMatchers("/admin", "/calendar/*", "/enroll/*", "/specialist/*", "/administration/*").hasAnyRole("ADMIN", "SUPER")
-                        .requestMatchers("/visitors/*", "/managed/*").hasAnyRole("ADMIN", "SUPER", "USER") //ToDo мб поставить просто все залогиныные?
+                        .requestMatchers("/admin", "/calendar/*", "/enroll/*", "/specialist/*", "/administration/*",  "/spec_profile/*").hasAnyRole("ADMIN", "SUPER")
+                        .requestMatchers("/visitors/*", "/managed/*", "/profile/*").hasAnyRole("ADMIN", "SUPER", "USER") //ToDo мб поставить просто все залогиныные?
                         .requestMatchers("/auth/login", "/auth/registration", "/error", "/all", "/process_login", "/img/*").permitAll()
                         .anyRequest().hasAnyRole("USER", "ADMIN", "SUPER"))
                 .formLogin(login -> login
