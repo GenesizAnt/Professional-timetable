@@ -16,16 +16,16 @@ public class UnregisteredPerson {
     @NotEmpty(message = "Имя не должно быть пустым")
     @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов")
     @Column(name = "username")
-    private String username;
+    private String usernameUnregistered;
 
     @NotEmpty(message = "Фамилия не должна быть пустой")
     @Size(min = 2, max = 100, message = "Фамилия должна быть от 2 до 100 символов")
     @Column(name = "surname")
-    private String surname;
+    private String surnameUnregistered;
 
     @Size(min = 2, max = 100, message = "Отчество должно быть от 2 до 100 символов")
     @Column(name = "patronymic")
-    private String patronymic;
+    private String patronymicUnregistered;
 
     @ManyToOne
     @JoinColumn(name = "specialistid", referencedColumnName = "id")
@@ -42,29 +42,53 @@ public class UnregisteredPerson {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsernameUnregistered() {
+        return usernameUnregistered;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsernameUnregistered(String usernameUnregistered) {
+        this.usernameUnregistered = usernameUnregistered;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getSurnameUnregistered() {
+        return surnameUnregistered;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setSurnameUnregistered(String surnameUnregistered) {
+        this.surnameUnregistered = surnameUnregistered;
     }
 
-    public String getPatronymic() {
-        return patronymic;
+    public String getPatronymicUnregistered() {
+        return patronymicUnregistered;
     }
 
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
+    public void setPatronymicUnregistered(String patronymicUnregistered) {
+        this.patronymicUnregistered = patronymicUnregistered;
     }
+
+    //    public String getUsername() {
+//        return username;
+//    }
+//
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//
+//    public String getSurname() {
+//        return surname;
+//    }
+//
+//    public void setSurname(String surname) {
+//        this.surname = surname;
+//    }
+//
+//    public String getPatronymic() {
+//        return patronymic;
+//    }
+//
+//    public void setPatronymic(String patronymic) {
+//        this.patronymic = patronymic;
+//    }
 
     public Person getSpecialistUnregisteredPerson() {
         return specialistUnregisteredPerson;

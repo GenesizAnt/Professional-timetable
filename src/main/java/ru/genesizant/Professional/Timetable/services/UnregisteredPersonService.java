@@ -30,9 +30,9 @@ public class UnregisteredPersonService {
     //Создание незарегистрированного пользователя
     public void addNewUnregisteredPerson(String username, String surname, String patronymic, Optional<Person> specialist) {
         UnregisteredPerson newUnregisteredPerson = new UnregisteredPerson();
-        newUnregisteredPerson.setUsername(username);
-        newUnregisteredPerson.setSurname(surname);
-        newUnregisteredPerson.setPatronymic(patronymic);
+        newUnregisteredPerson.setUsernameUnregistered(username);
+        newUnregisteredPerson.setSurnameUnregistered(surname);
+        newUnregisteredPerson.setPatronymicUnregistered(patronymic);
         newUnregisteredPerson.setSpecialistUnregisteredPerson(specialist.get());
         unregisteredPersonRepository.save(newUnregisteredPerson);
     }

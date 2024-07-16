@@ -113,9 +113,9 @@ public class EnrollClientController {
     //Специалист создает незарегистрированного пользователя
     @PostMapping("/newUnregisteredPerson")
     public String newUnregisteredPerson(@ModelAttribute("specialist") Person specialist, //ToDo addNewUnregisteredPerson
-                                        @RequestParam("username") String username,
-                                        @RequestParam("surname") String surname,
-                                        @RequestParam("patronymic") String patronymic) {
+                                        @RequestParam("usernameUnregistered") String username,
+                                        @RequestParam("surnameUnregistered") String surname,
+                                        @RequestParam("patronymicUnregistered") String patronymic) {
         if (isValidPersonInformation(username, surname, patronymic)) {
             unregisteredPersonService.addNewUnregisteredPerson(username, surname, patronymic, personService.findById(specialist.getId()));
             log.info("Спец: " + specialist.getFullName() + ". создает незарегистрированного пользователя");

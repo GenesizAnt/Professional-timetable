@@ -31,12 +31,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.botProperties = botProperties;
         this.mainMessageService = mainMessageService;
         this.notifyMessageService = notifyMessageService;
-//        try {
-//            this.execute(new SetMyCommands(listMenuCommand(), new BotCommandScopeDefault(),null));
-//        } catch (TelegramApiException e) {
-//            log.error("Ошибка установки меню бота, пункты меню такие: " + listMenuCommand());
-//        }
-
+        try {
+            this.execute(new SetMyCommands(listMenuCommand(), new BotCommandScopeDefault(),null));
+        } catch (TelegramApiException e) {
+            log.error("Ошибка установки меню бота, пункты меню такие: " + listMenuCommand());
+        }
     }
 
     @Override

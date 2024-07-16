@@ -198,7 +198,7 @@
                                             <option value="">Выбери клиента для записи</option>
                                             <option th:each="client : ${unregisteredBySpecialist}"
                                                     th:value="${client.id}"
-                                                    th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">
+                                                    th:text="${client.usernameUnregistered + ' ' + client.surnameUnregistered + ' ' + client.patronymicUnregistered}">
                                             </option>
                                         </select>
                                         <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
@@ -325,15 +325,15 @@
                                 <form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">
                                     <div class="input-group">
                                         <span class="input-group-text text-center">Имя</span>
-                                        <input type="text" aria-label="username" name="username" class="form-control">
+                                        <input type="text" aria-label="usernameUnregistered" name="usernameUnregistered" class="form-control">
                                     </div>
                                     <div class="input-group">
                                         <span class="input-group-text text-center">Фамилия</span>
-                                        <input type="text" aria-label="surname" name="surname" class="form-control">
+                                        <input type="text" aria-label="surnameUnregistered" name="surnameUnregistered" class="form-control">
                                     </div>
                                     <div class="input-group">
                                         <span class="input-group-text text-center">Отчество</span>
-                                        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">
+                                        <input type="text" aria-label="patronymicUnregistered" name="patronymicUnregistered" class="form-control">
                                     </div>
                                     <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
                                             role="button">Добавить
