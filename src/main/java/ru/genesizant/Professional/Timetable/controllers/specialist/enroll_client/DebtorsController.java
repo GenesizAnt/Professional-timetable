@@ -13,6 +13,7 @@ import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,17 @@ public class DebtorsController {
             model.addAttribute("agreePay", agreePay);
             model.addAttribute("maybePay", maybePay);
         }
+        List<LocalDateTime> times = new ArrayList<>();
+        if (!appointmentsList.isEmpty()) {
+            for (SpecialistAppointments appointments : appointmentsList) {
+                if (!appointments.isPrepayment()) {
+                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
+                }
+            }
+            //ToDo здесь еще должно быть время посещения
+            //ToDo Перебор по всему списку??
+        }
+        model.addAttribute("visitDates", times);
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
 

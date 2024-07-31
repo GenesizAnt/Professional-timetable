@@ -10,8 +10,10 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
@@ -102,14 +104,16 @@ public class SendMessageService {
     private String enrollNewAppointmentMessage(UserTelegram recipient, UserTelegram sender, LocalDateTime localDateTime, StatusPerson statusPerson) {
         String responseMsg = "";
         switch (statusPerson) {
-            case VISITOR -> responseMsg = String.format("%s, сообщаем, что клиент %s записался на консультацию на %s в %s",
+            case VISITOR -> responseMsg = String.format("%s, сообщаем, что клиент %s записался на консультацию на%s %s в %s",
                     recipient.getFirstName(),
                     sender.getFirstName(),
+                    getDiffDay(localDateTime),
                     localDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                     localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s подтвердил назначенную встречу на %s в %s",
+            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s подтвердил назначенную встречу на%s %s в %s",
                     recipient.getFirstName(),
                     sender.getFirstName(),
+                    getDiffDay(localDateTime),
                     localDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                     localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         }
@@ -119,14 +123,16 @@ public class SendMessageService {
     private String cancellationMessage(SpecialistAppointments appointment, StatusPerson statusPerson) {
         String responseMsg = "";
         switch (statusPerson) {
-            case VISITOR -> responseMsg = String.format("%s, сообщаем, что клиент %s отменил назначенную встречу на %s в %s",
+            case VISITOR -> responseMsg = String.format("%s, сообщаем, что клиент %s отменил назначенную встречу на%s %s в %s",
                     appointment.getSpecialistAppointments().getUsername(),
                     appointment.getVisitorAppointments().getFullName(),
+                    getDiffDay(appointment.getVisitDate().atStartOfDay()),
                     appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                     appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s отменил назначенную встречу на %s в %s",
+            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s отменил назначенную встречу на%s %s в %s",
                     appointment.getVisitorAppointments().getUsername(),
                     appointment.getSpecialistAppointments().getFullName(),
+                    getDiffDay(appointment.getVisitDate().atStartOfDay()),
                     appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                     appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         }
@@ -138,5 +144,16 @@ public class SendMessageService {
         message.setChatId(chatId.toString());
         message.setText(msg);
         return message;
+    }
+
+    private String getDiffDay(LocalDateTime localDateTime) {
+        String day = "";
+        int difference = (int) LocalDate.now().until(localDateTime.toLocalDate(), ChronoUnit.DAYS);
+        switch (difference) {
+            case 0 -> day = " сегодня";
+            case 1 -> day = " завтра";
+            case 2 -> day = " послезавтра";
+        }
+        return day;
     }
 }

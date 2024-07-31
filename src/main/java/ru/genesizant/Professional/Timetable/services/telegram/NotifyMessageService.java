@@ -66,8 +66,10 @@ public class NotifyMessageService {
     }
 
     private String getMessNotify(SpecialistAppointments appointment) {
-        return String.format("%s, напоминаем, что у Вас назначена встреча на %s в %s со специалистом %s",
+        String day = appointment.getVisitDate().equals(LocalDate.now()) ? " сегодня" : " завтра";
+        return String.format("%s, напоминаем, что у Вас назначена встреча%s %s в %s со специалистом %s",
                 appointment.getVisitorAppointments().getUsername(),
+                day,
                 appointment.getVisitDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("HH:mm")),
                 appointment.getSpecialistAppointments().getFullName());

@@ -58,6 +58,16 @@
 <section class="chooseclient">
     <div class="container">
         <div class="row">
+            <div th:if="${#lists.size(visitDates) > 0}">
+                <!--                    <a href="/administration/proof_clients">Полный список неоплаченных</a>-->
+                <div class="alert alert-danger text-center" role="alert" th:each="date : ${visitDates}">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                        <use xlink:href="#exclamation-triangle-fill"/>
+                    </svg>
+                    <span style="color: firebrick" th:text="'Внимание! Есть неоплаченная консультация на ' + ${date.toLocalDate()} + ' в ' + ${date.toLocalTime()}"></span>
+                    <br>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6 col-sm-12 text-center">
                     <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>

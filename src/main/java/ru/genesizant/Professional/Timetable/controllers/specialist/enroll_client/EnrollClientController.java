@@ -52,17 +52,17 @@ public class EnrollClientController {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
-        List<LocalDateTime> times = new ArrayList<>();
-        if (!appointmentsList.isEmpty()) {
-            for (SpecialistAppointments appointments : appointmentsList) {
-                if (!appointments.isPrepayment()) {
-                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
-                }
-            }
-            //ToDo здесь еще должно быть время посещения
-            //ToDo Перебор по всему списку??
-        }
-        model.addAttribute("visitDates", times);
+//        List<LocalDateTime> times = new ArrayList<>();
+//        if (!appointmentsList.isEmpty()) {
+//            for (SpecialistAppointments appointments : appointmentsList) {
+//                if (!appointments.isPrepayment()) {
+//                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
+//                }
+//            }
+//            //ToDo здесь еще должно быть время посещения
+//            //ToDo Перебор по всему списку??
+//        }
+//        model.addAttribute("visitDates", times);
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
         List<String> allCalendar = new ArrayList<>();
         LocalDate now = LocalDate.now();
