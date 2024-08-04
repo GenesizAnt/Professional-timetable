@@ -5,13 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.VacantSeatService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -31,9 +34,10 @@ public class CalendarManagementController {
 
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
+    private final VacantSeatService vacantSeatService;
 
     @ModelAttribute
-    public void getPayloadPage(Model model, HttpServletRequest request) {
+    public void getPayloadPage(@ModelAttribute("specialist") Person specialist, Model model, HttpServletRequest request) {
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
         List<String> allCalendar = new ArrayList<>();
         LocalDate now = LocalDate.now();
@@ -54,6 +58,9 @@ public class CalendarManagementController {
             model.addAttribute("day" + i, allCalendar.get(i));
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
+
+        List<VacantSeat> vacantSeats = vacantSeatService.getVacantSeats(specialist);
+        model.addAttribute("vacantSeats", vacantSeats);
     }
 
     @ModelAttribute(name = "specialist")
@@ -74,19 +81,32 @@ public class CalendarManagementController {
                                              @RequestParam("endDate") String endDate,
                                              @RequestParam("startTime") String startTime,
                                              @RequestParam("endTime") String endTime,
-                                             @RequestParam("minInterval") String minInterval) {
+                                             @RequestParam("minInterval") String minInterval,
+                                             @RequestParam(value = "weekDays", required = false) List<String> weekDays) {
         if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
-            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, specialist.getId())) {
-                return encodeError("Нельзя добавить календарь в уже существующих датах");
-            } else {
-                datesAppointmentsService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime,
-                        minInterval,
-                        StatusAdmissionTime.AVAILABLE);
-                log.info("Спец: " + specialist.getFullName() + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
-            }
+            vacantSeatService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime, minInterval, weekDays);
+//            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, specialist.getId())) {
+//                return encodeError("Нельзя добавить календарь в уже существующих датах");
+//            } else {
+//                datesAppointmentsService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime,
+//                        minInterval,
+//                        StatusAdmissionTime.AVAILABLE);
+//                log.info("Спец: " + specialist.getFullName() + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
+//            }
         } else {
             return encodeError("Для создания календаря нужно внести все данные по форме");
         }
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/your-controller-url") // Укажите здесь URL, который соответствует URL в JavaScript запросе
+    public String handleTableClick(@RequestBody Map<String, String> applicationFromSpecialist) {
+        // Ваша логика обработки данных
+        // Например, найти объект по id и выполнить необходимые действия
+//        VacantSeat vacantSeat = vacantSeatService.findById(id);
+        // Ваши действия с vacantSeat
+        System.out.println();
+
         return CALENDAR_VIEW_REDIRECT;
     }
 

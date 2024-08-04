@@ -95,6 +95,17 @@ public class Person {
     @OneToMany(mappedBy = "specialistPay")
     private List<SpecialistPay> specialistPays;
 
+    @OneToMany(mappedBy = "specId")
+    private List<VacantSeat> specIdList;
+
+    @OneToMany(mappedBy = "clientId")
+    private List<VacantSeat> clientIdList;
+
+    @OneToMany(mappedBy = "specIdReception")
+    private List<Reception> specIdReceptionList;
+
+    @OneToMany(mappedBy = "visitorIdReception")
+    private List<Reception> visitorIdReceptionList;
     public String getFullName() {
         return surname + " " + username + " " + patronymic;
     }

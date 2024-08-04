@@ -33,57 +33,57 @@
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
-    <style>
-        .custom-select {
-            width: 230px;
-        }
+<!--    <style>-->
+<!--        .custom-select {-->
+<!--            width: 230px;-->
+<!--        }-->
 
-        .form-select.custom-select option[selected] {
-            font-weight: bold;
-        }
+<!--        .form-select.custom-select option[selected] {-->
+<!--            font-weight: bold;-->
+<!--        }-->
 
-        table {
-            width: 100%;
-            table-layout: fixed;
-        }
+<!--        table {-->
+<!--            width: 100%;-->
+<!--            table-layout: fixed;-->
+<!--        }-->
 
-        th:first-child, td:first-child {
-            width: 16%; /* ширина первого столбца */
-        }
+<!--        th:first-child, td:first-child {-->
+<!--            width: 16%; /* ширина первого столбца */-->
+<!--        }-->
 
-        th, td {
-            width: 42%; /* ширина второго и третьего столбцов */
-            text-align: center; /* выравнивание текста по центру */
-        }
+<!--        th, td {-->
+<!--            width: 42%; /* ширина второго и третьего столбцов */-->
+<!--            text-align: center; /* выравнивание текста по центру */-->
+<!--        }-->
 
-        th, td {
-            text-align: center; /* выравнивание текста по центру */
-        }
+<!--        th, td {-->
+<!--            text-align: center; /* выравнивание текста по центру */-->
+<!--        }-->
 
-        tr {
-            text-align: center;
-            vertical-align: middle;
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 8px;
-        }
+<!--        tr {-->
+<!--            text-align: center;-->
+<!--            vertical-align: middle;-->
+<!--            border: 1px solid black;-->
+<!--            border-collapse: collapse;-->
+<!--            padding: 8px;-->
+<!--        }-->
 
-        th {
-            text-align: center;
-            vertical-align: middle;
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 8px;
-        }
+<!--        th {-->
+<!--            text-align: center;-->
+<!--            vertical-align: middle;-->
+<!--            border: 1px solid black;-->
+<!--            border-collapse: collapse;-->
+<!--            padding: 8px;-->
+<!--        }-->
 
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 8px;
-            text-align: center;
-            vertical-align: middle;
-        }
-    </style>
+<!--        td {-->
+<!--            border: 1px solid black;-->
+<!--            border-collapse: collapse;-->
+<!--            padding: 8px;-->
+<!--            text-align: center;-->
+<!--            vertical-align: middle;-->
+<!--        }-->
+<!--    </style>-->
 
 </head>
 <body>
@@ -154,10 +154,8 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="addAvailableTimeLabel">Установи диапазон свободных дат и
-                                    времени приема</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                <h5 class="modal-title" id="addAvailableTimeLabel">Установите диапазон свободных дат и времени приема</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form th:method="POST" th:action="@{/calendar/admission_calendar_update}">
@@ -181,9 +179,19 @@
                                         <label for="minInterval">Минимальный интервал между приемами:</label>
                                         <input type="time" id="minInterval" name="minInterval">
                                     </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Отправить
-                                    </button>
+                                    <div class="col-12">
+                                        <label>Выберите выходные дни:</label>
+                                        <div>
+                                            <input type="checkbox" name="weekDays" value="Понедельник"> Понедельник
+                                            <input type="checkbox" name="weekDays" value="Вторник"> Вторник
+                                            <input type="checkbox" name="weekDays" value="Среда"> Среда
+                                            <input type="checkbox" name="weekDays" value="Четверг"> Четверг
+                                            <input type="checkbox" name="weekDays" value="Пятница"> Пятница
+                                            <input type="checkbox" name="weekDays" value="Суббота"> Суббота
+                                            <input type="checkbox" name="weekDays" value="Воскресенье"> Воскресенье
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Отправить</button>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -593,7 +601,64 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Дата</th>
+                <th scope="col">Время</th>
+                <th scope="col">Клиент</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vacantSeat : ${vacantSeats}">
+                <th hidden th:text="${vacantSeat.id}"></th>
+                <th th:text="${vacantSeat.dayOfWeek}"></th>
+                <td th:text="${vacantSeat.date_vacant}"></td>
+                <td th:text="${vacantSeat.time_vacant}"></td>
+                <td th:text="${vacantSeat.clientId != null ? vacantSeat.clientId.getFullName : 'Нет записи'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
+
+<script th:inline="javascript">
+    $(document).ready(function(){
+        // При нажатии на запись
+        $('tr').click(function(){
+            var id = $(this).find('th:eq(0)').text(); // Получаем значение ID выбранной записи
+            var date = $(this).find('td:eq(0)').text(); // Получаем значение даты выбранной записи
+            var time = $(this).find('td:eq(1)').text(); // Получаем значение времени выбранной записи
+            var client = $(this).find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
+
+            var confirmDelete = confirm("Точно хотите удалить запись?");
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+                date: date,
+                time: time,
+                client: client
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            console.log(applicationFromSpecialist)
+            // Отправляем данные на сервер
+            fetch("/calendar/your-controller-url", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            })
+        });
+    });
+</script>
 
 <script th:inline="javascript">
 
