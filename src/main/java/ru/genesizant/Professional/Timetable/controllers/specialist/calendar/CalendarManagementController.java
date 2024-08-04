@@ -101,12 +101,7 @@ public class CalendarManagementController {
 
     @PostMapping("/your-controller-url") // Укажите здесь URL, который соответствует URL в JavaScript запросе
     public String handleTableClick(@RequestBody Map<String, String> applicationFromSpecialist) {
-        // Ваша логика обработки данных
-        // Например, найти объект по id и выполнить необходимые действия
-//        VacantSeat vacantSeat = vacantSeatService.findById(id);
-        // Ваши действия с vacantSeat
-        System.out.println();
-
+        vacantSeatService.removeVacantSlot(applicationFromSpecialist.get("id"));
         return CALENDAR_VIEW_REDIRECT;
     }
 

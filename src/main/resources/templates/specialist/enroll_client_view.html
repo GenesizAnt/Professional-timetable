@@ -340,197 +340,63 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Дата</th>
+                <th scope="col">Время</th>
+                <th scope="col">Клиент</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vacantSeat : ${vacantSeats}">
+                <th hidden th:text="${vacantSeat.id}"></th>
+                <th th:text="${vacantSeat.dayOfWeek}"></th>
+                <td th:text="${vacantSeat.date_vacant}"></td>
+                <td th:text="${vacantSeat.time_vacant}"></td>
+                <td th:text="${vacantSeat.clientId != null ? vacantSeat.clientId.getFullName : 'Нет записи'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 
+<script th:inline="javascript">
+    $(document).ready(function(){
+        // При нажатии на запись
+        $('tr').click(function(){
+            var id = $(this).find('th:eq(0)').text(); // Получаем значение ID выбранной записи
+            var date = $(this).find('td:eq(0)').text(); // Получаем значение даты выбранной записи
+            var time = $(this).find('td:eq(1)').text(); // Получаем значение времени выбранной записи
+            var client = $(this).find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
 
-<!--<u>Запись</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/newDatesAppointments}">-->
-<!--    &lt;!&ndash;                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />&ndash;&gt;-->
-<!--    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>-->
-<!--    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>-->
-<!--    <label for="meeting">Выберите дату и время:</label>-->
-<!--    <input type="datetime-local" id="meeting" name="meeting">-->
-<!--    <input type="submit">-->
-<!--</form>-->
-<!--<br>-->
+            var confirmDelete = confirm("Точно хотите удалить запись?");
 
-<!--<u>Отмена записи</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/cancellingBooking}">-->
-<!--    <label for="meeting">Выберите дату и время:</label>-->
-<!--    <input type="datetime-local" id="meetingCancel" name="meetingCancel">-->
-<!--    <input type="submit" value="Отменить">-->
-<!--</form>-->
-<!--<br>-->
-<!--<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">-->
-<!--    <div class="input-group">-->
-<!--        <span class="input-group-text">Укажите ФИО</span>-->
-<!--        <input type="text" aria-label="username" name="username" class="form-control">-->
-<!--        <input type="text" aria-label="surname" name="surname" class="form-control">-->
-<!--        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">-->
-<!--        <input type="submit" value="Добавить">-->
-<!--    </div>-->
-<!--</form>-->
-<!--<br>-->
-
-
-<!--<div class="container">-->
-<!--    <div class="row align-items-center">-->
-<!--        <div class="col-6 col-sm-6">-->
-<!--            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
-<!--                    data-bs-target="#listAssigned">-->
-<!--                Выбери закрепленного клиента для записи-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header bg-success text-white">-->
-<!--                <h5 class="modal-title" id="listAssignedLabel">Список закрепленных за специалистом клиентов</h5>-->
-<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
-<!--                    <input type="hidden" th:name="registeredStatus" th:value="REGISTERED"/>-->
-<!--                    <select class="form-select" aria-label="Select Client" name="clientFullName">-->
-<!--                        <option value="">Выбери клиента для записи</option>-->
-<!--                        <option th:each="client : ${clientsBySpecialist}"-->
-<!--                                th:value="${client.id}"-->
-<!--                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client-->
-<!--                            Full Name-->
-<!--                        </option>-->
-<!--                    </select>-->
-<!--                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Выбрать</button>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <div class="modal-footer">-->
-<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--<div class="container">-->
-<!--    <div class="row align-items-center">-->
-<!--        <div class="col-6 col-sm-6">-->
-<!--            <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
-<!--                    data-bs-target="#listUnregistered">-->
-<!--                Выбери не зарегистрированного клиента для записи-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header bg-success text-white">-->
-<!--                <h5 class="modal-title" id="listUnregisteredLabel">Список НЕ ЗАРЕГИСТРИРОВАННЫХ клиентов</h5>-->
-<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
-<!--                    <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>-->
-<!--                    <select class="form-select" size="10" aria-label="Select Client" name="clientFullName">-->
-<!--                        <option value="">Выбери клиента для записи</option>-->
-<!--                        <option th:each="client : ${unregisteredBySpecialist}"-->
-<!--                                th:value="${client.id}"-->
-<!--                                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client-->
-<!--                            Full Name-->
-<!--                        </option>-->
-<!--                    </select>-->
-<!--                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1" role="button">Выбрать-->
-<!--                    </button>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <div class="modal-footer">-->
-<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<br>-->
-
-<!--Здесь форма для отображения списка закрепленных за специалистом ЗАРЕГ клиентов-->
-<!--<u>Список закрепленных за специалистом клиентов</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
-<!--    <input type="hidden" th:name="registeredStatus" th:value="REGISTERED"/>-->
-<!--    <select class="form-select" aria-label="Select Client" name="clientFullName">-->
-<!--        <option value="">Выбери клиента для записи</option>-->
-<!--        <option th:each="client : ${clientsBySpecialist}"-->
-<!--                th:value="${client.id}"-->
-<!--                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name-->
-<!--        </option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Выбрать">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--Напротив по горизонтали форма для отображения списка закрепленных за специалистом НЕ_ЗАРЕГ клиентов-->
-<!--<u>Список закрепленных за специалистом клиентов НЕ ЗАРЕГИСТРИРОВАННЫХ</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/customerForRecording}">-->
-<!--    <input type="hidden" th:name="registeredStatus" th:value="UNREGISTERED"/>-->
-<!--    <select class="form-select" aria-label="Select Client" name="clientFullName">-->
-<!--        <option value="">Выбери клиента для записи</option>-->
-<!--        <option th:each="client : ${unregisteredBySpecialist}"-->
-<!--                th:value="${client.id}"-->
-<!--                th:text="${client.username + ' ' + client.surname + ' ' + client.patronymic}">Client Full Name-->
-<!--        </option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Выбрать">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Добавить НЕЗАРЕГИСТРИРОВАННОГО клиента</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/newUnregisteredPerson}">-->
-<!--    <div class="input-group">-->
-<!--        <span class="input-group-text">Укажите ФИО</span>-->
-<!--        <input type="text" aria-label="username" name="username" class="form-control">-->
-<!--        <input type="text" aria-label="surname" name="surname" class="form-control">-->
-<!--        <input type="text" aria-label="patronymic" name="patronymic" class="form-control">-->
-<!--        <input type="submit" value="Добавить">-->
-<!--    </div>-->
-<!--</form>-->
-<!--<br>-->
-
-<!--&lt;!&ndash;отображение выбранного для записи клиента&ndash;&gt;-->
-<!--<div class="container px-4">-->
-<!--    <div class="row gx-5">-->
-<!--        <div class="col">-->
-<!--            <div class="p-3 border bg-light">-->
-<!--                <tr>-->
-<!--                    <td th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Выбери клиента для записи'">-->
-<!--                        Выбери клиента для записи-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<u>Запись</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/newDatesAppointments}">-->
-<!--    &lt;!&ndash;                    <input type="hidden" th:name="selectedCustomerFullName" th:value="${selectedCustomerFullName}" />&ndash;&gt;-->
-<!--    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>-->
-<!--    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>-->
-<!--    <label for="meeting">Выберите дату и время:</label>-->
-<!--    <input type="datetime-local" id="meeting" name="meeting">-->
-<!--    <input type="submit">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Отмена записи</u>-->
-<!--<form th:method="POST" th:action="@{/enroll/cancellingBooking}">-->
-<!--    <label for="meeting">Выберите дату и время:</label>-->
-<!--    <input type="datetime-local" id="meetingCancel" name="meetingCancel">-->
-<!--    <input type="submit" value="Отменить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--Под ней поле для создания НЕ_ЗАРЕГ клиента-->
-<!--Еще немного ниже поле для сопоставления ЗАРЕГ и НЕ_ЗАРЕГ клиентов-->
-
-<!--Выбор времени и даты для регистрации клиента-->
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+                date: date,
+                time: time,
+                client: client
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/calendar/your-controller-url", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            })
+        });
+    });
+</script>
 
 <script th:inline="javascript">
 

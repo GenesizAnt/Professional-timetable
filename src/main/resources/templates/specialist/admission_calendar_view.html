@@ -9,6 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/jquery.dataTables.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -33,57 +35,60 @@
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
-<!--    <style>-->
-<!--        .custom-select {-->
-<!--            width: 230px;-->
-<!--        }-->
+    <style>
+        .no-wrap {
+            white-space: nowrap;
+        }
+/*<!--        .custom-select {-->*/
+/*<!--            width: 230px;-->*/
+/*<!--        }-->*/
 
-<!--        .form-select.custom-select option[selected] {-->
-<!--            font-weight: bold;-->
-<!--        }-->
+/*<!--        .form-select.custom-select option[selected] {-->*/
+/*<!--            font-weight: bold;-->*/
+/*<!--        }-->*/
 
-<!--        table {-->
-<!--            width: 100%;-->
-<!--            table-layout: fixed;-->
-<!--        }-->
+/*<!--        table {-->*/
+/*<!--            width: 100%;-->*/
+/*<!--            table-layout: fixed;-->*/
+/*<!--        }-->*/
 
-<!--        th:first-child, td:first-child {-->
-<!--            width: 16%; /* ширина первого столбца */-->
-<!--        }-->
+/*<!--        th:first-child, td:first-child {-->*/
+/*<!--            width: 16%; !* ширина первого столбца *!-->*/
+/*<!--        }-->*/
 
-<!--        th, td {-->
-<!--            width: 42%; /* ширина второго и третьего столбцов */-->
-<!--            text-align: center; /* выравнивание текста по центру */-->
-<!--        }-->
+/*<!--        th, td {-->*/
+/*<!--            width: 42%; !* ширина второго и третьего столбцов *!-->*/
+/*<!--            text-align: center; !* выравнивание текста по центру *!-->*/
+/*<!--        }-->*/
 
-<!--        th, td {-->
-<!--            text-align: center; /* выравнивание текста по центру */-->
-<!--        }-->
+/*<!--        th, td {-->*/
+/*<!--            text-align: center; !* выравнивание текста по центру *!-->*/
+/*<!--        }-->*/
 
-<!--        tr {-->
-<!--            text-align: center;-->
-<!--            vertical-align: middle;-->
-<!--            border: 1px solid black;-->
-<!--            border-collapse: collapse;-->
-<!--            padding: 8px;-->
-<!--        }-->
+/*<!--        tr {-->*/
+/*<!--            text-align: center;-->*/
+/*<!--            vertical-align: middle;-->*/
+/*<!--            border: 1px solid black;-->*/
+/*<!--            border-collapse: collapse;-->*/
+/*<!--            padding: 8px;-->*/
+/*<!--        }-->*/
 
-<!--        th {-->
-<!--            text-align: center;-->
-<!--            vertical-align: middle;-->
-<!--            border: 1px solid black;-->
-<!--            border-collapse: collapse;-->
-<!--            padding: 8px;-->
-<!--        }-->
+/*<!--        th {-->*/
+/*<!--            text-align: center;-->*/
+/*<!--            vertical-align: middle;-->*/
+/*<!--            border: 1px solid black;-->*/
+/*<!--            border-collapse: collapse;-->*/
+/*<!--            padding: 8px;-->*/
+/*<!--        }-->*/
 
-<!--        td {-->
-<!--            border: 1px solid black;-->
-<!--            border-collapse: collapse;-->
-<!--            padding: 8px;-->
-<!--            text-align: center;-->
-<!--            vertical-align: middle;-->
-<!--        }-->
-<!--    </style>-->
+/*<!--        td {-->*/
+/*<!--            border: 1px solid black;-->*/
+/*<!--            border-collapse: collapse;-->*/
+/*<!--            padding: 8px;-->*/
+/*<!--            text-align: center;-->*/
+/*<!--            vertical-align: middle;-->*/
+/*<!--        }--> */
+    </style>
 
 </head>
 <body>
@@ -603,7 +608,7 @@
     </div>
 
     <div class="container">
-        <table class="table">
+        <table class="table table-bordered table-striped">
             <thead>
             <tr>
                 <th scope="col"></th>
@@ -616,9 +621,12 @@
             <tr th:each="vacantSeat : ${vacantSeats}">
                 <th hidden th:text="${vacantSeat.id}"></th>
                 <th th:text="${vacantSeat.dayOfWeek}"></th>
-                <td th:text="${vacantSeat.date_vacant}"></td>
+                <td th:text="${vacantSeat.date_vacant}" class="no-wrap"></td>
                 <td th:text="${vacantSeat.time_vacant}"></td>
-                <td th:text="${vacantSeat.clientId != null ? vacantSeat.clientId.getFullName : 'Нет записи'}"></td>
+                <td>
+                    <span th:if="${vacantSeat.clientId != null}" th:text="${vacantSeat.clientId.getFullName}"></span>
+                    <a th:if="${vacantSeat.clientId == null}" href="javascript:void(0)" class="delete-slot">Удалить слот</a>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -628,13 +636,13 @@
 <script th:inline="javascript">
     $(document).ready(function(){
         // При нажатии на запись
-        $('tr').click(function(){
-            var id = $(this).find('th:eq(0)').text(); // Получаем значение ID выбранной записи
-            var date = $(this).find('td:eq(0)').text(); // Получаем значение даты выбранной записи
-            var time = $(this).find('td:eq(1)').text(); // Получаем значение времени выбранной записи
-            var client = $(this).find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
+        $('.delete-slot').click(function(){
+            var row = $(this).closest('tr');
+            var id = row.find('th:eq(0)').text(); // Получаем значение ID выбранной записи
+            var date = row.find('td:eq(0)').text(); // Получаем значение даты выбранной записи
+            var time = row.find('td:eq(1)').text(); // Получаем значение времени выбранной записи
+            var client = row.find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
 
-            var confirmDelete = confirm("Точно хотите удалить запись?");
 
             // Отправляем данные на контроллер для обработки
             var applicationFromSpecialist = {
@@ -645,7 +653,6 @@
                 client: client
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
-            console.log(applicationFromSpecialist)
             // Отправляем данные на сервер
             fetch("/calendar/your-controller-url", {
                 method: 'POST',
@@ -655,7 +662,13 @@
                     // Здесь могут быть другие заголовки, если необходимо
                 },
                 body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
             })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
         });
     });
 </script>
@@ -790,182 +803,6 @@
     createTable(data20);
 </script>
 
-<!-- значок ручки <i class="fa-solid fa-pen-nib"></i>-->
-
-
-<!--<h1 style="text-align:center;">Установи диапазон свободных дат и времени приема</h1>-->
-<!--<form th:method="POST" action="/calendar/admission_calendar_update">-->
-<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-<!--    <label for="startDate">Дата начала доступного расписания:</label>-->
-<!--    <input type="date" id="startDate" name="startDate" value="2023-11-30">-->
-<!--    <br>-->
-<!--    <label for="endDate">Дата конца доступного расписания:</label>-->
-<!--    <input type="date" id="endDate" name="endDate" value="2023-12-02">-->
-<!--    <br>-->
-<!--    <label for="startTime">Начало доступного времени для приемов:</label>-->
-<!--    <input type="time" id="startTime" name="startTime" value="10:00:00">-->
-<!--    <br>-->
-<!--    <label for="endTime">Конец доступного времени для приемов:</label>-->
-<!--    <input type="time" id="endTime" name="endTime" value="18:00:00">-->
-<!--    <br>-->
-<!--    <label for="minInterval">Минимальный интервал между приемами:</label>-->
-<!--    <input type="time" id="minInterval" name="minInterval" value="01:00:00">-->
-<!--    <br>-->
-<!--    <input type="submit" value="Отправить">-->
-<!--</form>-->
-<!--<br>-->
-<!--<br>-->
-<!--<h1 style="text-align:center;">Календарь уже установленных свободных дат</h1>-->
-<!--<h2 style="text-align:center;">Клиент видит только установленные даты</h2>-->
-<!--<h6>Изменить данные календаря</h6><br>-->
-
-<!--<b>Управление записями клиентов</b>-->
-<!--<a th:href="@{/enroll/enroll_page}" class="btn btn-success btn-sm" tabindex="-1" role="button" aria-disabled="true">Перейти</a><br><br>-->
-<!--<button type="button" class="btn btn-success btn-sm" onclick="window.location.href='/specialist/enroll_client'">Перейти</button><br>-->
-<!--<td><a th:href="@{'/visitors/specialist/' + ${specialist.id}}" th:text="${specialist.username}"></a></td>-->
-
-<!--<u>Удалить дату</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/dateFormDelete}">-->
-<!--    <label for="selectedDate">Выберите дату:</label>-->
-<!--    <input type="date" id="selectedDate" name="selectedDate">-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form> <br>-->
-
-<!--<u>Удалить диапазон дат</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/dateRangeFormDelete}">-->
-<!--    <label for="startDateRange">Начало:</label>-->
-<!--    <input type="date" id="startDateRange" name="startDateRange">-->
-<!--    <label for="endDateRange">Конец:</label>-->
-<!--    <input type="date" id="endDateRange" name="endDateRange">-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form> <br>-->
-
-<!--<u>Добавить время доступное для приема</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/addTimeAvailability}">-->
-<!--    <label for="dateAddTime">Дата:</label>-->
-<!--    <input type="date" id="dateAddTime" name="dateAddTime">-->
-<!--    <label for="timeAvailability">Время:</label>-->
-<!--    <input type="time" id="timeAvailability" name="timeAvailability" value="">-->
-<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
-<!--        <option selected>Выбрать статус</option>-->
-<!--        <option value="AVAILABLE">Доступно</option>-->
-<!--        <option value="RESERVED">Забронировано</option>-->
-<!--        <option value="IN_QUESTION">Под вопросом</option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Добавить">-->
-<!--</form> <br>-->
-
-<!--<u>Добавить диапазон времени доступного для приема</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/addRangeTimeAvailability}">-->
-<!--    <label for="dateRangeAdd">Дата:</label>-->
-<!--    <input type="date" id="dateRangeAdd" name="dateRangeAdd">-->
-<!--    <label for="startAddTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="startAddTimeAdmission" name="startAddTimeAdmission" value="">-->
-<!--    <label for="endAddTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="endAddTimeAdmission" name="endAddTimeAdmission" value="">-->
-<!--    <label for="minIntervalAdd">Минимальный интервал между приемами:</label>-->
-<!--    <input type="time" id="minIntervalAdd" name="minIntervalAdd" value="01:00:00">-->
-<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption" required>-->
-<!--        <option selected>Выбрать статус</option>-->
-<!--        <option value="AVAILABLE">Доступно</option>-->
-<!--        <option value="RESERVED">Забронировано</option>-->
-<!--        <option value="IN_QUESTION">Под вопросом</option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Добавить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Удалить время доступное для приема</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">-->
-<!--    <label for="dateOne">Дата:</label>-->
-<!--    <input type="date" id="dateOne" name="dateOne">-->
-<!--    <label for="selectedTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="selectedTimeAdmission" name="selectedTimeAdmission" value="">-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Удалить диапазон времени доступного для приема</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">-->
-<!--    <label for="dateRange">Дата:</label>-->
-<!--    <input type="date" id="dateRange" name="dateRange">-->
-<!--    <label for="startTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">-->
-<!--    <label for="endTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Установить статус доступности времени</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/setTimeAvailabilityStatus}">-->
-<!--    <label for="date">Дата:</label>-->
-<!--    <input type="date" id="date" name="date">-->
-<!--    <label for="selectedTimeAdmission">Время:</label>-->
-<!--    <input type="time" id="timeAdmission" name="timeAdmission" value="">-->
-<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
-<!--        <option selected>Выбрать статус</option>-->
-<!--        <option value="AVAILABLE">Доступно</option>-->
-<!--        <option value="RESERVED">Забронировано</option>-->
-<!--        <option value="IN_QUESTION">Под вопросом</option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Установить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Установить статус доступности для диапазона времени</u>-->
-<!--<form th:method="POST" th:action="@{/calendar/setRangeTimeAvailabilityStatus}">-->
-<!--    <label for="dateForTime">Дата:</label>-->
-<!--    <input type="date" id="dateForTime" name="date">-->
-<!--    <label for="selectedStartTimeAdmission">Начало:</label>-->
-<!--    <input type="time" id="selectedStartTimeAdmission" name="startStartAdmission" value="">-->
-<!--    <label for="selectedEndTimeAdmission">Конец:</label>-->
-<!--    <input type="time" id="selectedEndTimeAdmission" name="endStartAdmission" value="">-->
-<!--    <select class="form-select custom-select" aria-label="Default select example" name="selectedOption">-->
-<!--        <option selected>Выбрать статус</option>-->
-<!--        <option value="AVAILABLE">Доступно</option>-->
-<!--        <option value="RESERVED">Забронировано</option>-->
-<!--        <option value="IN_QUESTION">Под вопросом</option>-->
-<!--    </select>-->
-<!--    <input type="submit" value="Установить">-->
-<!--</form>-->
-<!--<br>-->
-
-<!--<u>Очистить даты из календаря раньше: </u>-->
-<!--<form th:method="POST" th:action="@{/calendar/dateBeforeClear}">-->
-<!--    <label for="selectedDateBeforeClear">Выберите дату:</label>-->
-<!--    <input type="date" id="selectedDateBeforeClear" name="selectedDateBeforeClear">-->
-<!--    <input type="submit" value="Удалить">-->
-<!--</form>-->
-<!--<br><br>-->
-
-<!--<div class="table-responsive">-->
-<!--    <table class="table">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Дата</th>-->
-<!--            <th>Время</th>-->
-<!--            <th>Статус</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="dateEntry : ${dates}">-->
-<!--            <td th:text="${dateEntry.key}"></td>-->
-<!--            <td>-->
-<!--                <div th:each="timeEntry : ${dateEntry.value}">-->
-<!--                    <span th:text="${timeEntry.key}"></span><br>-->
-<!--                </div>-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <div th:each="statusEntry : ${dateEntry.value}">-->
-<!--                    <span th:text="${statusEntry.value}"></span><br>-->
-<!--                </div>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-
 <footer id="footer">
     <div class="container">
         <div class="row align-items-end">
@@ -976,34 +813,6 @@
         </div>
     </div>
 </footer>
-
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $('table').DataTable({-->
-<!--            paging: true,-->
-<!--            pageLength: 5,-->
-<!--            language: {-->
-<!--                "lengthMenu": "Показать _MENU_ записей",-->
-<!--                "search": "Найти:",-->
-<!--                "info": "Отображение от _START_ до _END_ из _TOTAL_ элементов",-->
-<!--                "paginate": {-->
-<!--                    "previous": "Предыдущий",-->
-<!--                    "next": "Следующий"-->
-<!--                },-->
-<!--            },-->
-<!--            "lengthMenu": [-->
-<!--                [3, 5, 10, -1],-->
-<!--                [3, 5, 10, 'Все']-->
-<!--            ]-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
 </body>
 </html>
 
-
-<!--<label for="datetime_open">Добавить конкретную дату и время:</label>-->
-<!--<input type="datetime-local" id="datetime_open" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">-->
-
-<!--<label for="datetime_close">Забронировать конкретную дату и время:</label>-->
-<!--<input type="datetime-local" id="datetime_close" name="datetime" value="2023-12-02T10:00" min="2023-12-02T10:00" max="2023-12-02T18:00">-->

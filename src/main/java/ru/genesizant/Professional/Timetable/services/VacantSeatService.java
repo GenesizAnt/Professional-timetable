@@ -11,8 +11,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeek;
+import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeekShort;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class VacantSeatService {
             for (String s : availableRecordingTime) {
                 if (!weekDays.contains(getRusDayWeek(startDateObject.plusDays(i).getDayOfWeek().name()))) {
                     VacantSeat vacantSeat = new VacantSeat();
-                    vacantSeat.setDayOfWeek(getRusDayWeek(startDateObject.plusDays(i).getDayOfWeek().name()));
+                    vacantSeat.setDayOfWeek(getRusDayWeekShort(startDateObject.plusDays(i).getDayOfWeek().name()));
                     vacantSeat.setDate_vacant(startDateObject.plusDays(i));
                     vacantSeat.setTime_vacant(LocalTime.parse(s));
                     vacantSeat.setSpecId(specialist);
@@ -60,31 +62,19 @@ public class VacantSeatService {
     }
 
     public List<VacantSeat> getVacantSeats(Person specialist) {
-        return vacantSeatRepository.findBySpecId(specialist);
+        List<VacantSeat> bySpecId = vacantSeatRepository.findBySpecId(specialist);
+
+        return sortVacantSeatsByDateTimeAsc(bySpecId);
     }
 
-//    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
-//        // Создаем объект LocalDate для начала даты
-//        LocalDate startDateObject = LocalDate.parse(startDate);
-//        // Создаем объект LocalDate для конца даты
-//        LocalDate endDateObject = LocalDate.parse(endDate);
-//        // Вычисляем количество дней между двумя датами
-//        int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
-//
-//        //Получить расписание в формате "Время":"Статус"
-//        Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour, status);
-//
-//        for (int i = 0; i <= daysBetween; i++) {
-//            Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
-//            if (existingRecord.isPresent()) {
-//                // обновление существующей записи
-//                existingRecord.get().setScheduleTime(getScheduleJSON(availableRecordingTime));
-//                datesAppointmentsRepository.save(existingRecord.get());
-//            } else {
-//                // создание новой записи
-//                DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, getScheduleJSON(availableRecordingTime));
-//                datesAppointmentsRepository.save(newRecord);
-//            }
-//        }
-//    }
+    private List<VacantSeat> sortVacantSeatsByDateTimeAsc(List<VacantSeat> vacantSeats) {
+        // Сортировка списка по возрастанию по дате и времени
+        return vacantSeats.stream()
+                .sorted(Comparator.comparing(VacantSeat::getDate_vacant).thenComparing(VacantSeat::getTime_vacant))
+                .collect(Collectors.toList());
+    }
+
+    public void removeVacantSlot(String id) {
+        vacantSeatRepository.deleteById(Long.valueOf(id));
+    }
 }
