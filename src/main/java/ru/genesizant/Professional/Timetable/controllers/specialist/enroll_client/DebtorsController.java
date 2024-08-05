@@ -16,6 +16,7 @@ import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsServi
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -100,4 +101,13 @@ public class DebtorsController {
         }
         return ENROLL_VIEW_REDIRECT;
     }
+
+    @PostMapping("/confirm") // Укажите здесь URL, который соответствует URL в JavaScript запросе
+    public String handleTableClick(@ModelAttribute("specialist") Person person,
+                                   @RequestBody Map<String, String> applicationFromSpecialist) {
+        specialistAppointmentsService.agreementPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+        log.info("Спец: " + person.getFullName() + ". Подтвердил оплату через таблицу по консультации с ID:" + applicationFromSpecialist.get("id"));
+        return ENROLL_VIEW_REDIRECT;
+    }
+
 }

@@ -22,6 +22,13 @@
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+<!--    <style>-->
+<!--        .no-wrap {-->
+<!--            white-space: nowrap;-->
+<!--        }-->
+<!--    </style>-->
+
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -184,8 +191,76 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-secondary table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Клиент</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col" style="width: 50px;"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="debtors : ${listName}">
+                    <th hidden th:text="${debtors.idAppointment}"></th>
+                    <th th:text="${debtors.fullName}"></th>
+                    <td th:text="${debtors.dateAppointment}" class="no-wrap"></td>
+                    <td th:text="${debtors.timeAppointment}"></td>
+                    <td>
+                        <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </section>
 
+<script th:inline="javascript">
+    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+    $(document).ready(function(){
+        // При нажатии на запись
+        $('.confirm-slot').click(function(){
+            var row = $(this).closest('tr');
+            var id = row.find('th:eq(0)').text(); // Получаем значение ID выбранной записи
+            var date = row.find('td:eq(0)').text(); // Получаем значение даты выбранной записи
+            var time = row.find('td:eq(1)').text(); // Получаем значение времени выбранной записи
+            var client = row.find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+                date: date,
+                time: time,
+                client: client
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/administration/confirm", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+</script>
 
 
 <!--<li class="nav-item">-->
