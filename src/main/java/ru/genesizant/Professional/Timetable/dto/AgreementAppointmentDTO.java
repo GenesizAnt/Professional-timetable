@@ -2,11 +2,12 @@ package ru.genesizant.Professional.Timetable.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+
+import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeekShort;
 
 @Getter
 @Setter
@@ -19,10 +20,9 @@ public class AgreementAppointmentDTO {
 
 
     public void setDateAppointment(LocalDate dateq) {
-        if (dateq != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            this.dateAppointment = String.valueOf(LocalDate.parse(dateq.toString(), formatter));
-        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        this.dateAppointment = dateq.format(formatter);
+        this.dateAppointment = getRusDayWeekShort(dateq.getDayOfWeek().name()) + " " + this.dateAppointment;
     }
 
 }

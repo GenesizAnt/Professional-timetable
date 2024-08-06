@@ -23,12 +23,6 @@
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
-<!--    <style>-->
-<!--        .no-wrap {-->
-<!--            white-space: nowrap;-->
-<!--        }-->
-<!--    </style>-->
-
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -66,15 +60,23 @@
     <div class="container">
         <div class="row">
             <div th:if="${#lists.size(visitDates) > 0}">
-                <!--                    <a href="/administration/proof_clients">Полный список неоплаченных</a>-->
-                <div class="alert alert-danger text-center" role="alert" th:each="date : ${visitDates}">
+                <div class="alert alert-danger text-center" role="alert" style="display: flex; align-items: center; justify-content: center;">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                         <use xlink:href="#exclamation-triangle-fill"/>
                     </svg>
-                    <span style="color: firebrick" th:text="'Внимание! Есть неоплаченная консультация на ' + ${date.toLocalDate()} + ' в ' + ${date.toLocalTime()}"></span>
+                    <span style="color: firebrick;" th:text="'Внимание! Есть неоплаченные консультации, см. в таблице ниже'"></span>
                     <br>
                 </div>
             </div>
+
+            <!--                <div class="alert alert-danger text-center" role="alert" th:each="date : ${visitDates}">-->
+            <!--                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">-->
+            <!--                        <use xlink:href="#exclamation-triangle-fill"/>-->
+            <!--                    </svg>-->
+            <!--                    <span style="color: firebrick"-->
+            <!--                          th:text="'Внимание! Есть неоплаченная консультация на ' + ${date.toLocalDate()} + ' в ' + ${date.toLocalTime()}"></span>-->
+            <!--                    <br>-->
+            <!--                </div>-->
             <div class="row">
                 <div class="col-md-6 col-sm-12 text-center">
                     <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>
@@ -193,14 +195,14 @@
     </div>
 
     <div class="container">
-        <div class="table-responsive">
+        <div class="table-responsive-sm">
             <table class="table table-secondary table-bordered table-striped">
                 <thead>
                 <tr>
                     <th scope="col">Клиент</th>
                     <th scope="col">Дата</th>
                     <th scope="col">Время</th>
-                    <th scope="col" style="width: 50px;"></th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
