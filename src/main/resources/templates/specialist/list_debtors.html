@@ -23,6 +23,17 @@
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
+    <style>
+        .custom-table table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .custom-table td {
+            word-wrap: break-word;
+        }
+    </style>
+
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -195,7 +206,7 @@
     </div>
 
     <div class="container">
-        <div class="table-responsive-sm">
+        <div class="table-responsive-sm custom-table">
             <table class="table table-secondary table-bordered table-striped">
                 <thead>
                 <tr>
@@ -209,7 +220,7 @@
                 <tr th:each="debtors : ${listName}">
                     <th hidden th:text="${debtors.idAppointment}"></th>
                     <th th:text="${debtors.fullName}"></th>
-                    <td th:text="${debtors.dateAppointment}" class="no-wrap"></td>
+                    <td th:text="${debtors.dateAppointment}"></td>
                     <td th:text="${debtors.timeAppointment}"></td>
                     <td>
                         <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>

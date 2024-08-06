@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,8 @@ public class DatesAppointmentsService {
     private final ObjectMapper objectMapper;
 
     //Добавить в БД доступные даты и время на будущее (заполнение календаря на будущий период)
-    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork, String endTimeWork, String timeIntervalHour, StatusAdmissionTime status) {
+    public void addFreeDateSchedule(Person personSpecialist, String startDate, String endDate, String startTimeWork,
+                                    String endTimeWork, List<String> weekDays, String timeIntervalHour, StatusAdmissionTime status) {
         // Создаем объект LocalDate для начала даты
         LocalDate startDateObject = LocalDate.parse(startDate);
         // Создаем объект LocalDate для конца даты
@@ -46,15 +46,17 @@ public class DatesAppointmentsService {
         Map<String, String> availableRecordingTime = availableRecordingTime(startTimeWork, endTimeWork, timeIntervalHour, status);
 
         for (int i = 0; i <= daysBetween; i++) {
-            Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
-            if (existingRecord.isPresent()) {
-                // обновление существующей записи
-                existingRecord.get().setScheduleTime(getScheduleJSON(availableRecordingTime));
-                datesAppointmentsRepository.save(existingRecord.get());
-            } else {
-                // создание новой записи
-                DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, getScheduleJSON(availableRecordingTime));
-                datesAppointmentsRepository.save(newRecord);
+            if (!weekDays.contains(getRusDayWeek(startDateObject.plusDays(i).getDayOfWeek().name()))) {
+                Optional<DatesAppointments> existingRecord = datesAppointmentsRepository.findByVisitDateAndSpecialistDateAppointmentsIdOrderById(startDateObject.plusDays(i), personSpecialist.getId());
+                if (existingRecord.isPresent()) {
+                    // обновление существующей записи
+                    existingRecord.get().setScheduleTime(getScheduleJSON(availableRecordingTime));
+                    datesAppointmentsRepository.save(existingRecord.get());
+                } else {
+                    // создание новой записи
+                    DatesAppointments newRecord = new DatesAppointments(startDateObject.plusDays(i), personSpecialist, getScheduleJSON(availableRecordingTime));
+                    datesAppointmentsRepository.save(newRecord);
+                }
             }
         }
     }

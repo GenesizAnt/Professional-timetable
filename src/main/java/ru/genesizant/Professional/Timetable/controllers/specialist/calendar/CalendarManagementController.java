@@ -74,12 +74,13 @@ public class CalendarManagementController {
                                              @RequestParam("endDate") String endDate,
                                              @RequestParam("startTime") String startTime,
                                              @RequestParam("endTime") String endTime,
-                                             @RequestParam("minInterval") String minInterval) {
-        if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
+                                             @RequestParam("minInterval") String minInterval,
+                                             @RequestParam(value = "weekDays", required = false) List<String> weekDays) {
+        if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval, weekDays)) {
             if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, specialist.getId())) {
                 return encodeError("Нельзя добавить календарь в уже существующих датах");
             } else {
-                datesAppointmentsService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime,
+                datesAppointmentsService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime, weekDays,
                         minInterval,
                         StatusAdmissionTime.AVAILABLE);
                 log.info("Спец: " + specialist.getFullName() + ". Нажал кнопку для автоматического заполнения календаря на будущий период");
@@ -231,8 +232,8 @@ public class CalendarManagementController {
         return ERROR_VALIDATE_FORM + URLEncoder.encode(error, StandardCharsets.UTF_8);
     }
 
-    private boolean isValidFormAddCalendarAdmission(String startDate, String endDate, String startTime, String endTime, String minInterval) {
-        return !startDate.isEmpty() && !endDate.isEmpty() && !startTime.isEmpty() && !endTime.isEmpty() && !minInterval.isEmpty();
+    private boolean isValidFormAddCalendarAdmission(String startDate, String endDate, String startTime, String endTime, String minInterval, List<String> weekDays) {
+        return !startDate.isEmpty() && !endDate.isEmpty() && !startTime.isEmpty() && !endTime.isEmpty() && !minInterval.isEmpty() && !weekDays.isEmpty();
     }
 
     private boolean isValidSetTimeForm(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
