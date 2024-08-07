@@ -26,12 +26,16 @@
     <style>
         .custom-table table {
             width: 100%;
-            table-layout: fixed;
         }
 
         .custom-table td {
             word-wrap: break-word;
         }
+
+        .col-client { width: 30%; }
+        .col-date { width: 23%; }
+        .col-time { width: 17%; }
+        .col-action { width: 30%; }
     </style>
 
 </head>
@@ -218,11 +222,11 @@
                 </thead>
                 <tbody>
                 <tr th:each="debtors : ${listName}">
-                    <th hidden th:text="${debtors.idAppointment}"></th>
-                    <th th:text="${debtors.fullName}"></th>
-                    <td th:text="${debtors.dateAppointment}"></td>
-                    <td th:text="${debtors.timeAppointment}"></td>
-                    <td>
+                    <td hidden th:text="${debtors.idAppointment}"></td>
+                    <td class="col-client" th:text="${debtors.fullName}"></td>
+                    <td class="col-date" th:text="${debtors.dateAppointment}"></td>
+                    <td class="col-time" th:text="${debtors.timeAppointment}"></td>
+                    <td class="col-action">
                         <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>
                     </td>
                 </tr>
@@ -274,24 +278,5 @@
         });
     });
 </script>
-
-
-<!--<li class="nav-item">-->
-<!--    <a class="nav-link active" aria-current="page" th:href="@{/enroll/enroll_page}">Запись клиента</a>-->
-<!--</li>-->
-<!--<table>-->
-<!--    <thead>-->
-<!--    <th>Посетитель</th>-->
-<!--    <th>Дата записи</th>-->
-<!--    <th>Профессиональные услуги</th>-->
-<!--    </thead>-->
-<!--    <tbody>-->
-<!--    <tr th:each="appointment : ${appointmentsList}">-->
-<!--        <td th:text="${appointment.visitor_appointments.getFullName()}"></td>-->
-<!--        <td th:text="${appointment.appointmentTime}"></td>-->
-<!--        <td th:text="${appointment.professionalServices}"></td>-->
-<!--    </tr>-->
-<!--    </tbody>-->
-<!--</table>-->
 </body>
 </html>
