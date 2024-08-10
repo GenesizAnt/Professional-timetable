@@ -36,9 +36,19 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
     <style>
-        .no-wrap {
-            white-space: nowrap;
+        .custom-table table {
+            width: 100%;
         }
+
+        .custom-table td {
+            word-wrap: break-word;
+        }
+
+        .col-dayOfWeek { width: 10%; }
+        .col-date { width: 33%; }
+        .col-time { width: 17%; }
+        .col-client { width: 40%; }
+
 /*<!--        .custom-select {-->*/
 /*<!--            width: 230px;-->*/
 /*<!--        }-->*/
@@ -608,53 +618,55 @@
     </div>
 
     <div class="container">
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">Дата</th>
-                <th scope="col">Время</th>
-                <th scope="col">Клиент</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="vacantSeat : ${vacantSeats}">
-                <th hidden th:text="${vacantSeat.id}"></th>
-                <th th:text="${vacantSeat.dayOfWeek}"></th>
-                <td th:text="${vacantSeat.date_vacant}" class="no-wrap"></td>
-                <td th:text="${vacantSeat.time_vacant}"></td>
-                <td>
-                    <span th:if="${vacantSeat.clientId != null}" th:text="${vacantSeat.clientId.getFullName}"></span>
-                    <a th:if="${vacantSeat.clientId == null}" href="javascript:void(0)" class="delete-slot">Удалить слот</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive-sm custom-table">
+            <table class="table table-secondary table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Клиент</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="vacantSeat : ${vacantSeats}">
+                    <td hidden th:text="${vacantSeat.id}"></td>
+                    <td class="col-dayOfWeek" th:text="${vacantSeat.dayOfWeek}"></td>
+                    <td class="col-date" th:text="${vacantSeat.date_vacant}"></td>
+                    <td class="col-time" th:text="${vacantSeat.time_vacant}"></td>
+                    <td class="col-client">
+                        <span th:if="${vacantSeat.clientId != null}"
+                              th:text="${vacantSeat.clientId.getFullName}"></span>
+                        <a th:if="${vacantSeat.clientId == null}" href="javascript:void(0)" class="delete-slot">Удалить
+                            слот</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+
 </section>
 
 <script th:inline="javascript">
+    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+
     $(document).ready(function(){
         // При нажатии на запись
         $('.delete-slot').click(function(){
             var row = $(this).closest('tr');
-            var id = row.find('th:eq(0)').text(); // Получаем значение ID выбранной записи
-            var date = row.find('td:eq(0)').text(); // Получаем значение даты выбранной записи
-            var time = row.find('td:eq(1)').text(); // Получаем значение времени выбранной записи
-            var client = row.find('td:eq(2)').text(); // Получаем значение клиента выбранной записи
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
 
 
             // Отправляем данные на контроллер для обработки
             var applicationFromSpecialist = {
                 // specialistId: idSpecialist,
                 id: id,
-                date: date,
-                time: time,
-                client: client
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер
-            fetch("/calendar/your-controller-url", {
+            fetch("/calendar/removeVacantSlot", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -673,135 +685,135 @@
     });
 </script>
 
-<script th:inline="javascript">
+<!--<script th:inline="javascript">-->
 
-    var csrfToken = document.querySelector('input[name="_csrf"]').value;
-    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');
+<!--    var csrfToken = document.querySelector('input[name="_csrf"]').value;-->
+<!--    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');-->
 
-    function createTable(data) {
-        var table = document.createElement('table');
-        table.className = "table";
-        var tableBody = document.createElement('tbody');
+<!--    function createTable(data) {-->
+<!--        var table = document.createElement('table');-->
+<!--        table.className = "table";-->
+<!--        var tableBody = document.createElement('tbody');-->
 
-        // Создаем строку заголовков
-        var tr = document.createElement('tr');
+<!--        // Создаем строку заголовков-->
+<!--        var tr = document.createElement('tr');-->
 
-        var th1 = document.createElement('th');
-        th1.textContent = data[0][0];
-        th1.colSpan = 1;
-        tr.appendChild(th1);
+<!--        var th1 = document.createElement('th');-->
+<!--        th1.textContent = data[0][0];-->
+<!--        th1.colSpan = 1;-->
+<!--        tr.appendChild(th1);-->
 
-        var th2 = document.createElement('th');
-        th2.textContent = data[0][1];
-        th2.colSpan = 2;
-        tr.appendChild(th2);
+<!--        var th2 = document.createElement('th');-->
+<!--        th2.textContent = data[0][1];-->
+<!--        th2.colSpan = 2;-->
+<!--        tr.appendChild(th2);-->
 
-        tableBody.appendChild(tr);
+<!--        tableBody.appendChild(tr);-->
 
-        var tr = document.createElement('tr');
-        data[1].forEach(elem => {
-            let th = document.createElement('th');
-            th.textContent = elem;
-            tr.appendChild(th);
-        });
-        tableBody.appendChild(tr);
+<!--        var tr = document.createElement('tr');-->
+<!--        data[1].forEach(elem => {-->
+<!--            let th = document.createElement('th');-->
+<!--            th.textContent = elem;-->
+<!--            tr.appendChild(th);-->
+<!--        });-->
+<!--        tableBody.appendChild(tr);-->
 
-        for (var i = 2; i < data.length; i++) {
-            tr = document.createElement('tr');
-            data[i].forEach((elem, index) => {
-                var ind = i;
-                var td = document.createElement('td');
-                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"
-                if (index === 2 && elem === "Доступно") {
-                    var link = document.createElement('a');
-                    link.textContent = elem;
-                    link.href = "/enroll/enroll_page"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
-                    // link.addEventListener('click', function (event) {
-                    //     event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
-                    //
-                    //     var applicationFromVisitor = {
-                    //         specialistId: idSpecialist,
-                    //         meetingDate: table.rows[0].cells[0].textContent,
-                    //         meetingTime: table.rows[ind].cells[index - 2].textContent
-                    //     }; // Ваши данные для отправки на контроллер
-                    //     // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
-                    //
-                    //     // Отправляем данные на сервер
-                    //     fetch("/enroll/enroll_page", {
-                    //         method: 'POST',
-                    //         headers: {
-                    //             'Content-Type': 'application/json',
-                    //             'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
-                    //             // Здесь могут быть другие заголовки, если необходимо
-                    //         },
-                    //         body: JSON.stringify(applicationFromVisitor)
-                    //     })
-                    //         .then(response => {
-                    //             location.reload();
-                    //             // Обрабатываем ответ от сервера
-                    //         })
-                    //         .catch(error => {
-                    //             // Обрабатываем ошибки при отправке запроса на сервер
-                    //         });
-                    // });
-                    td.appendChild(link);
-                } else {
-                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
-                    td.textContent = elem;
-                }
-                tr.appendChild(td);
-            });
-            tableBody.appendChild(tr);
-        }
+<!--        for (var i = 2; i < data.length; i++) {-->
+<!--            tr = document.createElement('tr');-->
+<!--            data[i].forEach((elem, index) => {-->
+<!--                var ind = i;-->
+<!--                var td = document.createElement('td');-->
+<!--                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"-->
+<!--                if (index === 2 && elem === "Доступно") {-->
+<!--                    var link = document.createElement('a');-->
+<!--                    link.textContent = elem;-->
+<!--                    link.href = "/enroll/enroll_page"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая-->
+<!--                    // link.addEventListener('click', function (event) {-->
+<!--                    //     event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию-->
+<!--                    //-->
+<!--                    //     var applicationFromVisitor = {-->
+<!--                    //         specialistId: idSpecialist,-->
+<!--                    //         meetingDate: table.rows[0].cells[0].textContent,-->
+<!--                    //         meetingTime: table.rows[ind].cells[index - 2].textContent-->
+<!--                    //     }; // Ваши данные для отправки на контроллер-->
+<!--                    //     // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными-->
+<!--                    //-->
+<!--                    //     // Отправляем данные на сервер-->
+<!--                    //     fetch("/enroll/enroll_page", {-->
+<!--                    //         method: 'POST',-->
+<!--                    //         headers: {-->
+<!--                    //             'Content-Type': 'application/json',-->
+<!--                    //             'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса-->
+<!--                    //             // Здесь могут быть другие заголовки, если необходимо-->
+<!--                    //         },-->
+<!--                    //         body: JSON.stringify(applicationFromVisitor)-->
+<!--                    //     })-->
+<!--                    //         .then(response => {-->
+<!--                    //             location.reload();-->
+<!--                    //             // Обрабатываем ответ от сервера-->
+<!--                    //         })-->
+<!--                    //         .catch(error => {-->
+<!--                    //             // Обрабатываем ошибки при отправке запроса на сервер-->
+<!--                    //         });-->
+<!--                    // });-->
+<!--                    td.appendChild(link);-->
+<!--                } else {-->
+<!--                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст-->
+<!--                    td.textContent = elem;-->
+<!--                }-->
+<!--                tr.appendChild(td);-->
+<!--            });-->
+<!--            tableBody.appendChild(tr);-->
+<!--        }-->
 
-        table.appendChild(tableBody);
-        document.body.appendChild(table);
-    }
+<!--        table.appendChild(tableBody);-->
+<!--        document.body.appendChild(table);-->
+<!--    }-->
 
-    var data0 = JSON.parse(/*[[${day0}]]*/ '');
-    var data1 = JSON.parse(/*[[${day1}]]*/ '');
-    var data2 = JSON.parse(/*[[${day2}]]*/ '');
-    var data3 = JSON.parse(/*[[${day3}]]*/ '');
-    var data4 = JSON.parse(/*[[${day4}]]*/ '');
-    var data5 = JSON.parse(/*[[${day5}]]*/ '');
-    var data6 = JSON.parse(/*[[${day6}]]*/ '');
-    var data7 = JSON.parse(/*[[${day7}]]*/ '');
-    var data8 = JSON.parse(/*[[${day8}]]*/ '');
-    var data9 = JSON.parse(/*[[${day9}]]*/ '');
-    var data10 = JSON.parse(/*[[${day10}]]*/ '');
-    var data11 = JSON.parse(/*[[${day11}]]*/ '');
-    var data12 = JSON.parse(/*[[${day12}]]*/ '');
-    var data13 = JSON.parse(/*[[${day13}]]*/ '');
-    var data14 = JSON.parse(/*[[${day14}]]*/ '');
-    var data15 = JSON.parse(/*[[${day15}]]*/ '');
-    var data16 = JSON.parse(/*[[${day16}]]*/ '');
-    var data17 = JSON.parse(/*[[${day17}]]*/ '');
-    var data18 = JSON.parse(/*[[${day18}]]*/ '');
-    var data19 = JSON.parse(/*[[${day19}]]*/ '');
-    var data20 = JSON.parse(/*[[${day20}]]*/ '');
+<!--    var data0 = JSON.parse(/*[[${day0}]]*/ '');-->
+<!--    var data1 = JSON.parse(/*[[${day1}]]*/ '');-->
+<!--    var data2 = JSON.parse(/*[[${day2}]]*/ '');-->
+<!--    var data3 = JSON.parse(/*[[${day3}]]*/ '');-->
+<!--    var data4 = JSON.parse(/*[[${day4}]]*/ '');-->
+<!--    var data5 = JSON.parse(/*[[${day5}]]*/ '');-->
+<!--    var data6 = JSON.parse(/*[[${day6}]]*/ '');-->
+<!--    var data7 = JSON.parse(/*[[${day7}]]*/ '');-->
+<!--    var data8 = JSON.parse(/*[[${day8}]]*/ '');-->
+<!--    var data9 = JSON.parse(/*[[${day9}]]*/ '');-->
+<!--    var data10 = JSON.parse(/*[[${day10}]]*/ '');-->
+<!--    var data11 = JSON.parse(/*[[${day11}]]*/ '');-->
+<!--    var data12 = JSON.parse(/*[[${day12}]]*/ '');-->
+<!--    var data13 = JSON.parse(/*[[${day13}]]*/ '');-->
+<!--    var data14 = JSON.parse(/*[[${day14}]]*/ '');-->
+<!--    var data15 = JSON.parse(/*[[${day15}]]*/ '');-->
+<!--    var data16 = JSON.parse(/*[[${day16}]]*/ '');-->
+<!--    var data17 = JSON.parse(/*[[${day17}]]*/ '');-->
+<!--    var data18 = JSON.parse(/*[[${day18}]]*/ '');-->
+<!--    var data19 = JSON.parse(/*[[${day19}]]*/ '');-->
+<!--    var data20 = JSON.parse(/*[[${day20}]]*/ '');-->
 
-    createTable(data0);
-    createTable(data1);
-    createTable(data2);
-    createTable(data3);
-    createTable(data4);
-    createTable(data5);
-    createTable(data6);
-    createTable(data7);
-    createTable(data8);
-    createTable(data9);
-    createTable(data10);
-    createTable(data11);
-    createTable(data12);
-    createTable(data13);
-    createTable(data14);
-    createTable(data15);
-    createTable(data16);
-    createTable(data17);
-    createTable(data18);
-    createTable(data19);
-    createTable(data20);
-</script>
+<!--    createTable(data0);-->
+<!--    createTable(data1);-->
+<!--    createTable(data2);-->
+<!--    createTable(data3);-->
+<!--    createTable(data4);-->
+<!--    createTable(data5);-->
+<!--    createTable(data6);-->
+<!--    createTable(data7);-->
+<!--    createTable(data8);-->
+<!--    createTable(data9);-->
+<!--    createTable(data10);-->
+<!--    createTable(data11);-->
+<!--    createTable(data12);-->
+<!--    createTable(data13);-->
+<!--    createTable(data14);-->
+<!--    createTable(data15);-->
+<!--    createTable(data16);-->
+<!--    createTable(data17);-->
+<!--    createTable(data18);-->
+<!--    createTable(data19);-->
+<!--    createTable(data20);-->
+<!--</script>-->
 
 <footer id="footer">
     <div class="container">
