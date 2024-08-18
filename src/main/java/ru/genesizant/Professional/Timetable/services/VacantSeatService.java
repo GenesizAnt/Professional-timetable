@@ -1,9 +1,7 @@
 package ru.genesizant.Professional.Timetable.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
@@ -86,7 +84,42 @@ public class VacantSeatService {
     }
 
     public Page<VacantSeat> getVacantSeatsPage(Person specialist, Pageable pageable) {
-        return vacantSeatRepository.findBySpecId(specialist, pageable);
+        List<VacantSeat> vacantSeats1 = getVacantSeats(specialist);
 
+
+        Page<VacantSeat> bySpecId = vacantSeatRepository.findBySpecId(specialist, pageable);
+
+
+        List<VacantSeat> vacantSeats = bySpecId.getContent();
+        // Сортировка списка
+        List<VacantSeat> collect = vacantSeats1.stream()
+                .sorted(Comparator.comparing(VacantSeat::getDate_vacant).thenComparing(VacantSeat::getTime_vacant)).toList();
+
+//        vacantSeats.sort(Comparator.comparing(VacantSeat::getDate_vacant)
+//                .thenComparing(VacantSeat::getTime_vacant));
+
+        // Создание нового объекта Page с отсортированным содержимым
+//        return new PageImpl<>(collect, bySpecId.getPageable(), bySpecId.getTotalElements());
+
+
+//        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("date_vacant").and(Sort.by("time_vacant")));
+//        Page<VacantSeat> sortedByPage = bySpecId.map(bySpecId -> {
+//            List<VacantSeat> sortedList = vacantSeats.stream()
+//                    .sorted(Comparator.comparing(VacantSeat::getDateVacant)
+//                            .thenComparing(VacantSeat::getTimeVacant))
+//                    .collect(Collectors.toList());
+//            return new PageImpl<>(sortedList, pageRequest, vacantSeats.getTotalElements());
+//        });
+
+        return bySpecId;
+    }
+
+    public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {
+        VacantSeat vacantSeat = new VacantSeat();
+        vacantSeat.setDayOfWeek(getRusDayWeekShort(date.getDayOfWeek().name()));
+        vacantSeat.setDate_vacant(date);
+        vacantSeat.setTime_vacant(time);
+        vacantSeat.setSpecId(spec);
+        vacantSeatRepository.save(vacantSeat);
     }
 }

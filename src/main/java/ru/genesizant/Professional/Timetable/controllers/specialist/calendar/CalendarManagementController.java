@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
@@ -23,6 +22,7 @@ import ru.genesizant.Professional.Timetable.services.VacantSeatService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -63,20 +63,15 @@ public class CalendarManagementController {
         }
         model.addAttribute("name", request.getSession().getAttribute("name"));
 
-        List<VacantSeat> vacantSeats = vacantSeatService.getVacantSeats(specialist);
-        model.addAttribute("vacantSeats", vacantSeats);
+//        List<VacantSeat> vacantSeats = vacantSeatService.getVacantSeats(specialist);
+//        model.addAttribute("vacantSeats", vacantSeats);
 
-//        int p = model.getAttribute("page") == null ? 0 : (Integer) model.getAttribute("page");
-//        int o = model.getAttribute("page") == null ? 10 : (Integer) model.getAttribute("page");
-//
-//        Page<VacantSeat> vacantSeatsPage = vacantSeatService.findAll(PageRequest.of(p, o));
-//        model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
-//        model.addAttribute("page", vacantSeatsPage);
 
         // Обработка параметров пагинации
         int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
         int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date_vacant").and(Sort.by("time_vacant")));
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, );
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
@@ -135,34 +130,34 @@ public class CalendarManagementController {
         vacantSeatService.removeVacantSlot(applicationFromSpecialist.get("id"));
         return CALENDAR_VIEW_REDIRECT;
     }
-
-    //Удалить полный День из доступных для выбора дат
-    @PostMapping("/dateFormDelete")
-    public String selectedDateFormDelete(@ModelAttribute("specialist") Person specialist,
-                                         @RequestParam("selectedDate") LocalDate selectedDate) {
-        if (selectedDate != null) {
-            datesAppointmentsService.deleteVisitDate(selectedDate);
-            log.info("Спец: " + specialist.getFullName() + ". Удалил полный день " + selectedDate);
-        } else {
-            return encodeError("Для удаления нужно выбрать дату");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
+//
+//    //Удалить полный День из доступных для выбора дат
+//    @PostMapping("/dateFormDelete")
+//    public String selectedDateFormDelete(@ModelAttribute("specialist") Person specialist,
+//                                         @RequestParam("selectedDate") LocalDate selectedDate) {
+//        if (selectedDate != null) {
+//            datesAppointmentsService.deleteVisitDate(selectedDate);
+//            log.info("Спец: " + specialist.getFullName() + ". Удалил полный день " + selectedDate);
+//        } else {
+//            return encodeError("Для удаления нужно выбрать дату");
+//        }
+//        return CALENDAR_VIEW_REDIRECT;
+//    }
 
 
     //Удалить Диапазон Дней из доступных для выбора дат
-    @PostMapping("/dateRangeFormDelete")
-    public String selectedDateRangeFormDelete(@ModelAttribute("specialist") Person specialist,
-                                              @RequestParam("startDateRange") LocalDate startDateRange,
-                                              @RequestParam("endDateRange") LocalDate endDateRange) {
-        if (startDateRange != null && endDateRange != null) {
-            datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
-            log.info("Спец: " + specialist.getFullName() + ". Удалил диапазон дней из доступных для выбора дат");
-        } else {
-            return encodeError("Для удаления нужно выбрать диапазон дат");
-        }
-        return CALENDAR_VIEW_REDIRECT;
-    }
+//    @PostMapping("/dateRangeFormDelete")
+//    public String selectedDateRangeFormDelete(@ModelAttribute("specialist") Person specialist,
+//                                              @RequestParam("startDateRange") LocalDate startDateRange,
+//                                              @RequestParam("endDateRange") LocalDate endDateRange) {
+//        if (startDateRange != null && endDateRange != null) {
+//            datesAppointmentsService.deleteByVisitDateBetween(startDateRange, endDateRange);
+//            log.info("Спец: " + specialist.getFullName() + ". Удалил диапазон дней из доступных для выбора дат");
+//        } else {
+//            return encodeError("Для удаления нужно выбрать диапазон дат");
+//        }
+//        return CALENDAR_VIEW_REDIRECT;
+//    }
 
     //Удалить конкретное Время из доступного дня
     @PostMapping("/timeAdmissionFormDelete")
@@ -242,9 +237,13 @@ public class CalendarManagementController {
     public String addTimeAvailability(@ModelAttribute("specialist") Person specialist,
                                       @RequestParam("timeAvailability") String timeAvailability,
                                       @RequestParam("dateAddTime") LocalDate date,
-                                      @RequestParam("selectedOption") StatusAdmissionTime status) {
-        if (isValidFormAddTimeAvailability(date, timeAvailability, status)) {
-            datesAppointmentsService.addTimeAvailability(specialist.getId(), date, timeAvailability, status);
+                                      @RequestParam(value = "selectedOption", required = false) StatusAdmissionTime status) {
+        if (isValidFormAddTimeAvailability(date, timeAvailability)) {
+//            datesAppointmentsService.addTimeAvailability(specialist.getId(), date, timeAvailability, status);
+            vacantSeatService.addTimeAvailability(specialist,
+                    date,
+                    LocalTime.of(Integer.parseInt(timeAvailability.split(":")[0]),
+                            Integer.parseInt(timeAvailability.split(":")[1])));
             log.info("Спец: " + specialist.getFullName() + ". Добавил в календарь конкретное время, дату и статус доступное для приема");
         } else {
             return encodeError("Нужно выбрать дату, время и статус времени приема");
@@ -303,8 +302,8 @@ public class CalendarManagementController {
         return startStartAdmission.isEmpty() && endStartAdmission.isEmpty() && !status.getStatus().isEmpty() && date != null;
     }
 
-    private boolean isValidFormAddTimeAvailability(LocalDate date, String timeAvailability, StatusAdmissionTime status) {
-        return date != null && !timeAvailability.isEmpty() && !status.getStatus().isEmpty();
+    private boolean isValidFormAddTimeAvailability(LocalDate date, String timeAvailability) {
+        return date != null && !timeAvailability.isEmpty();
     }
 
     private boolean isValidFormAddRangeTimeAvailability(LocalDate date, String startTimeAvailability, String endTimeAvailability, StatusAdmissionTime status, String intervalHour) {

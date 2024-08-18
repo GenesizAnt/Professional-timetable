@@ -219,76 +219,76 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-square-xmark"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#deleteDate">
-                    <h6 class="text-center">Удалить дату</h6>
-                </button>
-                <div class="modal fade" id="deleteDate" tabindex="-1" aria-labelledby="deleteDateLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteDateLabel">Выбери дату для удаления</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
-                                    <label for="selectedDate">Выберите дату:</label>
-                                    <input type="date" id="selectedDate" name="selectedDate" required>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-delete-left"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#deleteRageDate">
-                    <h6 class="text-center">Удалить диапазон дат</h6>
-                </button>
-                <div class="modal fade" id="deleteRageDate" tabindex="-1" aria-labelledby="deleteRageDateLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteRageDateLabel">Выбери диапазон дат для удаления</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/dateRangeFormDelete}">
-                                    <div class="col-12">
-                                        <label for="startDateRange">Начало:</label>
-                                        <input type="date" id="startDateRange" name="startDateRange">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="endDateRange">Конец:</label>
-                                        <input type="date" id="endDateRange" name="endDateRange">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-square-xmark"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#deleteDate">-->
+<!--                    <h6 class="text-center">Удалить дату</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="deleteDate" tabindex="-1" aria-labelledby="deleteDateLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="deleteDateLabel">Выбери дату для удаления</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/dateFormDelete}">-->
+<!--                                    <label for="selectedDate">Выберите дату:</label>-->
+<!--                                    <input type="date" id="selectedDate" name="selectedDate" required>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Удалить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-delete-left"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#deleteRageDate">-->
+<!--                    <h6 class="text-center">Удалить диапазон дат</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="deleteRageDate" tabindex="-1" aria-labelledby="deleteRageDateLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="deleteRageDateLabel">Выбери диапазон дат для удаления</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/dateRangeFormDelete}">-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="startDateRange">Начало:</label>-->
+<!--                                        <input type="date" id="startDateRange" name="startDateRange">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="endDateRange">Конец:</label>-->
+<!--                                        <input type="date" id="endDateRange" name="endDateRange">-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Удалить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-person-circle-plus"></i></div>
                 <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -314,16 +314,16 @@
                                         <label for="timeAvailability">Время:</label>
                                         <input type="time" id="timeAvailability" name="timeAvailability" value="">
                                     </div>
-                                    <div class="col-12">
-                                        <select class="form-select custom-select mx-auto"
-                                                aria-label="Default select example"
-                                                name="selectedOption" required>
-                                            <option selected value="">Выбрать статус</option>
-                                            <option value="AVAILABLE">Доступно</option>
-                                            <option value="RESERVED">Забронировано</option>
-                                            <option value="IN_QUESTION">Под вопросом</option>
-                                        </select>
-                                    </div>
+<!--                                    <div class="col-12">-->
+<!--                                        <select class="form-select custom-select mx-auto"-->
+<!--                                                aria-label="Default select example"-->
+<!--                                                name="selectedOption" required>-->
+<!--                                            <option selected value="">Выбрать статус</option>-->
+<!--                                            <option value="AVAILABLE">Доступно</option>-->
+<!--                                            <option value="RESERVED">Забронировано</option>-->
+<!--                                            <option value="IN_QUESTION">Под вопросом</option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
                                     <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
                                         Добавить
                                     </button>
