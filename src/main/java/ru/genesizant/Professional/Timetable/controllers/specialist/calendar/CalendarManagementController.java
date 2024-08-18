@@ -5,10 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
@@ -61,12 +65,39 @@ public class CalendarManagementController {
 
         List<VacantSeat> vacantSeats = vacantSeatService.getVacantSeats(specialist);
         model.addAttribute("vacantSeats", vacantSeats);
+
+//        int p = model.getAttribute("page") == null ? 0 : (Integer) model.getAttribute("page");
+//        int o = model.getAttribute("page") == null ? 10 : (Integer) model.getAttribute("page");
+//
+//        Page<VacantSeat> vacantSeatsPage = vacantSeatService.findAll(PageRequest.of(p, o));
+//        model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
+//        model.addAttribute("page", vacantSeatsPage);
+
+        // Обработка параметров пагинации
+        int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
+        int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
+        model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
+        model.addAttribute("page", vacantSeatsPage);
     }
 
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {
         return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
     }
+
+//    @ModelAttribute(name = "pageList")
+//    public Page<VacantSeat> getPageList(@ModelAttribute("specialist") Person specialist) {
+//        if (vacantSeatsPage == null) {
+//            Pageable pageable = PageRequest.of(0, 10);
+//            return vacantSeatService.getVacantSeatsPage(specialist, pageable);
+//        } else {
+//            return vacantSeatsPage;
+//        }
+
+//    }
 
     //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
     @GetMapping("/admission_calendar_view")
@@ -239,6 +270,20 @@ public class CalendarManagementController {
         }
         return CALENDAR_VIEW_REDIRECT;
     }
+
+    @GetMapping("/vacantSeats")
+    public String getVacantSeats(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+        request.getSession().setAttribute("page", page);
+        request.getSession().setAttribute("size", size);
+        Page<VacantSeat> all = vacantSeatService.findAll(PageRequest.of(page, size));
+        model.addAttribute("vacantSeats", all.getContent());
+        model.addAttribute("page", all);
+//        model.addAttribute("size", size);
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
 
 
     private String encodeError(String error) {

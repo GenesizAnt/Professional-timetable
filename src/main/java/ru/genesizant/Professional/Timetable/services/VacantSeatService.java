@@ -1,6 +1,9 @@
 package ru.genesizant.Professional.Timetable.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
@@ -76,5 +79,14 @@ public class VacantSeatService {
 
     public void removeVacantSlot(String id) {
         vacantSeatRepository.deleteById(Long.valueOf(id));
+    }
+
+    public Page<VacantSeat> findAll(Pageable pageable) {
+        return vacantSeatRepository.findAll(pageable);
+    }
+
+    public Page<VacantSeat> getVacantSeatsPage(Person specialist, Pageable pageable) {
+        return vacantSeatRepository.findBySpecId(specialist, pageable);
+
     }
 }
