@@ -8,6 +8,7 @@ import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.repositories.VacantSeatRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -25,15 +26,22 @@ public class VacantSeatService {
 
     public void addFreeDateSchedule(Person specialist, String startDate, String endDate, String startTime, String endTime, String minInterval, List<String> weekDays) {
         // Создаем объект LocalDate для начала даты
-        LocalDate startDateObject = LocalDate.parse(startDate);
+//        LocalDate startDateObject = LocalDate.parse(startDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String datePartStart = startDate.split(" ")[1];
+        LocalDate startDateObject = LocalDate.parse(datePartStart, formatter);
+
         // Создаем объект LocalDate для конца даты
-        LocalDate endDateObject = LocalDate.parse(endDate);
+//        LocalDate endDateObject = LocalDate.parse(endDate);
+        String datePartEnd = endDate.split(" ")[1];
+        LocalDate endDateObject = LocalDate.parse(datePartEnd, formatter);
+
         // Вычисляем количество дней между двумя датами
         int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
-        List<String> availableRecordingTime = availableRecordingTime(startTime, endTime, minInterval);
+        List<String> availableRecordingTime = availableRecordingTime(startDate, endDate, minInterval);
 
-        for (int i = 0; i < daysBetween; i++) {
+        for (int i = 0; i <= daysBetween; i++) {
             for (String s : availableRecordingTime) {
                 if (!weekDays.contains(getRusDayWeek(startDateObject.plusDays(i).getDayOfWeek().name()))) {
                     VacantSeat vacantSeat = new VacantSeat();
@@ -48,8 +56,14 @@ public class VacantSeatService {
     }
 
     private List<String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour) {
-        LocalTime startTime = LocalTime.parse(startTimeWork);
-        LocalTime endTime = LocalTime.parse(endTimeWork);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        String timePartStart = startTimeWork.split(" ")[0];
+        LocalTime startTime = LocalTime.parse(timePartStart, timeFormatter);
+
+        String timePartEnd = endTimeWork.split(" ")[0];
+        LocalTime endTime = LocalTime.parse(timePartEnd, timeFormatter);
+
         LocalTime timeString = LocalTime.parse(timeIntervalHour);
         int intervalMinutes = timeString.getHour() * 60 + timeString.getMinute();
 

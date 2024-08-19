@@ -22,6 +22,7 @@ import ru.genesizant.Professional.Timetable.services.VacantSeatService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -105,11 +106,14 @@ public class CalendarManagementController {
     public String addAdmissionCalendarUpdate(@ModelAttribute("specialist") Person specialist,
                                              @RequestParam("startDate") String startDate,
                                              @RequestParam("endDate") String endDate,
-                                             @RequestParam("startTime") String startTime,
-                                             @RequestParam("endTime") String endTime,
+                                             @RequestParam(value = "startTime", required = false) String startTime,
+                                             @RequestParam(value = "endTime", required = false) String endTime,
                                              @RequestParam("minInterval") String minInterval,
                                              @RequestParam(value = "weekDays", required = false) List<String> weekDays) {
         if (isValidFormAddCalendarAdmission(startDate, endDate, startTime, endTime, minInterval)) {
+            if (weekDays == null || weekDays.isEmpty()) {
+                weekDays = List.of(""); // Устанавливаем значение по умолчанию
+            }
             vacantSeatService.addFreeDateSchedule(specialist, startDate, endDate, startTime, endTime, minInterval, weekDays);
 //            if (datesAppointmentsService.isDateWithinRangeOfAppointments(startDate, endDate, specialist.getId())) {
 //                return encodeError("Нельзя добавить календарь в уже существующих датах");
@@ -292,7 +296,7 @@ public class CalendarManagementController {
     }
 
     private boolean isValidFormAddCalendarAdmission(String startDate, String endDate, String startTime, String endTime, String minInterval) {
-        return !startDate.isEmpty() && !endDate.isEmpty() && !startTime.isEmpty() && !endTime.isEmpty() && !minInterval.isEmpty();
+        return !startDate.isEmpty() && !endDate.isEmpty() && !minInterval.isEmpty();
     }
 
     private boolean isValidSetTimeForm(LocalDate date, String timeAdmission, StatusAdmissionTime status) {
