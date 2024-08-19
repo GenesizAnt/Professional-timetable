@@ -219,38 +219,38 @@
             </div>
         </div>
         <div class="row">
-<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
-<!--                <div class="itd_circle"><i class="fa-solid fa-square-xmark"></i></div>-->
-<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
-<!--                        data-bs-target="#deleteDate">-->
-<!--                    <h6 class="text-center">Удалить дату</h6>-->
-<!--                </button>-->
-<!--                <div class="modal fade" id="deleteDate" tabindex="-1" aria-labelledby="deleteDateLabel"-->
-<!--                     aria-hidden="true">-->
-<!--                    <div class="modal-dialog">-->
-<!--                        <div class="modal-content">-->
-<!--                            <div class="modal-header bg-success text-white">-->
-<!--                                <h5 class="modal-title" id="deleteDateLabel">Выбери дату для удаления</h5>-->
-<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-<!--                                        aria-label="Close"></button>-->
-<!--                            </div>-->
-<!--                            <div class="modal-body">-->
-<!--                                <form th:method="POST" th:action="@{/calendar/dateFormDelete}">-->
-<!--                                    <label for="selectedDate">Выберите дату:</label>-->
-<!--                                    <input type="date" id="selectedDate" name="selectedDate" required>-->
-<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
-<!--                                        Удалить-->
-<!--                                    </button>-->
-<!--                                </form>-->
-<!--                            </div>-->
-<!--                            <div class="modal-footer">-->
-<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="line"></div>-->
-<!--            </div>-->
+            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-square-xmark"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                        data-bs-target="#deleteDate">
+                    <h6 class="text-center">Удалить дату</h6>
+                </button>
+                <div class="modal fade" id="deleteDate" tabindex="-1" aria-labelledby="deleteDateLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="deleteDateLabel">Выбери дату для удаления</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/calendar/dateFormDelete}">
+                                    <label for="selectedDate">Выберите дату:</label>
+                                    <input type="date" id="selectedDate" name="selectedDate" required>
+                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
 <!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
 <!--                <div class="itd_circle"><i class="fa-solid fa-delete-left"></i></div>-->
 <!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
@@ -337,64 +337,64 @@
                 </div>
                 <div class="line"></div>
             </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-address-book"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#dateRageAddModal">
-                    <h6 class="text-center">Добавить диапазон времени для приема</h6>
-                </button>
-                <div class="modal fade" id="dateRageAddModal" tabindex="-1" aria-labelledby="dateRageAddModalLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="dateRageAddModalLabel">Выбери диапазон времени доступного
-                                    для приема</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/addRangeTimeAvailability}">
-                                    <div class="col-12">
-                                        <label for="dateRangeAdd">Дата:</label>
-                                        <input type="date" id="dateRangeAdd" name="dateRangeAdd">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="startAddTimeAdmission">Время:</label>
-                                        <input type="time" id="startAddTimeAdmission" name="startAddTimeAdmission"
-                                               value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="endAddTimeAdmission">Время:</label>
-                                        <input type="time" id="endAddTimeAdmission" name="endAddTimeAdmission" value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="minIntervalAdd">Минимальный интервал между приемами:</label>
-                                        <input type="time" id="minIntervalAdd" name="minIntervalAdd" value="01:00:00">
-                                    </div>
-                                    <div class="col-12">
-                                        <select class="form-select custom-select mx-auto"
-                                                aria-label="Default select example"
-                                                name="selectedOption" required>
-                                            <option selected value="">Выбрать статус</option>
-                                            <option value="AVAILABLE">Доступно</option>
-                                            <option value="RESERVED">Забронировано</option>
-                                            <option value="IN_QUESTION">Под вопросом</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Добавить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-address-book"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#dateRageAddModal">-->
+<!--                    <h6 class="text-center">Добавить диапазон времени для приема</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="dateRageAddModal" tabindex="-1" aria-labelledby="dateRageAddModalLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="dateRageAddModalLabel">Выбери диапазон времени доступного-->
+<!--                                    для приема</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/addRangeTimeAvailability}">-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="dateRangeAdd">Дата:</label>-->
+<!--                                        <input type="date" id="dateRangeAdd" name="dateRangeAdd">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="startAddTimeAdmission">Время:</label>-->
+<!--                                        <input type="time" id="startAddTimeAdmission" name="startAddTimeAdmission"-->
+<!--                                               value="">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="endAddTimeAdmission">Время:</label>-->
+<!--                                        <input type="time" id="endAddTimeAdmission" name="endAddTimeAdmission" value="">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="minIntervalAdd">Минимальный интервал между приемами:</label>-->
+<!--                                        <input type="time" id="minIntervalAdd" name="minIntervalAdd" value="01:00:00">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <select class="form-select custom-select mx-auto"-->
+<!--                                                aria-label="Default select example"-->
+<!--                                                name="selectedOption" required>-->
+<!--                                            <option selected value="">Выбрать статус</option>-->
+<!--                                            <option value="AVAILABLE">Доступно</option>-->
+<!--                                            <option value="RESERVED">Забронировано</option>-->
+<!--                                            <option value="IN_QUESTION">Под вопросом</option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Добавить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-eraser"></i></div>
                 <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -434,153 +434,48 @@
                 </div>
                 <div class="line"></div>
             </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-house-lock"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#deleteRangeTime">
-                    <h6 class="text-center">Удалить диапазон времени для приема</h6>
-                </button>
-                <div class="modal fade" id="deleteRangeTime" tabindex="-1" aria-labelledby="deleteRangeTimeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteRangeTimeLabel">Выбери время для удаления (указать точное время, которе есть в календаре)</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">
-                                    <div class="col-12">
-                                        <label for="dateRange">Дата:</label>
-                                        <input type="date" id="dateRange" name="dateRange">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="startTimeAdmission">Время:</label>
-                                        <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="endTimeAdmission">Время:</label>
-                                        <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-regular fa-calendar-check"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#selectedTime">
-                    <h6 class="text-center">???Установить статус доступности времени</h6>
-                </button>
-                <div class="modal fade" id="selectedTime" tabindex="-1" aria-labelledby="selectedTimeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="selectedTimeLabel">Выбери дату и время, которую хочешь
-                                    изменить</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/setTimeAvailabilityStatus}">
-                                    <div class="col-12">
-                                        <label for="date">Дата:</label>
-                                        <input type="date" id="date" name="date">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="selectedTimeAdmission">Время:</label>
-                                        <input type="time" id="timeAdmission" name="timeAdmission" value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <select class="form-select custom-select mx-auto"
-                                                aria-label="Default select example"
-                                                name="selectedOption" required>
-                                            <option selected value="">Выбрать статус</option>
-                                            <option value="AVAILABLE">Доступно</option>
-                                            <option value="RESERVED">Забронировано</option>
-                                            <option value="IN_QUESTION">Под вопросом</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Установить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-plane-circle-check"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#selectedRangeTime">
-                    <h6 class="text-center">???Установить статус для диапазона времени</h6>
-                </button>
-                <div class="modal fade" id="selectedRangeTime" tabindex="-1" aria-labelledby="selectedRangeTimeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="selectedRangeTimeLabel">Выбери дату и диапазон времени,
-                                    который хочешь
-                                    изменить</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/setRangeTimeAvailabilityStatus}">
-                                    <div class="col-12">
-                                        <label for="dateForTime">Дата:</label>
-                                        <input type="date" id="dateForTime" name="date">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="selectedStartTimeAdmission">Начало:</label>
-                                        <input type="time" id="selectedStartTimeAdmission" name="startStartAdmission"
-                                               value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="selectedEndTimeAdmission">Конец:</label>
-                                        <input type="time" id="selectedEndTimeAdmission" name="endStartAdmission"
-                                               value="">
-                                    </div>
-                                    <div class="col-12">
-                                        <select class="form-select custom-select mx-auto"
-                                                aria-label="Default select example"
-                                                name="selectedOption" required>
-                                            <option selected value="">Выбрать статус</option>
-                                            <option value="AVAILABLE">Доступно</option>
-                                            <option value="RESERVED">Забронировано</option>
-                                            <option value="IN_QUESTION">Под вопросом</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Установить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-house-lock"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#deleteRangeTime">-->
+<!--                    <h6 class="text-center">Удалить диапазон времени для приема</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="deleteRangeTime" tabindex="-1" aria-labelledby="deleteRangeTimeLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="deleteRangeTimeLabel">Выбери время для удаления (указать точное время, которе есть в календаре)</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/timeAdmissionRangeFormDelete}">-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="dateRange">Дата:</label>-->
+<!--                                        <input type="date" id="dateRange" name="dateRange">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="startTimeAdmission">Время:</label>-->
+<!--                                        <input type="time" id="startTimeAdmission" name="startTimeAdmission" value="">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="endTimeAdmission">Время:</label>-->
+<!--                                        <input type="time" id="endTimeAdmission" name="endTimeAdmission" value="">-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Удалить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-trash"></i></div>
                 <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -644,8 +539,8 @@
                 <tr th:each="vacantSeat : ${vacantSeats}">
                     <td hidden th:text="${vacantSeat.id}"></td>
                     <td class="col-dayOfWeek" th:text="${vacantSeat.dayOfWeek}"></td>
-                    <td class="col-date" th:text="${vacantSeat.date_vacant}"></td>
-                    <td class="col-time" th:text="${vacantSeat.time_vacant}"></td>
+                    <td class="col-date" th:text="${vacantSeat.dateVacant}"></td>
+                    <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
                         <span th:if="${vacantSeat.clientId != null}"
                               th:text="${vacantSeat.clientId.getFullName}"></span>
@@ -655,8 +550,8 @@
                 </tr>
                 </tbody>
             </table>
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
+            <nav aria-label="Page navigation" class="pagination-container">
+                <ul class="pagination justify-content-center">
                     <li class="page-item" th:classappend="${page.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/calendar(page=${page.number - 1}, size=${param.size})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>

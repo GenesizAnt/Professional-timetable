@@ -70,7 +70,7 @@ public class CalendarManagementController {
         // Обработка параметров пагинации
         int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
         int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date_vacant").and(Sort.by("time_vacant")));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
 //        Pageable pageable = PageRequest.of(pageNumber, pageSize, );
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
@@ -130,19 +130,20 @@ public class CalendarManagementController {
         vacantSeatService.removeVacantSlot(applicationFromSpecialist.get("id"));
         return CALENDAR_VIEW_REDIRECT;
     }
-//
-//    //Удалить полный День из доступных для выбора дат
-//    @PostMapping("/dateFormDelete")
-//    public String selectedDateFormDelete(@ModelAttribute("specialist") Person specialist,
-//                                         @RequestParam("selectedDate") LocalDate selectedDate) {
-//        if (selectedDate != null) {
+
+    //Удалить полный День из доступных для выбора дат
+    @PostMapping("/dateFormDelete")
+    public String selectedDateFormDelete(@ModelAttribute("specialist") Person specialist,
+                                         @RequestParam("selectedDate") LocalDate selectedDate) {
+        if (selectedDate != null) {
 //            datesAppointmentsService.deleteVisitDate(selectedDate);
-//            log.info("Спец: " + specialist.getFullName() + ". Удалил полный день " + selectedDate);
-//        } else {
-//            return encodeError("Для удаления нужно выбрать дату");
-//        }
-//        return CALENDAR_VIEW_REDIRECT;
-//    }
+            vacantSeatService.deleteVisitDate(specialist, selectedDate);
+            log.info("Спец: " + specialist.getFullName() + ". Удалил полный день " + selectedDate);
+        } else {
+            return encodeError("Для удаления нужно выбрать дату");
+        }
+        return CALENDAR_VIEW_REDIRECT;
+    }
 
 
     //Удалить Диапазон Дней из доступных для выбора дат

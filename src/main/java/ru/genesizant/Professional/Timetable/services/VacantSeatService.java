@@ -38,8 +38,8 @@ public class VacantSeatService {
                 if (!weekDays.contains(getRusDayWeek(startDateObject.plusDays(i).getDayOfWeek().name()))) {
                     VacantSeat vacantSeat = new VacantSeat();
                     vacantSeat.setDayOfWeek(getRusDayWeekShort(startDateObject.plusDays(i).getDayOfWeek().name()));
-                    vacantSeat.setDate_vacant(startDateObject.plusDays(i));
-                    vacantSeat.setTime_vacant(LocalTime.parse(s));
+                    vacantSeat.setDateVacant(startDateObject.plusDays(i));
+                    vacantSeat.setTimeVacant(LocalTime.parse(s));
                     vacantSeat.setSpecId(specialist);
                     vacantSeatRepository.save(vacantSeat);
                 }
@@ -71,7 +71,7 @@ public class VacantSeatService {
     private List<VacantSeat> sortVacantSeatsByDateTimeAsc(List<VacantSeat> vacantSeats) {
         // Сортировка списка по возрастанию по дате и времени
         return vacantSeats.stream()
-                .sorted(Comparator.comparing(VacantSeat::getDate_vacant).thenComparing(VacantSeat::getTime_vacant))
+                .sorted(Comparator.comparing(VacantSeat::getDateVacant).thenComparing(VacantSeat::getTimeVacant))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class VacantSeatService {
         List<VacantSeat> vacantSeats = bySpecId.getContent();
         // Сортировка списка
         List<VacantSeat> collect = vacantSeats1.stream()
-                .sorted(Comparator.comparing(VacantSeat::getDate_vacant).thenComparing(VacantSeat::getTime_vacant)).toList();
+                .sorted(Comparator.comparing(VacantSeat::getDateVacant).thenComparing(VacantSeat::getTimeVacant)).toList();
 
 //        vacantSeats.sort(Comparator.comparing(VacantSeat::getDate_vacant)
 //                .thenComparing(VacantSeat::getTime_vacant));
@@ -117,9 +117,13 @@ public class VacantSeatService {
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {
         VacantSeat vacantSeat = new VacantSeat();
         vacantSeat.setDayOfWeek(getRusDayWeekShort(date.getDayOfWeek().name()));
-        vacantSeat.setDate_vacant(date);
-        vacantSeat.setTime_vacant(time);
+        vacantSeat.setDateVacant(date);
+        vacantSeat.setTimeVacant(time);
         vacantSeat.setSpecId(spec);
         vacantSeatRepository.save(vacantSeat);
+    }
+
+    public void deleteVisitDate(Person specialist, LocalDate selectedDate) {
+        vacantSeatRepository.deleteByDateAndSpecId(selectedDate, specialist.getId());
     }
 }
