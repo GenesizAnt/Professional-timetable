@@ -8,7 +8,6 @@ import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.repositories.VacantSeatRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -104,10 +103,10 @@ public class VacantSeatService {
         Page<VacantSeat> bySpecId = vacantSeatRepository.findBySpecId(specialist, pageable);
 
 
-        List<VacantSeat> vacantSeats = bySpecId.getContent();
-        // Сортировка списка
-        List<VacantSeat> collect = vacantSeats1.stream()
-                .sorted(Comparator.comparing(VacantSeat::getDateVacant).thenComparing(VacantSeat::getTimeVacant)).toList();
+//        List<VacantSeat> vacantSeats = bySpecId.getContent();
+//        // Сортировка списка
+//        List<VacantSeat> collect = vacantSeats1.stream()
+//                .sorted(Comparator.comparing(VacantSeat::getDateVacant).thenComparing(VacantSeat::getTimeVacant)).toList();
 
 //        vacantSeats.sort(Comparator.comparing(VacantSeat::getDate_vacant)
 //                .thenComparing(VacantSeat::getTime_vacant));
@@ -128,6 +127,10 @@ public class VacantSeatService {
         return bySpecId;
     }
 
+    public Page<VacantSeat> getBookingSeatsPage(Person specialist, Pageable pageable) {
+        return vacantSeatRepository.findBySpecIdAndClientIdIsNotNull(specialist, pageable);
+    }
+
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {
         VacantSeat vacantSeat = new VacantSeat();
         vacantSeat.setDayOfWeek(getRusDayWeekShort(date.getDayOfWeek().name()));
@@ -139,5 +142,13 @@ public class VacantSeatService {
 
     public void deleteVisitDate(Person specialist, LocalDate selectedDate) {
         vacantSeatRepository.deleteByDateAndSpecId(selectedDate, specialist.getId());
+    }
+
+    public VacantSeat findById(Long vacantSeatId) {
+        return vacantSeatRepository.findById(vacantSeatId).orElseThrow();
+    }
+
+    public void save(VacantSeat vacantSeat) {
+        vacantSeatRepository.save(vacantSeat);
     }
 }

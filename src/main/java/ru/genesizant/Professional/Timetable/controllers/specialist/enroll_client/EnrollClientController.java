@@ -5,15 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
-import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
-import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
+import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.services.*;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
@@ -46,9 +48,10 @@ public class EnrollClientController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final UnregisteredPersonService unregisteredPersonService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final VacantSeatService vacantSeatService;
 
     @ModelAttribute
-    public void getPayloadPage(Model model, HttpServletRequest request) {
+    public void getPayloadPage(@ModelAttribute("specialist") Person specialist, Model model, HttpServletRequest request) {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
         List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
@@ -83,6 +86,19 @@ public class EnrollClientController {
         model.addAttribute("clientsBySpecialist", clientsBySpecialist);
         model.addAttribute("unregisteredBySpecialist", unregisteredBySpecialist);
         model.addAttribute("name", request.getSession().getAttribute("name"));
+
+
+        // Обработка параметров пагинации
+        int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
+        int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, );
+
+        Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
+        model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
+        model.addAttribute("page", vacantSeatsPage);
+
+
     }
 
     @ModelAttribute(name = "specialist")
@@ -94,6 +110,25 @@ public class EnrollClientController {
     @GetMapping("/enroll_page")
     public String addAdmissionCalendarUpdate(@ModelAttribute("specialist") Person specialist) { //ToDo showEnrollPage
         return "specialist/enroll_client_view";
+    }
+
+    @PostMapping("/cancel")
+    public String cancelEnrollment(@RequestBody Map<String, String> applicationFromSpecialist) {
+        // Найти вакантное место по ID
+        VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+
+        Optional<Person> person = personService.findById(vacantSeat.getClientId().getId());
+        person.get().getClientIdList().remove(vacantSeat);
+
+        // Обнуляем клиента, что означает отмену записи
+        vacantSeat.setClientId(null);
+
+        // Сохраняем изменения
+        vacantSeatService.save(vacantSeat);
+
+
+        // Перенаправляем на нужную страницу после обработки (например, назад на страницу календаря)
+        return ENROLL_VIEW_REDIRECT;
     }
 
     //Выбор и отображение Клиента для записи
@@ -136,7 +171,7 @@ public class EnrollClientController {
             PersonFullName visitorFullName = null;
             Person visitor = null;
             if (registeredStatus.equals(REGISTERED)) {
-                 visitor = personService.findById(Long.valueOf(selectedCustomerId)).get();
+                visitor = personService.findById(Long.valueOf(selectedCustomerId)).get();
                 //ToDo упростить метод ужас как много передается в аргументах
                 specialistAppointmentsService.createNewAppointments(
                         meeting.toLocalDate(),

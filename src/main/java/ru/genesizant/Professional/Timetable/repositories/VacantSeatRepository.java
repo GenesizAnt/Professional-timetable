@@ -23,4 +23,6 @@ public interface VacantSeatRepository extends JpaRepository<VacantSeat, Long> {
     @Modifying
     @Query("DELETE FROM VacantSeat v WHERE v.dateVacant = :date AND v.specId.id = :specialistId")
     void deleteByDateAndSpecId(LocalDate date, Long specialistId);
+
+    Page<VacantSeat> findBySpecIdAndClientIdIsNotNull(Person specialist, Pageable pageable);
 }
