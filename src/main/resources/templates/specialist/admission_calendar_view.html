@@ -196,12 +196,12 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/admission_calendar_update}">
+                                <form th:method="POST" th:action="@{/calendar/admission_calendar_update}" class="text-center">
                                     <div class="col-12">
-<!--                                        <label for="startDate">Дата начала доступного расписания:</label>-->
-<!--                                        <input type="date" id="startDate" name="startDate">-->
                                         <label for="startDate">Дата и время начала доступного расписания:</label>
-                                        <input class="justify-content-center" id="startDate" name="startDate" width="200" />
+                                        <div class="d-flex justify-content-center">
+                                            <input id="startDate" name="startDate" width="200" />
+                                        </div>
                                         <script>
                                             $(document).ready(function() {
                                                 $('#startDate').datetimepicker({
@@ -214,10 +214,10 @@
                                         </script>
                                     </div>
                                     <div class="col-12">
-<!--                                        <label for="endDate">Дата и время конца доступного расписания:</label>-->
-<!--                                        <input type="date" id="endDate" name="endDate">-->
                                         <label for="endDate">Дата и время конца доступного расписания:</label>
-                                        <input class="justify-content-center" id="endDate" name="endDate" width="200" />
+                                        <div class="d-flex justify-content-center">
+                                            <input id="endDate" name="endDate" width="200" />
+                                        </div>
                                         <script>
                                             $(document).ready(function() {
                                                 $('#endDate').datetimepicker({
@@ -229,31 +229,29 @@
                                             });
                                         </script>
                                     </div>
-<!--                                    <div class="col-12">-->
-<!--                                        <label for="startTime">Начало доступного времени для приемов:</label>-->
-<!--                                        <input type="time" id="startTime" name="startTime">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12">-->
-<!--                                        <label for="endTime">Конец доступного времени для приемов:</label>-->
-<!--                                        <input type="time" id="endTime" name="endTime">-->
-<!--                                    </div>-->
                                     <div class="col-12">
                                         <label for="minInterval">Минимальный интервал между приемами:</label>
-                                        <input type="time" id="minInterval" name="minInterval">
+                                        <div class="d-flex justify-content-center">
+                                            <input type="time" id="minInterval" name="minInterval">
+                                        </div>
                                     </div>
                                     <div class="col-12">
                                         <label>Выберите выходные дни:</label>
-                                        <div>
-                                            <input type="checkbox" name="weekDays" value="Понедельник"> Понедельник
-                                            <input type="checkbox" name="weekDays" value="Вторник"> Вторник
-                                            <input type="checkbox" name="weekDays" value="Среда"> Среда
-                                            <input type="checkbox" name="weekDays" value="Четверг"> Четверг
-                                            <input type="checkbox" name="weekDays" value="Пятница"> Пятница
-                                            <input type="checkbox" name="weekDays" value="Суббота"> Суббота
-                                            <input type="checkbox" name="weekDays" value="Воскресенье"> Воскресенье
+                                        <div class="d-flex justify-content-center">
+                                            <div>
+                                                <input type="checkbox" name="weekDays" value="Понедельник"> Понедельник
+                                                <input type="checkbox" name="weekDays" value="Вторник"> Вторник
+                                                <input type="checkbox" name="weekDays" value="Среда"> Среда
+                                                <input type="checkbox" name="weekDays" value="Четверг"> Четверг
+                                                <input type="checkbox" name="weekDays" value="Пятница"> Пятница
+                                                <input type="checkbox" name="weekDays" value="Суббота"> Суббота
+                                                <input type="checkbox" name="weekDays" value="Воскресенье"> Воскресенье
+                                            </div>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">Отправить</button>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-info btn-enroll mt-3">Отправить</button>
+                                    </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
