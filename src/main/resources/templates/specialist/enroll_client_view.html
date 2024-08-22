@@ -385,19 +385,19 @@
             <nav aria-label="Page navigation" class="pagination-container">
                 <ul class="pagination justify-content-center">
                     <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-                        <a class="page-link" th:href="@{/calendar(page=${page.number - 1}, size=${param.size})}"
+                        <a class="page-link" th:href="@{/enroll(page=${page.number - 1}, size=${param.size})}"
                            aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                     <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
                         th:classappend="${page.number == i} ? 'active'">
-                        <a class="page-link" th:href="@{/calendar/vacantSeats(page=${i}, size=${param.size})}"
+                        <a class="page-link" th:href="@{/enroll/vacantSeats(page=${i}, size=${param.size})}"
                            th:text="${i + 1}"></a>
                     </li>
                     <li class="page-item" th:classappend="${page.last} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/calendar/vacantSeats(page=${page.number + 1}, size=${param.size})}"
+                           th:href="@{/enroll/vacantSeats(page=${page.number + 1}, size=${param.size})}"
                            aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
@@ -409,7 +409,9 @@
 </section>
 
 <script th:inline="javascript">
-    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+    let csrfToken = document.querySelector('input[name="_csrf"]').value;
+    let selectedCustomerId1 = /*[[${selectedCustomerId}]]*/ '';
+    let registeredStatus1 = /*[[${registeredStatus}]]*/ '';
 
     $(document).ready(function () {
         // При нажатии на запись
@@ -422,6 +424,8 @@
             var applicationFromSpecialist = {
                 // specialistId: idSpecialist,
                 id: id,
+                selectedCustomerId: selectedCustomerId1,
+                registeredStatus: registeredStatus1
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
 import ru.genesizant.Professional.Timetable.model.*;
@@ -49,6 +48,7 @@ public class EnrollClientController {
     private final UnregisteredPersonService unregisteredPersonService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final VacantSeatService vacantSeatService;
+    private final ReceptionService receptionService;
 
     @ModelAttribute
     public void getPayloadPage(@ModelAttribute("specialist") Person specialist, Model model, HttpServletRequest request) {
@@ -114,20 +114,9 @@ public class EnrollClientController {
 
     @PostMapping("/cancel")
     public String cancelEnrollment(@RequestBody Map<String, String> applicationFromSpecialist) {
-        // Найти вакантное место по ID
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
-
-        Optional<Person> person = personService.findById(vacantSeat.getClientId().getId());
-        person.get().getClientIdList().remove(vacantSeat);
-
-        // Обнуляем клиента, что означает отмену записи
         vacantSeat.setClientId(null);
-
-        // Сохраняем изменения
         vacantSeatService.save(vacantSeat);
-
-
-        // Перенаправляем на нужную страницу после обработки (например, назад на страницу календаря)
         return ENROLL_VIEW_REDIRECT;
     }
 
@@ -227,6 +216,33 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    @PostMapping("/record-client")
+    public String handleRecordClient(@RequestBody Map<String, String> applicationFromSpecialist,
+                                     @ModelAttribute("specialist") Person specialist) {
+        VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        Person client = personService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
+        vacantSeat.setClientId(client);
+        if (applicationFromSpecialist.get("registeredStatus").equals(REGISTERED.name())) {
+
+//            datesAppointmentsService.enrollVisitorNewAppointments(vacantSeat, personFullName, specialist.getId(), SPECIALIST);
+            receptionService.recordNewReception(vacantSeat, client, specialist, SPECIALIST);
+            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+                    personService.findById(specialist.getId()).get(),
+                    personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+
+            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
+        } else if (applicationFromSpecialist.get("registeredStatus").equals(UNREGISTERED.name())) {
+            PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+            datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+        }
+//        vacantSeatService.recordClient(vacantSeat, );
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+//    id: id,
+//    selectedCustomerId: selectedCustomerId1,
+//    registeredStatus: registeredStatus1
+
     //Специалист отменяет запись ранее записанного клиента
     @PostMapping("/cancellingBooking")
     public String cancellingBooking(@ModelAttribute("specialist") Person specialist,
@@ -266,6 +282,19 @@ public class EnrollClientController {
             log.error("Спец: " + request.getSession().getAttribute("id") + ". Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения" + personFullName);
             return encodeError("Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения");
         }
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @GetMapping("/vacantSeats")
+    public String getVacantSeats(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+        request.getSession().setAttribute("page", page);
+        request.getSession().setAttribute("size", size);
+        Page<VacantSeat> all = vacantSeatService.findAll(PageRequest.of(page, size));
+        model.addAttribute("vacantSeats", all.getContent());
+        model.addAttribute("page", all);
+//        model.addAttribute("size", size);
         return ENROLL_VIEW_REDIRECT;
     }
 
