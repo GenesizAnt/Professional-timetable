@@ -591,9 +591,9 @@
                     <td class="col-date" th:text="${vacantSeat.dateVacant}"></td>
                     <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
-                        <span th:if="${vacantSeat.clientId != null}"
-                              th:text="${vacantSeat.clientId.getFullName}"></span>
-                        <a th:if="${vacantSeat.clientId == null}" href="javascript:void(0)" class="delete-slot">Удалить
+                        <span th:if="${vacantSeat.idVisitor != null}"
+                              th:text="${vacantSeat.fullname}"></span>
+                        <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="delete-slot">Удалить
                             слот</a>
                     </td>
                 </tr>

@@ -115,7 +115,9 @@ public class EnrollClientController {
     @PostMapping("/cancel")
     public String cancelEnrollment(@RequestBody Map<String, String> applicationFromSpecialist) {
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
-        vacantSeat.setClientId(null);
+        vacantSeat.setIdVisitor(null);
+        vacantSeat.setFullname(null);
+        vacantSeat.setStatusRegistration(null);
         vacantSeatService.save(vacantSeat);
         return ENROLL_VIEW_REDIRECT;
     }
@@ -150,91 +152,103 @@ public class EnrollClientController {
     }
 
     //Запись клиента на выбранную дату по кнопке
-    @PostMapping("/newDatesAppointments")
-    public String newDatesAppointments(@ModelAttribute("specialist") Person specialist,
-                                       @RequestParam("meeting") LocalDateTime meeting,
-                                       @RequestParam("selectedCustomerId") String selectedCustomerId,
-                                       @RequestParam("registeredStatus") StatusRegisteredVisitor registeredStatus) {
-        if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus) && !specialistAppointmentsService.isAppointmentExist(specialist.getId(), meeting)) {
-            //ToDo сделать Валид для проверки что время не забронированно
-            PersonFullName visitorFullName = null;
-            Person visitor = null;
-            if (registeredStatus.equals(REGISTERED)) {
-                visitor = personService.findById(Long.valueOf(selectedCustomerId)).get();
-                //ToDo упростить метод ужас как много передается в аргументах
-                specialistAppointmentsService.createNewAppointments(
-                        meeting.toLocalDate(),
-                        meeting.toLocalTime(),
-                        specialist,
-                        visitor,
-                        Boolean.FALSE, Boolean.FALSE);
-                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meeting, visitor.getId(), specialist.getId());
-            } else if (registeredStatus.equals(UNREGISTERED)) {
-                visitorFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-            }
-
-            if (visitorFullName == null) {
-                visitorFullName = modelMapper.map(visitor, PersonFullName.class);
-            }
-            datesAppointmentsService.enrollVisitorNewAppointments(meeting, visitorFullName, specialist.getId(), SPECIALIST);
-            log.info("Спец: " + specialist.getFullName() + ". Записал клиента: " + selectedCustomerId + " на " + meeting);
-        } else {
-            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
-        }
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    @PostMapping("/newDatesAppointments")
+//    public String newDatesAppointments(@ModelAttribute("specialist") Person specialist,
+//                                       @RequestParam("meeting") LocalDateTime meeting,
+//                                       @RequestParam("selectedCustomerId") String selectedCustomerId,
+//                                       @RequestParam("registeredStatus") StatusRegisteredVisitor registeredStatus) {
+//        if (isValidMeetingRequestParameters(meeting, selectedCustomerId, registeredStatus) && !specialistAppointmentsService.isAppointmentExist(specialist.getId(), meeting)) {
+//            //ToDo сделать Валид для проверки что время не забронированно
+//            PersonFullName visitorFullName = null;
+//            Person visitor = null;
+//            if (registeredStatus.equals(REGISTERED)) {
+//                visitor = personService.findById(Long.valueOf(selectedCustomerId)).get();
+//                //ToDo упростить метод ужас как много передается в аргументах
+//                specialistAppointmentsService.createNewAppointments(
+//                        meeting.toLocalDate(),
+//                        meeting.toLocalTime(),
+//                        specialist,
+//                        visitor,
+//                        Boolean.FALSE, Boolean.FALSE);
+////                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meeting, visitor.getId(), specialist.getId());
+//            } else if (registeredStatus.equals(UNREGISTERED)) {
+//                visitorFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//            }
+//
+//            if (visitorFullName == null) {
+//                visitorFullName = modelMapper.map(visitor, PersonFullName.class);
+//            }
+//            datesAppointmentsService.enrollVisitorNewAppointments(meeting, visitorFullName, specialist.getId(), SPECIALIST);
+//            log.info("Спец: " + specialist.getFullName() + ". Записал клиента: " + selectedCustomerId + " на " + meeting);
+//        } else {
+//            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
+//        }
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
     //Запись клиента на выбранную дату из таблицы
-    @PostMapping("/newDatesAppointmentsTable")
-    public String newDatesAppointmentsTable(@ModelAttribute("specialist") Person specialist,
-                                            @RequestBody Map<String, String> applicationFromSpecialist) {
-        String selectedCustomerId = applicationFromSpecialist.get("selectedCustomerId");
-        String registeredStatus = applicationFromSpecialist.get("registeredStatus");
-        LocalDateTime meetingDateTime = parseInLocalDataTime(applicationFromSpecialist);
-
-        if (selectedCustomerId != null && registeredStatus != null &&
-                !selectedCustomerId.isEmpty() && !registeredStatus.isEmpty()) { //ToDo сделать другую проверку
-
-            //ToDo насколько дублируется код из предыдущ метода?
-            if (registeredStatus.equals(REGISTERED.name())) {
-                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
-                specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
-                        personService.findById(specialist.getId()).get(),
-                        personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
-
-                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
-            } else if (registeredStatus.equals(UNREGISTERED.name())) {
-                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
-            }
-            log.info("Спец: " + specialist.getFullName() + ". Запись клиента: " + selectedCustomerId + " на выбранную дату из таблицы: " + meetingDateTime);
-        } else {
-            return encodeError("Для записи нужно выбрать клиента, время и дату записи");
-        }
-
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    @PostMapping("/newDatesAppointmentsTable")
+//    public String newDatesAppointmentsTable(@ModelAttribute("specialist") Person specialist,
+//                                            @RequestBody Map<String, String> applicationFromSpecialist) {
+//        String selectedCustomerId = applicationFromSpecialist.get("selectedCustomerId");
+//        String registeredStatus = applicationFromSpecialist.get("registeredStatus");
+//        LocalDateTime meetingDateTime = parseInLocalDataTime(applicationFromSpecialist);
+//
+//        if (selectedCustomerId != null && registeredStatus != null &&
+//                !selectedCustomerId.isEmpty() && !registeredStatus.isEmpty()) { //ToDo сделать другую проверку
+//
+//            //ToDo насколько дублируется код из предыдущ метода?
+//            if (registeredStatus.equals(REGISTERED.name())) {
+//                PersonFullName personFullName = modelMapper.map(personService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+//                specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+//                        personService.findById(specialist.getId()).get(),
+//                        personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+//
+//                sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
+//            } else if (registeredStatus.equals(UNREGISTERED.name())) {
+//                PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
+//                datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+//            }
+//            log.info("Спец: " + specialist.getFullName() + ". Запись клиента: " + selectedCustomerId + " на выбранную дату из таблицы: " + meetingDateTime);
+//        } else {
+//            return encodeError("Для записи нужно выбрать клиента, время и дату записи");
+//        }
+//
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
     @PostMapping("/record-client")
     public String handleRecordClient(@RequestBody Map<String, String> applicationFromSpecialist,
                                      @ModelAttribute("specialist") Person specialist) {
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
-        Person client = personService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
-        vacantSeat.setClientId(client);
+
         if (applicationFromSpecialist.get("registeredStatus").equals(REGISTERED.name())) {
 
+            Person client = personService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
 //            datesAppointmentsService.enrollVisitorNewAppointments(vacantSeat, personFullName, specialist.getId(), SPECIALIST);
-            receptionService.recordNewReception(vacantSeat, client, specialist, SPECIALIST);
-            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
-                    personService.findById(specialist.getId()).get(),
-                    personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+            receptionService.recordNewReception(vacantSeat, client, null, specialist, SPECIALIST, REGISTERED);
 
-            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
+//            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+//                    personService.findById(specialist.getId()).get(),
+//                    personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
+
+//            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
+            vacantSeat.setIdVisitor(client.getId());
+            vacantSeat.setFullname(client.getFullName());
+            vacantSeat.setStatusRegistration(REGISTERED.name());
+            vacantSeatService.save(vacantSeat);
+            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, vacantSeat, client.getId(), specialist.getId());
         } else if (applicationFromSpecialist.get("registeredStatus").equals(UNREGISTERED.name())) {
-            PersonFullName personFullName = modelMapper.map(unregisteredPersonService.findById(Long.valueOf(selectedCustomerId)), PersonFullName.class);
-            datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+            UnregisteredPerson unregisteredPerson = unregisteredPersonService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
+//            datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+            vacantSeat.setIdVisitor(unregisteredPerson.getId());
+            vacantSeat.setFullname(unregisteredPerson.getFullName());
+            vacantSeat.setStatusRegistration(UNREGISTERED.name());
+            vacantSeatService.save(vacantSeat);
+            receptionService.recordNewReception(vacantSeat, null, unregisteredPerson, specialist, SPECIALIST, UNREGISTERED);
         }
+
 //        vacantSeatService.recordClient(vacantSeat, );
         return ENROLL_VIEW_REDIRECT;
     }
@@ -244,19 +258,19 @@ public class EnrollClientController {
 //    registeredStatus: registeredStatus1
 
     //Специалист отменяет запись ранее записанного клиента
-    @PostMapping("/cancellingBooking")
-    public String cancellingBooking(@ModelAttribute("specialist") Person specialist,
-                                    @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
-        if (meetingCancel != null) {
-            sendMessageService.notifyCancellation(SPECIALIST, meetingCancel, specialist.getId());
-            datesAppointmentsService.cancellingBookingAppointments(meetingCancel, specialist.getId());
-            specialistAppointmentsService.removeAppointment(meetingCancel, specialist.getId());
-            log.info("Спец: " + specialist.getFullName() + ". Отменяет запись на: " + meetingCancel);
-        } else {
-            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
-        }
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    @PostMapping("/cancellingBooking")
+//    public String cancellingBooking(@ModelAttribute("specialist") Person specialist,
+//                                    @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
+//        if (meetingCancel != null) {
+//            sendMessageService.notifyCancellation(SPECIALIST, meetingCancel, specialist.getId());
+//            datesAppointmentsService.cancellingBookingAppointments(meetingCancel, specialist.getId());
+//            specialistAppointmentsService.removeAppointment(meetingCancel, specialist.getId());
+//            log.info("Спец: " + specialist.getFullName() + ". Отменяет запись на: " + meetingCancel);
+//        } else {
+//            return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
+//        }
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
 
     // Подтверждение записи встречи, которую инициировал клиент
@@ -276,7 +290,7 @@ public class EnrollClientController {
             specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
                     personService.findById(specialist.getId()).get(),
                     personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
-            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), specialist.getId());
+//            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), specialist.getId());
             log.info("Спец: " + specialist.getFullName() + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
         } else {
             log.error("Спец: " + request.getSession().getAttribute("id") + ". Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения" + personFullName);

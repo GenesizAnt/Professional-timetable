@@ -3,8 +3,10 @@ package ru.genesizant.Professional.Timetable.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.enums.StatusPerson;
+import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.Reception;
+import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.repositories.ReceptionRepository;
 
@@ -14,18 +16,27 @@ public class ReceptionService {
 
     private final ReceptionRepository receptionRepository;
 
-    public void recordNewReception(VacantSeat vacantSeat, Person client, Person specialist, StatusPerson statusPerson) {
+    public void recordNewReception(VacantSeat vacantSeat, Person client, UnregisteredPerson unregisteredPerson, Person specialist, StatusPerson statusPerson, StatusRegisteredVisitor statusRegistered) {
         Reception reception = new Reception();
         reception.setDate_vacant(vacantSeat.getDateVacant());
         reception.setTime_vacant(vacantSeat.getTimeVacant());
         reception.setSpecIdReception(specialist);
-        reception.setVisitorIdReception(client);
+        switch (statusRegistered) {
+            case REGISTERED -> reception.setVisitorIdReception(client);
+            case UNREGISTERED -> reception.setUnregisteredPerson(unregisteredPerson.getFullName());
+        }
         reception.setPrepayment(false);
         reception.setPrepaymentVisitor(false);
-//                switch (statusPerson) {
-//                    case VISITOR -> objectNode.put(NEED_CONFIRMATION.getStatus(), personFullName.toString());
-//                    case SPECIALIST -> objectNode.put(CONFIRMED.getStatus(), personFullName.toString());
-//                }
+        switch (statusPerson) {
+            case VISITOR -> {
+                reception.setConfirmedVisitor(true);
+                reception.setConfirmedSpecialist(false);
+            }
+            case SPECIALIST -> {
+                reception.setConfirmedVisitor(false);
+                reception.setConfirmedSpecialist(true);
+            }
+        }
         receptionRepository.save(reception);
     }
 }

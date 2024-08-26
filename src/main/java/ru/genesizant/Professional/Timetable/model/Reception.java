@@ -32,12 +32,15 @@ public class Reception {
     private LocalTime time_vacant;
 
     @ManyToOne
-    @JoinColumn(name = "specialist_id", referencedColumnName = "id")
+    @JoinColumn(name = "spec_id_reception", referencedColumnName = "id")
     private Person specIdReception;
 
     @ManyToOne
-    @JoinColumn(name = "visitor_id", referencedColumnName = "id")
+    @JoinColumn(name = "visitor_id_reception", referencedColumnName = "id")
     private Person visitorIdReception;
+
+    @Column(name = "unregisteredperson")
+    private String unregisteredPerson;
 
     @Comment("Предоплата отмеченная клиентом")
     @Column(name = "prepayment_visitor")
@@ -47,11 +50,19 @@ public class Reception {
     @Column(name = "prepayment")
     private boolean prepayment;
 
+    @Comment("Подтверждено специалистом")
+    @Column(name = "confirmed_specialist")
+    private boolean confirmedSpecialist;
+
+    @Comment("Подтверждено клиентом")
+    @Column(name = "confirmed_visitor")
+    private boolean confirmedVisitor;
+
     @Comment("Было ли уведомление за 24 часа")
-    @Column(name = "notify24hours")
+    @Column(name = "notify_24_hours")
     private boolean notify24hours;
 
     @Comment("Было ли уведомление за 3 часа")
-    @Column(name = "notify3hours")
+    @Column(name = "notify_3_hours")
     private boolean notify3hours;
 }

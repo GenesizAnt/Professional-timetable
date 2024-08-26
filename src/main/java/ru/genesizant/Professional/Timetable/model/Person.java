@@ -98,9 +98,6 @@ public class Person {
     @OneToMany(mappedBy = "specId")
     private List<VacantSeat> specIdList;
 
-    @OneToMany(mappedBy = "clientId", cascade = CascadeType.REMOVE)
-    private List<VacantSeat> clientIdList;
-
     @OneToMany(mappedBy = "specIdReception")
     private List<Reception> specIdReceptionList;
 

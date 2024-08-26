@@ -214,75 +214,75 @@
 <section class="managementlient">
     <div class="container">
         <div class="row">
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-person-circle-check"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#appointment">
-                    <h6 class="text-center">Запись</h6>
-                </button>
-                <div class="modal fade" id="appointment" tabindex="-1" aria-labelledby="appointmentLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="appointmentLabel">Выберите дату и время для записи</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/enroll/newDatesAppointments}">
-                                    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>
-                                    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>
-                                    <div class="col-12">
-                                        <input type="datetime-local" id="meeting" name="meeting">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                            role="button">Записать
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-person-circle-xmark"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#appointmentClose">
-                    <h6 class="text-center">Отменить запись</h6>
-                </button>
-                <div class="modal fade" id="appointmentClose" tabindex="-1" aria-labelledby="appointmentCloseLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="appointmentCloseLabel">Выберите дату и время для отмены
-                                    записи</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/enroll/cancellingBooking}">
-                                    <div class="col-12">
-                                        <input type="datetime-local" id="meetingCancel" name="meetingCancel">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                            role="button">Отменить запись
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-person-circle-check"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#appointment">-->
+<!--                    <h6 class="text-center">Запись</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="appointment" tabindex="-1" aria-labelledby="appointmentLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="appointmentLabel">Выберите дату и время для записи</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/enroll/newDatesAppointments}">-->
+<!--                                    <input type="hidden" th:name="selectedCustomerId" th:value="${selectedCustomerId}"/>-->
+<!--                                    <input type="hidden" th:name="registeredStatus" th:value="${registeredStatus}"/>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <input type="datetime-local" id="meeting" name="meeting">-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
+<!--                                            role="button">Записать-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-person-circle-xmark"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#appointmentClose">-->
+<!--                    <h6 class="text-center">Отменить запись</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="appointmentClose" tabindex="-1" aria-labelledby="appointmentCloseLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="appointmentCloseLabel">Выберите дату и время для отмены-->
+<!--                                    записи</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/enroll/cancellingBooking}">-->
+<!--                                    <div class="col-12">-->
+<!--                                        <input type="datetime-local" id="meetingCancel" name="meetingCancel">-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
+<!--                                            role="button">Отменить запись-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">
                 <div class="itd_circle"><i class="fa-solid fa-person-circle-exclamation"></i></div>
                 <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -372,12 +372,12 @@
                     <td class="col-date" th:text="${vacantSeat.dateVacant}"></td>
                     <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
-                        <span th:if="${vacantSeat.clientId != null}">
-                            <span th:text="${vacantSeat.clientId.getFullName()}"></span>
+                        <span th:if="${vacantSeat.idVisitor != null}">
+                            <span th:text="${vacantSeat.fullname}"></span>
                             <a href="javascript:void(0)" class="cancel-client">(отменить)</a>
 <!--                            <a href="javascript:void(0)" class="cancel-client" th:href="@{'/enroll/cancel/' + ${vacantSeat.id}}">(отменить)</a>-->
                         </span>
-                        <a th:if="${vacantSeat.clientId == null}" href="javascript:void(0)" class="record-client">Записать</a>
+                        <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-client">Записать</a>
                     </td>
                 </tr>
                 </tbody>

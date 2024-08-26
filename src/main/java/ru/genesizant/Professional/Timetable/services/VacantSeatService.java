@@ -38,7 +38,7 @@ public class VacantSeatService {
         // Вычисляем количество дней между двумя датами
         int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
-        List<String> availableRecordingTime = availableRecordingTime(startDate, endDate, minInterval);
+        List<String> availableRecordingTime = availableRecordingTime(startTime, endTime, minInterval);
 
         for (int i = 0; i <= daysBetween; i++) {
             for (String s : availableRecordingTime) {
@@ -127,9 +127,9 @@ public class VacantSeatService {
         return bySpecId;
     }
 
-    public Page<VacantSeat> getBookingSeatsPage(Person specialist, Pageable pageable) {
-        return vacantSeatRepository.findBySpecIdAndClientIdIsNotNull(specialist, pageable);
-    }
+//    public Page<VacantSeat> getBookingSeatsPage(Person specialist, Pageable pageable) {
+//        return vacantSeatRepository.findBySpecIdAndClientIdIsNotNull(specialist, pageable);
+//    }
 
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {
         VacantSeat vacantSeat = new VacantSeat();

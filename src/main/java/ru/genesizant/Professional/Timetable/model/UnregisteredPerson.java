@@ -97,4 +97,8 @@ public class UnregisteredPerson {
     public void setSpecialistUnregisteredPerson(Person specialistUnregisteredPerson) {
         this.specialistUnregisteredPerson = specialistUnregisteredPerson;
     }
+
+    public String getFullName() {
+        return surnameUnregistered + " " + usernameUnregistered + " " + patronymicUnregistered;
+    }
 }

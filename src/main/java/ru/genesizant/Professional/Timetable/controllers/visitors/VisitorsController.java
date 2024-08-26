@@ -147,7 +147,7 @@ public class VisitorsController {
                     modelMapper.map(personService.findById(visitor.getId()), PersonFullName.class);
 
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(specialistId), VISITOR);
-            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, visitor.getId(), Long.valueOf(specialistId));
+//            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, visitor.getId(), Long.valueOf(specialistId));
             log.info("Клиент: " + visitor.getFullName() + ". Записался через кнопку в таблице на: " + meeting);
         } else {
             return encodeError("Если Вы видите это сообщение, то произошла неизвестная ошибка");
@@ -164,7 +164,7 @@ public class VisitorsController {
         if (meeting != null) {
             PersonFullName personFullNameRegistered = modelMapper.map(personService.findById(visitor.getId()), PersonFullName.class);
             datesAppointmentsService.enrollVisitorNewAppointments(meeting, personFullNameRegistered, Long.valueOf(selectedSpecialistId), VISITOR);
-            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, visitor.getId(), Long.valueOf(selectedSpecialistId));
+//            sendMessageService.notifyEnrollNewAppointment(VISITOR, meeting, visitor.getId(), Long.valueOf(selectedSpecialistId));
             log.info("Клиент: " + visitor.getFullName() + ". Записался через кнопку на странице на: " + meeting);
         } else {
             return encodeError("Для записи нужно выбрать ДАТУ и ВРЕМЯ приема");

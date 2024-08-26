@@ -31,9 +31,14 @@ public class VacantSeat {
     @Column(name = "time_vacant")
     private LocalTime timeVacant;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private Person clientId;
+    @Column(name = "fullname_visitor")
+    private String fullname;
+
+    @Column(name = "status_reg_visitor")
+    private String statusRegistration;
+
+    @Column(name = "id_visitor")
+    private Long idVisitor;
 
     @ManyToOne
     @JoinColumn(name = "spec_id", referencedColumnName = "id")
