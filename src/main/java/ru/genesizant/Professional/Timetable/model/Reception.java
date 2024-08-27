@@ -26,10 +26,10 @@ public class Reception {
     private String dayOfWeek;
 
     @Column(name = "date_vacant")
-    private LocalDate date_vacant;
+    private LocalDate dateVacant;
 
     @Column(name = "time_vacant")
-    private LocalTime time_vacant;
+    private LocalTime timeVacant;
 
     @ManyToOne
     @JoinColumn(name = "spec_id_reception", referencedColumnName = "id")

@@ -99,6 +99,15 @@ public class EnrollClientController {
         model.addAttribute("page", vacantSeatsPage);
 
 
+        // Обработка параметров пагинации
+        int pageAp = request.getSession().getAttribute("pageAp") != null ? (int) request.getSession().getAttribute("pageAp") : 0;
+        int sizeAp = request.getSession().getAttribute("sizeAp") != null ? (int) request.getSession().getAttribute("sizeAp") : 10;
+        Pageable pageableAp = PageRequest.of(pageAp, sizeAp, Sort.by("dateVacant").and(Sort.by("timeVacant")));
+
+        Page<Reception> aproveReceptions = receptionService.getReceptionsPage(specialist, pageableAp);
+        model.addAttribute("aproveReceptions", aproveReceptions.getContent());
+        model.addAttribute("pageAp", aproveReceptions);
+
     }
 
     @ModelAttribute(name = "specialist")
@@ -273,31 +282,31 @@ public class EnrollClientController {
 //    }
 
 
-    // Подтверждение записи встречи, которую инициировал клиент
-    @PostMapping("/recordingConfirmed")
-    public String recordingConfirmed(@ModelAttribute("specialist") Person specialist,
-                                     HttpServletRequest request, @RequestBody Map<String, String> recordingIsConfirmed) {
-        PersonFullName personFullName = getPersonFullName(recordingIsConfirmed.get("meetingPerson"));
-        Map<String, String> identificationMeetingPerson = getIdentificationMeetingPerson(personFullName);
-        LocalDateTime meetingDateTime = parseInLocalDataTime(recordingIsConfirmed);
-
-        datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
-
-        //ToDo вынести метод в другое место? контролер решает две задачи
-        //ToDo ужас твориться с таблицей надо перепроверить все поля, например дата и продолжительность
-        //ToDo переименовать поле appointmenttime в Сикуль - нижнее подчеркивание
-        if (!identificationMeetingPerson.isEmpty()) {
-            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
-                    personService.findById(specialist.getId()).get(),
-                    personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
-//            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), specialist.getId());
-            log.info("Спец: " + specialist.getFullName() + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
-        } else {
-            log.error("Спец: " + request.getSession().getAttribute("id") + ". Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения" + personFullName);
-            return encodeError("Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения");
-        }
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    // Подтверждение записи встречи, которую инициировал клиент
+//    @PostMapping("/recordingConfirmed")
+//    public String recordingConfirmed(@ModelAttribute("specialist") Person specialist,
+//                                     HttpServletRequest request, @RequestBody Map<String, String> recordingIsConfirmed) {
+//        PersonFullName personFullName = getPersonFullName(recordingIsConfirmed.get("meetingPerson"));
+//        Map<String, String> identificationMeetingPerson = getIdentificationMeetingPerson(personFullName);
+//        LocalDateTime meetingDateTime = parseInLocalDataTime(recordingIsConfirmed);
+//
+//        datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
+//
+//        //ToDo вынести метод в другое место? контролер решает две задачи
+//        //ToDo ужас твориться с таблицей надо перепроверить все поля, например дата и продолжительность
+//        //ToDo переименовать поле appointmenttime в Сикуль - нижнее подчеркивание
+//        if (!identificationMeetingPerson.isEmpty()) {
+//            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
+//                    personService.findById(specialist.getId()).get(),
+//                    personService.findById(Long.valueOf(identificationMeetingPerson.get("id"))).get(), Boolean.FALSE, Boolean.FALSE);
+////            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, Long.valueOf(identificationMeetingPerson.get("id")), specialist.getId());
+//            log.info("Спец: " + specialist.getFullName() + ". Подтвердил запись встречи, которую инициировал клиент: " + personFullName + " на выбранную дату из таблицы: " + meetingDateTime);
+//        } else {
+//            log.error("Спец: " + request.getSession().getAttribute("id") + ". Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения" + personFullName);
+//            return encodeError("Не удалось найти клиента с таким ФИО, свяжитесь с администратором приложения");
+//        }
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
     @GetMapping("/vacantSeats")
     public String getVacantSeats(Model model,
@@ -312,36 +321,49 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
-    // Получить ФИО из запроса, в таблице ФИО хранится одной строкой
-    private PersonFullName getPersonFullName(String meetingPerson) {
-        PersonFullName personFullName = new PersonFullName();
-        String[] fioArray = meetingPerson.split(" ");
-        if (fioArray.length == 3) {
-            personFullName.setSurname(fioArray[0]);
-            personFullName.setUsername(fioArray[1]);
-            personFullName.setPatronymic(fioArray[2]);
-        }
-        return personFullName;
+    @GetMapping("/aproveReceptions")
+    public String getAproveReceptions(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+        request.getSession().setAttribute("pageAp", page);
+        request.getSession().setAttribute("sizeAp", size);
+        Page<Reception> all = receptionService.findAll(PageRequest.of(page, size));
+        model.addAttribute("aproveReceptions", all.getContent());
+        model.addAttribute("pageAp", all);
+//        model.addAttribute("size", size);
+        return ENROLL_VIEW_REDIRECT;
     }
 
+    // Получить ФИО из запроса, в таблице ФИО хранится одной строкой
+//    private PersonFullName getPersonFullName(String meetingPerson) {
+//        PersonFullName personFullName = new PersonFullName();
+//        String[] fioArray = meetingPerson.split(" ");
+//        if (fioArray.length == 3) {
+//            personFullName.setSurname(fioArray[0]);
+//            personFullName.setUsername(fioArray[1]);
+//            personFullName.setPatronymic(fioArray[2]);
+//        }
+//        return personFullName;
+//    }
+
     // ОПАСНЫЙ МЕТОД ищет ИД специалиста по ФИО - опасно т.к. может быть тезка
-    private Map<String, String> getIdentificationMeetingPerson(PersonFullName fioPerson) {
-        Map<String, String> identityVisitor = new HashMap<>();
-        Optional<Person> person = personService.findByFullName(
-                fioPerson.getUsername(),
-                fioPerson.getSurname(),
-                fioPerson.getPatronymic());
-        if (person.isPresent()) {
-            Optional<SpecialistsAndClient> specialistsAndClient = specialistsAndClientService.findByVisitorListId(person.get().getId());
-            if (specialistsAndClient.isPresent()) {
-                identityVisitor.put("id", person.get().getId().toString());
-                identityVisitor.put("name", fioPerson.getUsername());
-                identityVisitor.put("surname", fioPerson.getSurname());
-                identityVisitor.put("patronymic", fioPerson.getPatronymic());
-            }
-        }
-        return identityVisitor;
-    }
+//    private Map<String, String> getIdentificationMeetingPerson(PersonFullName fioPerson) {
+//        Map<String, String> identityVisitor = new HashMap<>();
+//        Optional<Person> person = personService.findByFullName(
+//                fioPerson.getUsername(),
+//                fioPerson.getSurname(),
+//                fioPerson.getPatronymic());
+//        if (person.isPresent()) {
+//            Optional<SpecialistsAndClient> specialistsAndClient = specialistsAndClientService.findByVisitorListId(person.get().getId());
+//            if (specialistsAndClient.isPresent()) {
+//                identityVisitor.put("id", person.get().getId().toString());
+//                identityVisitor.put("name", fioPerson.getUsername());
+//                identityVisitor.put("surname", fioPerson.getSurname());
+//                identityVisitor.put("patronymic", fioPerson.getPatronymic());
+//            }
+//        }
+//        return identityVisitor;
+//    }
 
     //Получение клиента для отображения на странице
     private void handleCustomerSelection(Model model, String clientId, StatusRegisteredVisitor registeredStatus) {

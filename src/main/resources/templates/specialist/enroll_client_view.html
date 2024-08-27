@@ -24,12 +24,54 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
     <style>
-        .custom-table table {
+        /*.custom-table table {*/
+        /*    width: 100%;*/
+        /*}*/
+        .custom-table table,
+        .custom-tableAp table {
             width: 100%;
+            /*table-layout: fixed; !* Фиксированная компоновка *!*/
         }
 
-        .custom-table td {
+        .custom-table table, .custom-tableAp table {
+            /*table-layout: fixed;*/
+        }
+
+        /*.custom-table td {*/
+        /*    word-wrap: break-word;*/
+        /*}*/
+        .custom-table td, .custom-tableAp td {
             word-wrap: break-word;
+        }
+
+        .col-dayOfWeekAp {
+            width: 9%;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-dateAp {
+            width: 30%;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-timeAp {
+            width: 10%;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-clientAp {
+            width: 35%;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-specAp {
+            width: 16%;
+            text-align: center;
+            vertical-align: middle;
         }
 
         .col-dayOfWeek {
@@ -49,6 +91,8 @@
             text-align: center;
             vertical-align: middle;
         }
+
+
     </style>
 
 </head>
@@ -201,10 +245,10 @@
     <div class="container">
         <div class="row mb-5">
             <h5 class="text-center">
-                <td th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Клиент для записи еще не выбран!'"
+                <span  th:text="${selectedCustomerFullName != null} ? 'Записываем: ' + ${selectedCustomerFullName} : 'Клиент для записи еще не выбран!'"
                     class="custom-text">
                     Клиент для записи еще не выбран!
-                </td>
+                </span>
             </h5>
         </div>
     </div>
@@ -353,7 +397,7 @@
     <!--            </tbody>-->
     <!--        </table>-->
     <!--    </div>-->
-
+    <h5 class="text-center color1 mb-5">Таблица приемов</h5>
     <div class="container">
         <div class="table-responsive-sm custom-table">
             <table class="table table-secondary table-bordered table-striped">
@@ -406,6 +450,81 @@
             </nav>
         </div>
     </div>
+</section>
+
+<h5 class="text-center color1 mb-5">Таблица подтверждения записей</h5>
+<div class="container">
+    <div class="table-responsive-sm custom-tableAp">
+        <table class="table table-secondary table-bordered table-striped">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col" style="text-align: center;">Дата</th>
+                <th scope="col" style="text-align: center;">Время</th>
+                <th scope="col" style="text-align: center;">Клиент</th>
+                <th scope="col" style="text-align: center;">Спец</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reception : ${aproveReceptions}">
+                <td hidden th:text="${reception.id}"></td>
+                <td class="col-dayOfWeekAp" th:text="${reception.dayOfWeek}"></td>
+                <td class="col-dateAp" th:text="${reception.dateVacant}"></td>
+                <td class="col-timeAp" th:text="${reception.timeVacant}"></td>
+                <td class="col-clientAp">
+                    <span th:if="${reception.visitorIdReception != null}" style="display: flex; flex-direction: column; align-items: center;">
+                        <span th:text="${reception.visitorIdReception.getFullName()}" style="text-align: center;"><br>
+                            <span th:text="'Подтверждено'"
+                                  style="color: #1196de; text-align: center;">
+                            </span>
+                        </span>
+                        <span th:if="${reception.confirmedVisitor == true}"
+                              th:text="'Подтверждено'"
+                              style="color: #1196de; text-align: center; margin-top: 5px;">
+                        </span>
+                        <span th:if="${reception.confirmedVisitor == false}"
+                              th:text="'Не подтверждено'"
+                              style="color: #ea7777; text-align: center; margin-top: 5px;">
+                        </span>
+                    </span>
+                </td>
+                <td class="col-specAp">
+                    <span th:if="${reception.confirmedSpecialist == true}"
+                          th:text="'Подт-но'"
+                          style="color: #1196de; text-align: center;">
+                        </span>
+                    <span th:if="${reception.confirmedSpecialist == false}"
+                          th:text="'Не подт-но'"
+                          style="color: #ea7777; text-align: center;">
+                        </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation" class="pagination-container">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${pageAp.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/enroll(pageAp=${pageAp.number - 1}, size=${param.size})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, pageAp.totalPages - 1)}"
+                    th:classappend="${pageAp.number == i} ? 'active'">
+                    <a class="page-link" th:href="@{/enroll/aproveReceptions(pageAp=${i}, size=${param.size})}"
+                       th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${pageAp.last} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/enroll/aproveReceptions(page=${pageAp.number + 1}, size=${param.size})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
 </section>
 
 <script th:inline="javascript">
