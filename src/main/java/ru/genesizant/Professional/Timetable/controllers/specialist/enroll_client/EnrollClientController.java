@@ -131,6 +131,22 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    @PostMapping("/agree-spec")
+    public String agreeReceptionSpec(@RequestBody Map<String, String> applicationFromSpecialist) {
+        Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        reception.setConfirmedSpecialist(true);
+        receptionService.save(reception);
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/agree-visitor")
+    public String agreeReceptionVisitor(@RequestBody Map<String, String> applicationFromSpecialist) {
+        Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        reception.setConfirmedVisitor(true);
+        receptionService.save(reception);
+        return ENROLL_VIEW_REDIRECT;
+    }
+
     //Выбор и отображение Клиента для записи
     @PostMapping("/customerForRecording")
     public String customerForRecording(@ModelAttribute("specialist") Person specialist, Model model, //ToDo chooseCustomerForRecording

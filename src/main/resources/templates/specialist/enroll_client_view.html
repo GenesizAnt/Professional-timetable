@@ -376,27 +376,6 @@
         </div>
     </div>
 
-    <!--    <div class="container">-->
-    <!--        <table class="table">-->
-    <!--            <thead>-->
-    <!--            <tr>-->
-    <!--                <th scope="col"></th>-->
-    <!--                <th scope="col">Дата</th>-->
-    <!--                <th scope="col">Время</th>-->
-    <!--                <th scope="col">Клиент</th>-->
-    <!--            </tr>-->
-    <!--            </thead>-->
-    <!--            <tbody>-->
-    <!--            <tr th:each="vacantSeat : ${vacantSeats}">-->
-    <!--                <th hidden th:text="${vacantSeat.id}"></th>-->
-    <!--                <th th:text="${vacantSeat.dayOfWeek}"></th>-->
-    <!--                <td th:text="${vacantSeat.date_vacant}"></td>-->
-    <!--                <td th:text="${vacantSeat.time_vacant}"></td>-->
-    <!--                <td th:text="${vacantSeat.clientId != null ? vacantSeat.clientId.getFullName : 'Нет записи'}"></td>-->
-    <!--            </tr>-->
-    <!--            </tbody>-->
-    <!--        </table>-->
-    <!--    </div>-->
     <h5 class="text-center color1 mb-5">Таблица приемов</h5>
     <div class="container">
         <div class="table-responsive-sm custom-table">
@@ -482,9 +461,8 @@
                               th:text="'Подтверждено'"
                               style="color: #1196de; text-align: center; margin-top: 5px;">
                         </span>
-                        <span th:if="${reception.confirmedVisitor == false}"
-                              th:text="'Не подтверждено'"
-                              style="color: #ea7777; text-align: center; margin-top: 5px;">
+                        <span th:if="${reception.confirmedVisitor == false}" style="color: #ea7777; text-align: center; margin-top: 5px;">
+                              <a href="javascript:void(0)" class="agree-visitor">Не подтверждено</a>
                         </span>
                     </span>
                 </td>
@@ -493,10 +471,10 @@
                           th:text="'Подт-но'"
                           style="color: #1196de; text-align: center;">
                         </span>
-                    <span th:if="${reception.confirmedSpecialist == false}"
-                          th:text="'Не подт-но'"
-                          style="color: #ea7777; text-align: center;">
-                        </span>
+                    <span th:if="${reception.confirmedSpecialist == false}" style="color: #ea7777; text-align: center;">
+<!--                            <span th:text="'Не подт-но'"></span>-->
+                            <a href="javascript:void(0)" class="agree-spec">Не подт-но</a>
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -583,6 +561,70 @@
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер
             fetch("/enroll/cancel", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+
+    $(document).ready(function () {
+        // При нажатии на запись
+        $('.agree-spec').click(function () {
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/enroll/agree-spec", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+
+    $(document).ready(function () {
+        // При нажатии на запись
+        $('.agree-visitor').click(function () {
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/enroll/agree-visitor", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

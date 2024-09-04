@@ -53,4 +53,12 @@ public class ReceptionService {
     public Page<Reception> getReceptionsPage(Person specialist, Pageable pageableAp) {
         return receptionRepository.findBySpecIdReception(specialist, pageableAp);
     }
+
+    public Reception findById(Long id) {
+        return receptionRepository.findById(id).orElseThrow();
+    }
+
+    public void save(Reception reception) {
+        receptionRepository.save(reception);
+    }
 }
