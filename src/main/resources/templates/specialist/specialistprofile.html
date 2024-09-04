@@ -4,22 +4,43 @@
     <meta charset="UTF-8">
     <title>Мой профиль</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+    <script src="https://kit.fontawesome.com/67a92a6cb5.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/gijgo@1.9.14/js/messages/messages.ru-ru.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/67a92a6cb5.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="shortcut icon" href="/t.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/fontello.css">
     <link rel="stylesheet" href="/css/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"-->
+<!--          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"-->
+<!--            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"-->
+<!--            crossorigin="anonymous"></script>-->
+<!--    <link rel="preconnect" href="https://fonts.googleapis.com">-->
+<!--    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">-->
+<!--    <script src="https://kit.fontawesome.com/67a92a6cb5.js" crossorigin="anonymous"></script>-->
+<!--    <link rel="shortcut icon" href="/t.ico" type="image/x-icon">-->
+<!--    <link rel="stylesheet" href="/css/fontello.css">-->
+<!--    <link rel="stylesheet" href="/css/style.css">-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--    <script type="text/javascript" charset="utf8"-->
+<!--            src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
+<!--    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
 
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -100,6 +121,96 @@
 </div>
 
 <p>Ссылка для приглашения клиента : <span th:text="${baseUrl}"></span></p>
+
+<form th:method="POST" th:action="@{/spec_profile/set-base-schedule}">
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="inputStartDate">Дата и время начала доступного расписания:</label>
+            <div class="d-flex justify-content-center">
+                <input id="inputStartDate" name="inputStartDate" width="200" />
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#inputStartDate').datetimepicker({
+                        uiLibrary: 'bootstrap5',
+                        modal: true,
+                        footer: true,
+                        locale: 'ru-ru'
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="inputEndDate">Дата и время конца доступного расписания:</label>
+            <div class="d-flex justify-content-center">
+                <input id="inputEndDate" name="inputEndDate" width="200" />
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#inputEndDate').datetimepicker({
+                        uiLibrary: 'bootstrap5',
+                        modal: true,
+                        footer: true,
+                        locale: 'ru-ru'
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <label for="inputTime" class="d-flex justify-content-center">Минимальный интервал между приемами:</label>
+        <input type="time" class="form-control" id="inputTime">
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-10 offset-sm-2">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="monday">
+                <label class="form-check-label" for="monday">
+                    Понедельник
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="tuesday">
+                <label class="form-check-label" for="tuesday">
+                    Вторник
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="wednesday">
+                <label class="form-check-label" for="wednesday">
+                    Среда
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="thursday">
+                <label class="form-check-label" for="thursday">
+                    Четверг
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="friday">
+                <label class="form-check-label" for="friday">
+                    Пятница
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="saturday">
+                <label class="form-check-label" for="saturday">
+                    Суббота
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sunday">
+                <label class="form-check-label" for="sunday">
+                    Воскресенье
+                </label>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить шаблон для создания расписания</button>
+</form>
 
 <div class="mb-3 row">
     <label for="linkPayS" class="col-sm-2 col-form-label">Текущая ссылка для оплаты</label>
