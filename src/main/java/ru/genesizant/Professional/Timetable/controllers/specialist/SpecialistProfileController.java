@@ -8,8 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
+import ru.genesizant.Professional.Timetable.model.BaseSchedule;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistPay;
+import ru.genesizant.Professional.Timetable.services.BaseScheduleService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
 import ru.genesizant.Professional.Timetable.services.telegram.UserTelegram;
@@ -19,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -32,6 +35,7 @@ public class SpecialistProfileController {
     private final UserTelegramService userTelegramService;
     private final PersonService personService;
     private final SpecialistPayService specialistPayService;
+    private final BaseScheduleService baseScheduleService;
 
     @ModelAttribute
     public void getPayloadPage(Model model, HttpServletRequest request) {
@@ -54,6 +58,14 @@ public class SpecialistProfileController {
         String currentUrl = request.getRequestURL().toString();
         String baseUrl = extractBaseUrl(currentUrl);
         person.ifPresent(value -> model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + value.getPhoneNumber() + "&role=client"));
+
+        BaseSchedule scheduleSpecialist = baseScheduleService.getBaseScheduleSpecialist(person.get());
+//        String formattedStartDate = scheduleSpecialist.getStartDate() != null
+//                ? scheduleSpecialist.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+//                : "";
+        model.addAttribute("schedule", scheduleSpecialist);
+//        model.addAttribute("formattedStartDate", formattedStartDate);
+
     }
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {

@@ -122,6 +122,69 @@
 
 <p>Ссылка для приглашения клиента : <span th:text="${baseUrl}"></span></p>
 
+
+<div class="container mt-5">
+    <h4 class="text-center">Сохраненный шаблон для создания расписания</h4>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Специалист:</strong></label>
+        </div>
+        <div class="col-6">
+            <span th:text="${schedule.specialistBaseSchedule.getFullName()}"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Дата и время начала:</strong></label>
+        </div>
+        <div class="col-6">
+            <span th:if="${schedule != null and schedule.startDate != null}"
+                  th:text="${schedule.startDate}"></span>
+            <span th:if="${schedule == null or schedule.startDate == null}">Не указано</span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Дата и время окончания:</strong></label>
+        </div>
+        <div class="col-6">
+            <span th:if="${schedule != null and schedule.endDate != null}"
+                  th:text="${schedule.endDate}"></span>
+            <span th:if="${schedule == null or schedule.endDate == null}">Не указано</span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Минимальный интервал между приемами:</strong></label>
+        </div>
+        <div class="col-6">
+            <span th:text="${schedule.minInterval != null ? schedule.minInterval : 'Не указано'}"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Выходные дни:</strong></label>
+        </div>
+        <div class="col-6">
+            <ul class="list-unstyled">
+                <li th:if="${schedule.monday}">Понедельник</li>
+                <li th:if="${schedule.tuesday}">Вторник</li>
+                <li th:if="${schedule.wednesday}">Среда</li>
+                <li th:if="${schedule.thursday}">Четверг</li>
+                <li th:if="${schedule.friday}">Пятница</li>
+                <li th:if="${schedule.saturday}">Суббота</li>
+                <li th:if="${schedule.sunday}">Воскресенье</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
 <form th:method="POST" th:action="@{/spec_profile/set-base-schedule}" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 2px solid #007bff; border-radius: 10px; background-color: #f9f9f9;">
     <div class="row mb-3">
         <div class="col-12">

@@ -103,6 +103,10 @@ public class Person {
 
     @OneToMany(mappedBy = "visitorIdReception")
     private List<Reception> visitorIdReceptionList;
+
+    @OneToOne(mappedBy = "specialistBaseSchedule")
+    private BaseSchedule baseSchedules;
+
     public String getFullName() {
         return surname + " " + username + " " + patronymic;
     }
