@@ -60,12 +60,7 @@ public class SpecialistProfileController {
         person.ifPresent(value -> model.addAttribute("baseUrl", baseUrl + "auth/registration?phone=" + value.getPhoneNumber() + "&role=client"));
 
         BaseSchedule scheduleSpecialist = baseScheduleService.getBaseScheduleSpecialist(person.get());
-//        String formattedStartDate = scheduleSpecialist.getStartDate() != null
-//                ? scheduleSpecialist.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
-//                : "";
         model.addAttribute("schedule", scheduleSpecialist);
-//        model.addAttribute("formattedStartDate", formattedStartDate);
-
     }
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {

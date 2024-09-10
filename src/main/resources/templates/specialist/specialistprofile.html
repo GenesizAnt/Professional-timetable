@@ -128,32 +128,23 @@
 
     <div class="row mb-3">
         <div class="col-6">
-            <label><strong>Специалист:</strong></label>
+            <label><strong>Время для начала приемов:</strong></label>
         </div>
         <div class="col-6">
-            <span th:text="${schedule.specialistBaseSchedule.getFullName()}"></span>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-6">
-            <label><strong>Дата и время начала:</strong></label>
-        </div>
-        <div class="col-6">
-            <span th:if="${schedule != null and schedule.startDate != null}"
-                  th:text="${schedule.startDate}"></span>
-            <span th:if="${schedule == null or schedule.startDate == null}">Не указано</span>
+            <span th:if="${schedule != null and schedule.startTime != null}"
+                  th:text="${schedule.startTime}"></span>
+            <span th:if="${schedule == null or schedule.startTime == null}">Не указано</span>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-6">
-            <label><strong>Дата и время окончания:</strong></label>
+            <label><strong>Время для окончания приемов:</strong></label>
         </div>
         <div class="col-6">
-            <span th:if="${schedule != null and schedule.endDate != null}"
-                  th:text="${schedule.endDate}"></span>
-            <span th:if="${schedule == null or schedule.endDate == null}">Не указано</span>
+            <span th:if="${schedule != null and schedule.endTime != null}"
+                  th:text="${schedule.endTime}"></span>
+            <span th:if="${schedule == null or schedule.endTime == null}">Не указано</span>
         </div>
     </div>
 
@@ -162,7 +153,20 @@
             <label><strong>Минимальный интервал между приемами:</strong></label>
         </div>
         <div class="col-6">
-            <span th:text="${schedule.minInterval != null ? schedule.minInterval : 'Не указано'}"></span>
+            <span th:if="${schedule != null and schedule.minInterval != null}"
+                              th:text="${schedule.minInterval}"></span>
+            <span th:if="${schedule == null or schedule.minInterval == null}">Не указано</span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label><strong>Кол-во дней для применения шаблона</strong></label>
+        </div>
+        <div class="col-6">
+            <span th:if="${schedule != null and schedule.countDays != null}"
+                              th:text="${schedule.countDays}"></span>
+            <span th:if="${schedule == null or schedule.countDays == null}">Не указано</span>
         </div>
     </div>
 
@@ -172,13 +176,13 @@
         </div>
         <div class="col-6">
             <ul class="list-unstyled">
-                <li th:if="${schedule.monday}">Понедельник</li>
-                <li th:if="${schedule.tuesday}">Вторник</li>
-                <li th:if="${schedule.wednesday}">Среда</li>
-                <li th:if="${schedule.thursday}">Четверг</li>
-                <li th:if="${schedule.friday}">Пятница</li>
-                <li th:if="${schedule.saturday}">Суббота</li>
-                <li th:if="${schedule.sunday}">Воскресенье</li>
+                <li th:if="${schedule != null and schedule.monday}">Понедельник</li>
+                <li th:if="${schedule != null and schedule.tuesday}">Вторник</li>
+                <li th:if="${schedule != null and schedule.wednesday}">Среда</li>
+                <li th:if="${schedule != null and schedule.thursday}">Четверг</li>
+                <li th:if="${schedule != null and schedule.friday}">Пятница</li>
+                <li th:if="${schedule != null and schedule.saturday}">Суббота</li>
+                <li th:if="${schedule != null and schedule.sunday}">Воскресенье</li>
             </ul>
         </div>
     </div>

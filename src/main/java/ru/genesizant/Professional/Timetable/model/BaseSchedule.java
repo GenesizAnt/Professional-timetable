@@ -24,12 +24,14 @@ public class BaseSchedule {
     @OneToOne
     @JoinColumn(name = "idspecialist", referencedColumnName = "id")
     private Person specialistBaseSchedule;
-    @Column(name = "startdate")
-    private LocalDateTime startDate;
-    @Column(name = "enddate")
-    private LocalDateTime endDate;
+    @Column(name = "starttime")
+    private LocalTime startTime;
+    @Column(name = "endtime")
+    private LocalTime endTime;
     @Column(name = "mininterval")
     private LocalTime minInterval;
+    @Column(name = "countdays")
+    private int countDays;
     @Column(name = "monday")
     private boolean monday;
     @Column(name = "tuesday")
