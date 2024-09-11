@@ -5,8 +5,10 @@ import org.springframework.stereotype.Repository;
 import ru.genesizant.Professional.Timetable.model.BaseSchedule;
 import ru.genesizant.Professional.Timetable.model.Person;
 
+import java.util.Optional;
+
 @Repository
 public interface BaseScheduleRepository extends JpaRepository<BaseSchedule, Long> {
 
-    BaseSchedule findBySpecialistBaseSchedule(Person spec);
+    Optional<BaseSchedule> findBySpecialistBaseSchedule(Person spec);
 }

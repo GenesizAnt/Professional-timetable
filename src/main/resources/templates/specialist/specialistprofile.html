@@ -192,73 +192,61 @@
 <form th:method="POST" th:action="@{/spec_profile/set-base-schedule}" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 2px solid #007bff; border-radius: 10px; background-color: #f9f9f9;">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="inputStartDate">Дата и время начала доступного расписания:</label>
+            <label class="d-flex justify-content-center">Время начала дня приемов для доступного расписания:</label>
             <div class="d-flex justify-content-center">
-                <input id="inputStartDate" name="inputStartDate" width="200" />
+                <input type="time" class="form-control" name="inputStartDate" width="200" />
             </div>
-            <script>
-                $(document).ready(function() {
-                    $('#inputStartDate').datetimepicker({
-                        uiLibrary: 'bootstrap5',
-                        modal: true,
-                        footer: true,
-                        locale: 'ru-ru'
-                    });
-                });
-            </script>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <label for="inputEndDate">Дата и время конца доступного расписания:</label>
+            <label class="d-flex justify-content-center">Время конца дня приемов доступного расписания:</label>
             <div class="d-flex justify-content-center">
-                <input id="inputEndDate" name="inputEndDate" width="200" />
+                <input type="time" class="form-control" name="inputEndDate" width="200" />
             </div>
-            <script>
-                $(document).ready(function() {
-                    $('#inputEndDate').datetimepicker({
-                        uiLibrary: 'bootstrap5',
-                        modal: true,
-                        footer: true,
-                        locale: 'ru-ru'
-                    });
-                });
-            </script>
         </div>
     </div>
-    <div class="col-md-12 mb-3">
-        <label for="inputTime" class="d-flex justify-content-center">Минимальный интервал между приемами:</label>
-        <input type="time" class="form-control" id="inputTime">
+    <div class="row mb-3">
+        <label class="d-flex justify-content-center">Минимальный интервал между приемами:</label>
+        <div class="d-flex justify-content-center">
+            <input type="time" class="form-control" name="inputTime">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="d-flex justify-content-center">Кол-во дней для применения шаблона</label>
+        <div class="d-flex justify-content-centre">
+            <input type="number" class="form-control" name="countDays">
+        </div>
     </div>
     <div class="row mb-3">
         <div class="col-12">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="monday">
-                <label class="form-check-label" for="monday">Понедельник</label>
+                <input class="form-check-input" type="checkbox" name="monday">
+                <label class="form-check-label">Понедельник</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="tuesday">
-                <label class="form-check-label" for="tuesday">Вторник</label>
+                <input class="form-check-input" type="checkbox" name="tuesday">
+                <label class="form-check-label">Вторник</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="wednesday">
-                <label class="form-check-label" for="wednesday">Среда</label>
+                <input class="form-check-input" type="checkbox" name="wednesday">
+                <label class="form-check-label">Среда</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="thursday">
-                <label class="form-check-label" for="thursday">Четверг</label>
+                <input class="form-check-input" type="checkbox" name="thursday">
+                <label class="form-check-label">Четверг</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="friday">
-                <label class="form-check-label" for="friday">Пятница</label>
+                <input class="form-check-input" type="checkbox" name="friday">
+                <label class="form-check-label">Пятница</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="saturday">
-                <label class="form-check-label" for="saturday">Суббота</label>
+                <input class="form-check-input" type="checkbox" name="saturday">
+                <label class="form-check-label">Суббота</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="sunday">
-                <label class="form-check-label" for="sunday">Воскресенье</label>
+                <input class="form-check-input" type="checkbox" name="sunday">
+                <label class="form-check-label">Воскресенье</label>
             </div>
         </div>
     </div>
