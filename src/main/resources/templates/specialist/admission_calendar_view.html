@@ -266,6 +266,97 @@
                 </div>
                 <div class="line"></div>
             </div>
+            <div class="col-12 text-center">
+                <div class="itd_circle"><i class="fa-solid fa-calendar-day"></i></div>
+                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                        data-bs-target="#addSampleAvailableTime">
+                    <h6 class="text-center">Создать расписание по шаблону</h6>
+                </button>
+                <div class="modal fade" id="addSampleAvailableTime" tabindex="-1" aria-labelledby="addSampleAvailableTimeLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="addSampleAvailableTimeLabel">Установите дату начала применения шаблона</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:method="POST" th:action="@{/calendar/add_sample_available_time}" class="text-center">
+                                    <div class="col-12">
+                                        <label class="d-flex justify-content-center">Дата начала шаблона</label>
+                                        <div class="d-flex justify-content-centre">
+                                            <input type="date" class="form-control" name="startDays">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label><strong>Время для начала приемов:</strong></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <span th:if="${schedule != null and schedule.startTime != null}"
+                                                  th:text="${schedule.startTime}"></span>
+                                            <span th:if="${schedule == null or schedule.startTime == null}">Не указано</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label><strong>Время для окончания приемов:</strong></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <span th:if="${schedule != null and schedule.endTime != null}"
+                                                  th:text="${schedule.endTime}"></span>
+                                            <span th:if="${schedule == null or schedule.endTime == null}">Не указано</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label><strong>Минимальный интервал между приемами:</strong></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <span th:if="${schedule != null and schedule.minInterval != null}"
+                                                  th:text="${schedule.minInterval}"></span>
+                                            <span th:if="${schedule == null or schedule.minInterval == null}">Не указано</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label><strong>Кол-во дней для применения шаблона</strong></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <span th:if="${schedule != null and schedule.countDays != null}"
+                                                  th:text="${schedule.countDays}"></span>
+                                            <span th:if="${schedule == null or schedule.countDays == null}">Не указано</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label><strong>Выходные дни:</strong></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <ul class="list-unstyled">
+                                                <li th:if="${schedule != null and schedule.monday}">Понедельник</li>
+                                                <li th:if="${schedule != null and schedule.tuesday}">Вторник</li>
+                                                <li th:if="${schedule != null and schedule.wednesday}">Среда</li>
+                                                <li th:if="${schedule != null and schedule.thursday}">Четверг</li>
+                                                <li th:if="${schedule != null and schedule.friday}">Пятница</li>
+                                                <li th:if="${schedule != null and schedule.saturday}">Суббота</li>
+                                                <li th:if="${schedule != null and schedule.sunday}">Воскресенье</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-info btn-enroll mt-3">Отправить</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
         </div>
         <div class="row">
             <div class="col-xl-4 col-md-6 col-sm-12 text-center">

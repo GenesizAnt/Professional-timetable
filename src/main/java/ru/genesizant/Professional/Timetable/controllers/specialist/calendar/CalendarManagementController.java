@@ -13,8 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.enums.StatusAdmissionTime;
+import ru.genesizant.Professional.Timetable.model.BaseSchedule;
 import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
+import ru.genesizant.Professional.Timetable.services.BaseScheduleService;
 import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
 import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.VacantSeatService;
@@ -22,7 +24,6 @@ import ru.genesizant.Professional.Timetable.services.VacantSeatService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -40,6 +41,7 @@ public class CalendarManagementController {
     private final PersonService personService;
     private final DatesAppointmentsService datesAppointmentsService;
     private final VacantSeatService vacantSeatService;
+    private final BaseScheduleService baseScheduleService;
 
     @ModelAttribute
     public void getPayloadPage(@ModelAttribute("specialist") Person specialist, Model model, HttpServletRequest request) {
@@ -77,23 +79,15 @@ public class CalendarManagementController {
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
+
+        Optional<BaseSchedule> scheduleSpecialist = baseScheduleService.getBaseScheduleSpecialist(specialist);
+        scheduleSpecialist.ifPresent(baseSchedule -> model.addAttribute("schedule", baseSchedule));
     }
 
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {
         return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
     }
-
-//    @ModelAttribute(name = "pageList")
-//    public Page<VacantSeat> getPageList(@ModelAttribute("specialist") Person specialist) {
-//        if (vacantSeatsPage == null) {
-//            Pageable pageable = PageRequest.of(0, 10);
-//            return vacantSeatService.getVacantSeatsPage(specialist, pageable);
-//        } else {
-//            return vacantSeatsPage;
-//        }
-
-//    }
 
     //Отображение страницы управление календарем (создание расписания - доступного/не доступного времени)
     @GetMapping("/admission_calendar_view")
@@ -132,6 +126,24 @@ public class CalendarManagementController {
     @PostMapping("/removeVacantSlot")
     public String handleTableClick(@RequestBody Map<String, String> applicationFromSpecialist) {
         vacantSeatService.removeVacantSlot(applicationFromSpecialist.get("id"));
+        return CALENDAR_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/add_sample_available_time")
+    public String addSampleAvailableTime(@ModelAttribute("specialist") Person specialist,
+                                         @RequestParam(name = "startDays") String startDays) {
+        Optional<BaseSchedule> baseScheduleSpecialist = baseScheduleService.getBaseScheduleSpecialist(specialist);
+        if (baseScheduleSpecialist.isPresent()) {
+
+            List<String> weekDays = baseScheduleSpecialist.get().getWeekDays();
+
+
+
+            vacantSeatService.addFreeDateSchedule(specialist, startDays, getEndDay(startDays, baseScheduleSpecialist),
+                    baseScheduleSpecialist.get().getStartTime().toString(),
+                    baseScheduleSpecialist.get().getEndTime().toString(), baseScheduleSpecialist.get().getMinInterval().toString(),
+                    baseScheduleSpecialist.get().getWeekDays());
+        }
         return CALENDAR_VIEW_REDIRECT;
     }
 
@@ -289,6 +301,10 @@ public class CalendarManagementController {
     }
 
 
+    private String getEndDay(String sDays, Optional<BaseSchedule> baseScheduleSpecialist) {
+        LocalDate startDays = LocalDate.parse(sDays);
+        return startDays.plusDays(baseScheduleSpecialist.get().getCountDays()).toString();
+    }
 
     private String encodeError(String error) {
         String ERROR_VALIDATE_FORM = "redirect:/calendar/admission_calendar_view?error=";
