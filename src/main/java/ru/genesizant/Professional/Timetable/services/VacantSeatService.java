@@ -8,8 +8,10 @@ import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.repositories.VacantSeatRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,21 +26,14 @@ public class VacantSeatService {
     private final VacantSeatRepository vacantSeatRepository;
 
     public void addFreeDateSchedule(Person specialist, String startDate, String endDate, String startTime, String endTime, String minInterval, List<String> weekDays) {
-        // Создаем объект LocalDate для начала даты
-//        LocalDate startDateObject = LocalDate.parse(startDate);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String datePartStart = startDate.split(" ")[1];
-        LocalDate startDateObject = LocalDate.parse(datePartStart, formatter);
+        LocalDate startDateObject = formatDate(startDate);
+        LocalDate endDateObject = formatDate(endDate);
 
-        // Создаем объект LocalDate для конца даты
-//        LocalDate endDateObject = LocalDate.parse(endDate);
-        String datePartEnd = endDate.split(" ")[1];
-        LocalDate endDateObject = LocalDate.parse(datePartEnd, formatter);
-
-        // Вычисляем количество дней между двумя датами
         int daysBetween = (int) ChronoUnit.DAYS.between(startDateObject, endDateObject);
 
-        List<String> availableRecordingTime = availableRecordingTime(startTime, endTime, minInterval);
+        List<String> availableRecordingTime = availableRecordingTime(
+                startTime != null ? startTime : startDate,
+                endTime != null ? endTime : endDate, minInterval);
 
         for (int i = 0; i <= daysBetween; i++) {
             for (String s : availableRecordingTime) {
@@ -55,13 +50,8 @@ public class VacantSeatService {
     }
 
     private List<String> availableRecordingTime(String startTimeWork, String endTimeWork, String timeIntervalHour) {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        String timePartStart = startTimeWork.split(" ")[0];
-        LocalTime startTime = LocalTime.parse(timePartStart, timeFormatter);
-
-        String timePartEnd = endTimeWork.split(" ")[0];
-        LocalTime endTime = LocalTime.parse(timePartEnd, timeFormatter);
+        LocalTime startTime = formatTime(startTimeWork);
+        LocalTime endTime = formatTime(endTimeWork);
 
         LocalTime timeString = LocalTime.parse(timeIntervalHour);
         int intervalMinutes = timeString.getHour() * 60 + timeString.getMinute();
@@ -97,39 +87,8 @@ public class VacantSeatService {
     }
 
     public Page<VacantSeat> getVacantSeatsPage(Person specialist, Pageable pageable) {
-        List<VacantSeat> vacantSeats1 = getVacantSeats(specialist);
-
-
-        Page<VacantSeat> bySpecId = vacantSeatRepository.findBySpecId(specialist, pageable);
-
-
-//        List<VacantSeat> vacantSeats = bySpecId.getContent();
-//        // Сортировка списка
-//        List<VacantSeat> collect = vacantSeats1.stream()
-//                .sorted(Comparator.comparing(VacantSeat::getDateVacant).thenComparing(VacantSeat::getTimeVacant)).toList();
-
-//        vacantSeats.sort(Comparator.comparing(VacantSeat::getDate_vacant)
-//                .thenComparing(VacantSeat::getTime_vacant));
-
-        // Создание нового объекта Page с отсортированным содержимым
-//        return new PageImpl<>(collect, bySpecId.getPageable(), bySpecId.getTotalElements());
-
-
-//        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("date_vacant").and(Sort.by("time_vacant")));
-//        Page<VacantSeat> sortedByPage = bySpecId.map(bySpecId -> {
-//            List<VacantSeat> sortedList = vacantSeats.stream()
-//                    .sorted(Comparator.comparing(VacantSeat::getDateVacant)
-//                            .thenComparing(VacantSeat::getTimeVacant))
-//                    .collect(Collectors.toList());
-//            return new PageImpl<>(sortedList, pageRequest, vacantSeats.getTotalElements());
-//        });
-
-        return bySpecId;
+        return vacantSeatRepository.findBySpecId(specialist, pageable);
     }
-
-//    public Page<VacantSeat> getBookingSeatsPage(Person specialist, Pageable pageable) {
-//        return vacantSeatRepository.findBySpecIdAndClientIdIsNotNull(specialist, pageable);
-//    }
 
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {
         VacantSeat vacantSeat = new VacantSeat();
@@ -150,5 +109,36 @@ public class VacantSeatService {
 
     public void save(VacantSeat vacantSeat) {
         vacantSeatRepository.save(vacantSeat);
+    }
+    private LocalDate formatDate(String inputDate) {
+        LocalDate dateObject;
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(inputDate, formatter1);
+            dateObject = dateTime.toLocalDate();
+        } catch (DateTimeParseException e1) {
+            try {
+                dateObject = LocalDate.parse(inputDate, formatter2);
+            } catch (DateTimeParseException e2) {
+                throw new IllegalArgumentException("Invalid date format: " + inputDate);
+            }
+        }
+        return dateObject;
+    }
+
+    private LocalTime formatTime(String inputTime) {
+        LocalTime timeObject;
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            timeObject = LocalTime.parse(inputTime.split(" ")[0], formatter2);
+        } catch (DateTimeParseException e1) {
+            try {
+                timeObject = LocalTime.parse(inputTime, formatter2);
+            } catch (DateTimeParseException e2) {
+                throw new IllegalArgumentException("Invalid time format: " + inputTime);
+            }
+        }
+        return timeObject;
     }
 }
