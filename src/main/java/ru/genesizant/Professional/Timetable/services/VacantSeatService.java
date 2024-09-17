@@ -87,7 +87,8 @@ public class VacantSeatService {
     }
 
     public Page<VacantSeat> getVacantSeatsPage(Person specialist, Pageable pageable) {
-        return vacantSeatRepository.findBySpecId(specialist, pageable);
+        return vacantSeatRepository.findByDateVacantGreaterThanEqualAndSpecId(LocalDate.now(), specialist, pageable);
+//        return vacantSeatRepository.findBySpecId(specialist, pageable);
     }
 
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {

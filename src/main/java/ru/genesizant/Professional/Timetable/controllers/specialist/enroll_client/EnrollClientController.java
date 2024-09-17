@@ -54,18 +54,6 @@ public class EnrollClientController {
     public void getPayloadPage(@ModelAttribute("specialist") Person specialist, Model model, HttpServletRequest request) {
         List<PersonFullName> clientsBySpecialist = specialistsAndClientService.getClientsBySpecialistList((long) request.getSession().getAttribute("id"));
         List<UnregisteredPerson> unregisteredBySpecialist = unregisteredPersonService.getUnregisteredPersonBySpecialistList((long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
-//        List<LocalDateTime> times = new ArrayList<>();
-//        if (!appointmentsList.isEmpty()) {
-//            for (SpecialistAppointments appointments : appointmentsList) {
-//                if (!appointments.isPrepayment()) {
-//                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
-//                }
-//            }
-//            //ToDo здесь еще должно быть время посещения
-//            //ToDo Перебор по всему списку??
-//        }
-//        model.addAttribute("visitDates", times);
         Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById((long) request.getSession().getAttribute("id"));
         List<String> allCalendar = new ArrayList<>();
         LocalDate now = LocalDate.now();
@@ -92,12 +80,10 @@ public class EnrollClientController {
         int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
         int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, );
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
-
 
         // Обработка параметров пагинации
         int pageAp = request.getSession().getAttribute("pageAp") != null ? (int) request.getSession().getAttribute("pageAp") : 0;
@@ -107,7 +93,6 @@ public class EnrollClientController {
         Page<Reception> aproveReceptions = receptionService.getReceptionsPage(specialist, pageableAp);
         model.addAttribute("aproveReceptions", aproveReceptions.getContent());
         model.addAttribute("pageAp", aproveReceptions);
-
     }
 
     @ModelAttribute(name = "specialist")

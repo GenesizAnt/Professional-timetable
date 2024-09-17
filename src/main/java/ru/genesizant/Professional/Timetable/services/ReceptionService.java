@@ -13,6 +13,8 @@ import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.repositories.ReceptionRepository;
 
+import java.time.LocalDate;
+
 import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeekShort;
 
 @Service
@@ -51,7 +53,7 @@ public class ReceptionService {
     }
 
     public Page<Reception> getReceptionsPage(Person specialist, Pageable pageableAp) {
-        return receptionRepository.findBySpecIdReception(specialist, pageableAp);
+        return receptionRepository.findByDateVacantGreaterThanEqualAndSpecIdReception(LocalDate.now(), specialist, pageableAp);
     }
 
     public Reception findById(Long id) {

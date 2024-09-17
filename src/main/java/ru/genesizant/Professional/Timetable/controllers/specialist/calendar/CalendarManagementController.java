@@ -74,7 +74,6 @@ public class CalendarManagementController {
         int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
         int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, );
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());

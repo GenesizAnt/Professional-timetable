@@ -24,19 +24,6 @@
 
 </head>
 <body>
-<label for="datepicker">Выберите дату:</label>
-<input id="datepicker" width="276" />
-<script>
-    $(document).ready(function() {
-        $('#datepicker').datetimepicker({
-            uiLibrary: 'bootstrap5',
-            modal: true,
-            footer: true,
-            locale: 'ru-ru'
-        });
-    });
-</script>
-
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
 <ul class="nav nav-pills justify-content-center">
