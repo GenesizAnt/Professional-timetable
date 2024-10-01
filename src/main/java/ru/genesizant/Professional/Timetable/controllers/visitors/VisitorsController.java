@@ -181,7 +181,7 @@ public class VisitorsController {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel, Long.valueOf(selectedSpecialistId));
             Optional<SpecialistAppointments> appointmentsCancel = specialistAppointmentsService.getAppointmentsSpecificDay(Long.valueOf(selectedSpecialistId), meetingCancel);
             appointmentsCancel.ifPresent(specialistAppointmentsService::removeAppointment);
-            sendMessageService.notifyCancellation(VISITOR, meetingCancel, Long.valueOf(selectedSpecialistId));
+//            sendMessageService.notifyCancellation(VISITOR, meetingCancel, Long.valueOf(selectedSpecialistId));
             log.info("Клиент: " + visitor.getFullName() + ". Отменил запись на: " + meetingCancel);
         } else {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");

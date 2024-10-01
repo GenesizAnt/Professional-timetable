@@ -7,13 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.genesizant.Professional.Timetable.enums.StatusPerson;
 import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
-import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.Reception;
-import ru.genesizant.Professional.Timetable.model.UnregisteredPerson;
-import ru.genesizant.Professional.Timetable.model.VacantSeat;
+import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.repositories.ReceptionRepository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static ru.genesizant.Professional.Timetable.enums.DayOfWeekRus.getRusDayWeekShort;
 
@@ -62,5 +61,21 @@ public class ReceptionService {
 
     public void save(Reception reception) {
         receptionRepository.save(reception);
+    }
+
+    public Optional<Reception> findByVacantSeat(VacantSeat vacantSeat, Person specialist) {
+        return receptionRepository.findByDateVacantAndTimeVacantAndSpecIdReception(vacantSeat.getDateVacant(), vacantSeat.getTimeVacant(), specialist);
+    }
+    public void removeByVacantSeat(VacantSeat vacantSeat, Person specialist) {
+        receptionRepository.deleteByDateVacantAndTimeVacantAndSpecIdReception(vacantSeat.getDateVacant(), vacantSeat.getTimeVacant(), specialist);
+    }
+
+    // получить список приемов по конкретному клиенту после определенной даты с учетом были ли уведомления ранее
+    public List<Reception> findVisitorAppointmentsAfterDateWithNotifications(Long id, LocalDate localDate, Boolean isNotifyOneDay, Boolean isNotifyThreeHours) {
+        return receptionRepository.findVisitorAppointmentsAfterDateWithNotifications(
+                id,
+                localDate,
+                isNotifyOneDay,
+                isNotifyThreeHours);
     }
 }

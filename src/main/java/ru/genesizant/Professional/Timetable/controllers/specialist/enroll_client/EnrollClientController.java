@@ -95,6 +95,8 @@ public class EnrollClientController {
         model.addAttribute("pageAp", aproveReceptions);
     }
 
+    //ToDo Проверить связь при отмене и создании записей на примем и слота времени
+
     @ModelAttribute(name = "specialist")
     public Person getSpecialist(HttpServletRequest request) {
         return personService.findById((Long) request.getSession().getAttribute("id")).orElseThrow();
@@ -106,21 +108,27 @@ public class EnrollClientController {
         return "specialist/enroll_client_view";
     }
 
+    //Специалист отменяет запись ранее записанного клиента
     @PostMapping("/cancel")
-    public String cancelEnrollment(@RequestBody Map<String, String> applicationFromSpecialist) {
+    public String cancelEnrollment(@RequestBody Map<String, String> applicationFromSpecialist, @ModelAttribute("specialist") Person specialist) {
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        sendMessageService.notifyCancellation(SPECIALIST, vacantSeat, specialist);
         vacantSeat.setIdVisitor(null);
         vacantSeat.setFullname(null);
         vacantSeat.setStatusRegistration(null);
         vacantSeatService.save(vacantSeat);
+        receptionService.removeByVacantSeat(vacantSeat, specialist);
         return ENROLL_VIEW_REDIRECT;
     }
 
+    // Подтверждение записи встречи, которую инициировал клиент
     @PostMapping("/agree-spec")
     public String agreeReceptionSpec(@RequestBody Map<String, String> applicationFromSpecialist) {
         Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
         reception.setConfirmedSpecialist(true);
         receptionService.save(reception);
+        sendMessageService.notifyEnrollNewAppointment(SPECIALIST, reception.getDateVacant(), reception.getTimeVacant(),
+                reception.getVisitorIdReception().getId(), reception.getSpecIdReception().getId());
         return ENROLL_VIEW_REDIRECT;
     }
 
@@ -161,7 +169,7 @@ public class EnrollClientController {
         return ENROLL_VIEW_REDIRECT;
     }
 
-    //Запись клиента на выбранную дату по кнопке
+    //Запись клиента на выбранную дату по кнопке - кнопка удалена
 //    @PostMapping("/newDatesAppointments")
 //    public String newDatesAppointments(@ModelAttribute("specialist") Person specialist,
 //                                       @RequestParam("meeting") LocalDateTime meeting,
@@ -233,7 +241,9 @@ public class EnrollClientController {
                                      @ModelAttribute("specialist") Person specialist) {
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
 
-        if (applicationFromSpecialist.get("registeredStatus").equals(REGISTERED.name())) {
+        if (applicationFromSpecialist.get("registeredStatus") == null) {
+            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
+        } else if (applicationFromSpecialist.get("registeredStatus").equals(REGISTERED.name())) {
 
             Person client = personService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
 //            datesAppointmentsService.enrollVisitorNewAppointments(vacantSeat, personFullName, specialist.getId(), SPECIALIST);
@@ -243,12 +253,11 @@ public class EnrollClientController {
 //                    personService.findById(specialist.getId()).get(),
 //                    personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
 
-//            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, meetingDateTime, personFullName.getId(), specialist.getId());
             vacantSeat.setIdVisitor(client.getId());
             vacantSeat.setFullname(client.getFullName());
             vacantSeat.setStatusRegistration(REGISTERED.name());
             vacantSeatService.save(vacantSeat);
-            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, vacantSeat, client.getId(), specialist.getId());
+            sendMessageService.notifyEnrollNewAppointment(SPECIALIST, vacantSeat.getDateVacant(), vacantSeat.getTimeVacant(), client.getId(), specialist.getId());
         } else if (applicationFromSpecialist.get("registeredStatus").equals(UNREGISTERED.name())) {
             UnregisteredPerson unregisteredPerson = unregisteredPersonService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
 //            datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
@@ -258,6 +267,7 @@ public class EnrollClientController {
             vacantSeatService.save(vacantSeat);
             receptionService.recordNewReception(vacantSeat, null, unregisteredPerson, specialist, SPECIALIST, UNREGISTERED);
         }
+//            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
 
 //        vacantSeatService.recordClient(vacantSeat, );
         return ENROLL_VIEW_REDIRECT;
