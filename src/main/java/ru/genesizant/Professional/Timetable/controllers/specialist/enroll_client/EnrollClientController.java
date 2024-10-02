@@ -9,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.services.*;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -237,22 +241,17 @@ public class EnrollClientController {
 //    }
 
     @PostMapping("/record-client")
-    public String handleRecordClient(@RequestBody Map<String, String> applicationFromSpecialist,
-                                     @ModelAttribute("specialist") Person specialist) {
+    public ResponseEntity<String> handleRecordClient(@RequestBody Map<String, String> applicationFromSpecialist,
+                                                     @ModelAttribute("specialist") Person specialist) {
         VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
 
         if (applicationFromSpecialist.get("registeredStatus") == null) {
-            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
+//            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято\"}");
         } else if (applicationFromSpecialist.get("registeredStatus").equals(REGISTERED.name())) {
 
             Person client = personService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
-//            datesAppointmentsService.enrollVisitorNewAppointments(vacantSeat, personFullName, specialist.getId(), SPECIALIST);
             receptionService.recordNewReception(vacantSeat, client, null, specialist, SPECIALIST, REGISTERED);
-
-//            specialistAppointmentsService.createNewAppointments(meetingDateTime.toLocalDate(), meetingDateTime.toLocalTime(),
-//                    personService.findById(specialist.getId()).get(),
-//                    personService.findById(personFullName.getId()).get(), Boolean.FALSE, Boolean.FALSE);
-
             vacantSeat.setIdVisitor(client.getId());
             vacantSeat.setFullname(client.getFullName());
             vacantSeat.setStatusRegistration(REGISTERED.name());
@@ -260,17 +259,15 @@ public class EnrollClientController {
             sendMessageService.notifyEnrollNewAppointment(SPECIALIST, vacantSeat.getDateVacant(), vacantSeat.getTimeVacant(), client.getId(), specialist.getId());
         } else if (applicationFromSpecialist.get("registeredStatus").equals(UNREGISTERED.name())) {
             UnregisteredPerson unregisteredPerson = unregisteredPersonService.findById(Long.valueOf(applicationFromSpecialist.get("selectedCustomerId"))).orElseThrow();
-//            datesAppointmentsService.enrollVisitorNewAppointments(meetingDateTime, personFullName, specialist.getId(), SPECIALIST);
             vacantSeat.setIdVisitor(unregisteredPerson.getId());
             vacantSeat.setFullname(unregisteredPerson.getFullName());
             vacantSeat.setStatusRegistration(UNREGISTERED.name());
             vacantSeatService.save(vacantSeat);
             receptionService.recordNewReception(vacantSeat, null, unregisteredPerson, specialist, SPECIALIST, UNREGISTERED);
         }
-//            return encodeError("Для записи нужно выбрать клиента, время и дату записи. Либо время уже занято");
-
-//        vacantSeatService.recordClient(vacantSeat, );
-        return ENROLL_VIEW_REDIRECT;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/enroll/enroll_page"));
+        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
 
 //    id: id,

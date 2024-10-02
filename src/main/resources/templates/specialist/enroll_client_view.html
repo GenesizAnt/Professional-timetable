@@ -535,12 +535,19 @@
                 },
                 body: JSON.stringify(applicationFromSpecialist)
             }).then(response => {
-                location.reload();
-                // Обрабатываем ответ от сервера
-            })
-                .catch(error => {
+
+                if (response.ok) {
+                    // Если ответ успешный, браузер автоматически выполнит редирект
+                    location.reload();
+                } else {
+                    return response.json().then(error => {
+                        throw new Error(error.error);
+                    });
+                }
+            }).catch(error => {
                     // Обрабатываем ошибки при отправке запроса на сервер
-                });
+                alert(error.message);
+            });
         });
     });
 
