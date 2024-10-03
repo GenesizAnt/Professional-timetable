@@ -86,9 +86,17 @@ public class VacantSeatService {
         return vacantSeatRepository.findAll(pageable);
     }
 
+    public Page<VacantSeat> findAllVacantSeatForVisitor(Long idVisitor, Pageable pageable) {
+        return vacantSeatRepository.findByIdVisitor(idVisitor, pageable);
+    }
+
     public Page<VacantSeat> getVacantSeatsPage(Person specialist, Pageable pageable) {
         return vacantSeatRepository.findByDateVacantGreaterThanEqualAndSpecId(LocalDate.now(), specialist, pageable);
-//        return vacantSeatRepository.findBySpecId(specialist, pageable);
+    }
+
+    public Page<VacantSeat> getVacantSeatsPageVisitor(Long idVisitor, Pageable pageable) {
+        return vacantSeatRepository.findVacantSeatsByDateAndIdVisitor(
+                LocalDate.now(), idVisitor, pageable);
     }
 
     public void addTimeAvailability(Person spec, LocalDate date, LocalTime time) {

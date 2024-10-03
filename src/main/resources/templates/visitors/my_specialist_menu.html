@@ -220,105 +220,167 @@
             </div>
         </div>
     </div>
+
+
+    <h5 class="text-center color1 mb-5">Доступные окна для записи</h5>
+    <div class="container">
+        <div class="table-responsive-sm custom-table">
+            <table class="table table-secondary table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Статус записи</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="vacantSeat : ${vacantSeatsVisitor}">
+                    <td hidden th:text="${vacantSeat.id}"></td>
+                    <td class="col-dayOfWeek" th:text="${vacantSeat.dayOfWeek}"></td>
+                    <td class="col-date" th:text="${vacantSeat.dateVacant}"></td>
+                    <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
+                    <td class="col-client">
+                        <span th:if="${vacantSeat.idVisitor != null}">
+                            <span th:text="${vacantSeat.fullname}"></span>
+                            <a href="javascript:void(0)" class="cancel-client">(отменить)</a>
+                            <!--                            <a href="javascript:void(0)" class="cancel-client" th:href="@{'/enroll/cancel/' + ${vacantSeat.id}}">(отменить)</a>-->
+                        </span>
+                        <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-client">Записать</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation" class="pagination-container">
+                <ul class="pagination justify-content-center">
+                    <!-- Если данных нет, показываем только одну страницу -->
+                    <li th:if="${page.totalPages == 0}" class="page-item active">
+                        <a class="page-link">1</a>
+                    </li>
+
+                    <!-- Если данные есть -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/visitors(page=${page.number - 1}, size=${param.size})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <!-- Генерация номеров страниц -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${page.number == i} ? 'active'">
+                        <a class="page-link" th:href="@{/visitors/vacantSeatsVisitor(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Кнопка перехода на следующую страницу -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/visitors/vacantSeatsVisitor(page=${page.number + 1}, size=${param.size})}"
+                           aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </section>
 
-<script th:inline="javascript">
+<!--<script th:inline="javascript">-->
 
-    var csrfToken = document.querySelector('input[name="_csrf"]').value;
-    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');
+<!--    var csrfToken = document.querySelector('input[name="_csrf"]').value;-->
+<!--    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');-->
 
-    function createTable(data) {
-        var table = document.createElement('table');
-        table.className = "table";
-        var tableBody = document.createElement('tbody');
+<!--    function createTable(data) {-->
+<!--        var table = document.createElement('table');-->
+<!--        table.className = "table";-->
+<!--        var tableBody = document.createElement('tbody');-->
 
-        // Создаем строку заголовков
-        var tr = document.createElement('tr');
+<!--        // Создаем строку заголовков-->
+<!--        var tr = document.createElement('tr');-->
 
-        var th1 = document.createElement('th');
-        th1.textContent = data[0][0];
-        th1.colSpan = 1;
-        tr.appendChild(th1);
+<!--        var th1 = document.createElement('th');-->
+<!--        th1.textContent = data[0][0];-->
+<!--        th1.colSpan = 1;-->
+<!--        tr.appendChild(th1);-->
 
-        var th2 = document.createElement('th');
-        th2.textContent = data[0][1];
-        th2.colSpan = 2;
-        tr.appendChild(th2);
+<!--        var th2 = document.createElement('th');-->
+<!--        th2.textContent = data[0][1];-->
+<!--        th2.colSpan = 2;-->
+<!--        tr.appendChild(th2);-->
 
-        tableBody.appendChild(tr);
+<!--        tableBody.appendChild(tr);-->
 
-        var tr = document.createElement('tr');
-        data[1].forEach(elem => {
-            let th = document.createElement('th');
-            th.textContent = elem;
-            tr.appendChild(th);
-        });
-        tableBody.appendChild(tr);
+<!--        var tr = document.createElement('tr');-->
+<!--        data[1].forEach(elem => {-->
+<!--            let th = document.createElement('th');-->
+<!--            th.textContent = elem;-->
+<!--            tr.appendChild(th);-->
+<!--        });-->
+<!--        tableBody.appendChild(tr);-->
 
-        for (var i = 2; i < data.length; i++) {
-            tr = document.createElement('tr');
-            data[i].forEach((elem, index) => {
-                var ind = i;
-                var td = document.createElement('td');
-                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"
-                if (index === 2 && elem === "Доступно") {
-                    var link = document.createElement('a');
-                    link.textContent = elem;
-                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая
-                    link.addEventListener('click', function (event) {
-                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию
+<!--        for (var i = 2; i < data.length; i++) {-->
+<!--            tr = document.createElement('tr');-->
+<!--            data[i].forEach((elem, index) => {-->
+<!--                var ind = i;-->
+<!--                var td = document.createElement('td');-->
+<!--                // Проверяем, является ли текущий столбец третьим (индекс 2) и содержит ли ячейка текст "Доступно"-->
+<!--                if (index === 2 && elem === "Доступно") {-->
+<!--                    var link = document.createElement('a');-->
+<!--                    link.textContent = elem;-->
+<!--                    link.href = "#"; // Установите ссылку на текущую страницу или другую подходящую для вашего случая-->
+<!--                    link.addEventListener('click', function (event) {-->
+<!--                        event.preventDefault(); // Предотвращаем переход по ссылке по умолчанию-->
 
-                        var applicationFromVisitor = {
-                            specialistId: idSpecialist,
-                            meetingDate: table.rows[0].cells[0].textContent,
-                            meetingTime: table.rows[ind].cells[index - 2].textContent
-                        }; // Ваши данные для отправки на контроллер
-                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+<!--                        var applicationFromVisitor = {-->
+<!--                            specialistId: idSpecialist,-->
+<!--                            meetingDate: table.rows[0].cells[0].textContent,-->
+<!--                            meetingTime: table.rows[ind].cells[index - 2].textContent-->
+<!--                        }; // Ваши данные для отправки на контроллер-->
+<!--                        // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными-->
 
-                        // Отправляем данные на сервер
-                        fetch("/visitors/appointment_booking_table", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
-                                // Здесь могут быть другие заголовки, если необходимо
-                            },
-                            body: JSON.stringify(applicationFromVisitor)
-                        })
-                            .then(response => {
-                                location.reload();
-                                // Обрабатываем ответ от сервера
-                            })
-                            .catch(error => {
-                                // Обрабатываем ошибки при отправке запроса на сервер
-                            });
-                    });
-                    td.appendChild(link);
-                } else {
-                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст
-                    td.textContent = elem;
-                }
-                tr.appendChild(td);
-            });
-            tableBody.appendChild(tr);
-        }
+<!--                        // Отправляем данные на сервер-->
+<!--                        fetch("/visitors/appointment_booking_table", {-->
+<!--                            method: 'POST',-->
+<!--                            headers: {-->
+<!--                                'Content-Type': 'application/json',-->
+<!--                                'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса-->
+<!--                                // Здесь могут быть другие заголовки, если необходимо-->
+<!--                            },-->
+<!--                            body: JSON.stringify(applicationFromVisitor)-->
+<!--                        })-->
+<!--                            .then(response => {-->
+<!--                                location.reload();-->
+<!--                                // Обрабатываем ответ от сервера-->
+<!--                            })-->
+<!--                            .catch(error => {-->
+<!--                                // Обрабатываем ошибки при отправке запроса на сервер-->
+<!--                            });-->
+<!--                    });-->
+<!--                    td.appendChild(link);-->
+<!--                } else {-->
+<!--                    // Если текст не "Доступно" или это не третий столбец, просто добавляем текст-->
+<!--                    td.textContent = elem;-->
+<!--                }-->
+<!--                tr.appendChild(td);-->
+<!--            });-->
+<!--            tableBody.appendChild(tr);-->
+<!--        }-->
 
-        table.appendChild(tableBody);
-        document.body.appendChild(table);
-    }
+<!--        table.appendChild(tableBody);-->
+<!--        document.body.appendChild(table);-->
+<!--    }-->
 
-    var data1 = JSON.parse(/*[[${day1}]]*/ '');
-    var data2 = JSON.parse(/*[[${day2}]]*/ '');
-    var data3 = JSON.parse(/*[[${day3}]]*/ '');
-    var data4 = JSON.parse(/*[[${day4}]]*/ '');
-    var data5 = JSON.parse(/*[[${day5}]]*/ '');
+<!--    var data1 = JSON.parse(/*[[${day1}]]*/ '');-->
+<!--    var data2 = JSON.parse(/*[[${day2}]]*/ '');-->
+<!--    var data3 = JSON.parse(/*[[${day3}]]*/ '');-->
+<!--    var data4 = JSON.parse(/*[[${day4}]]*/ '');-->
+<!--    var data5 = JSON.parse(/*[[${day5}]]*/ '');-->
 
-    createTable(data1);
-    createTable(data2);
-    createTable(data3);
-    createTable(data4);
-    createTable(data5);
-</script>
+<!--    createTable(data1);-->
+<!--    createTable(data2);-->
+<!--    createTable(data3);-->
+<!--    createTable(data4);-->
+<!--    createTable(data5);-->
+<!--</script>-->
 
 </body>
 </html>

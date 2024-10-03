@@ -344,7 +344,6 @@ public class EnrollClientController {
         Page<Reception> all = receptionService.findAll(PageRequest.of(page, size));
         model.addAttribute("aproveReceptions", all.getContent());
         model.addAttribute("pageAp", all);
-//        model.addAttribute("size", size);
         return ENROLL_VIEW_REDIRECT;
     }
 

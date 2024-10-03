@@ -6,6 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +19,8 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.DatesAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.PersonService;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
+import ru.genesizant.Professional.Timetable.model.VacantSeat;
+import ru.genesizant.Professional.Timetable.services.*;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
 import java.net.URLEncoder;
@@ -47,9 +49,10 @@ public class VisitorsController {
     private final DatesAppointmentsService datesAppointmentsService;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
+    private final VacantSeatService vacantSeatService;
 
     @ModelAttribute
-    public void getPayloadPage(Model model, HttpServletRequest request) {
+    public void getPayloadPage(@ModelAttribute("visitor") Person visitor, Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
         List<SpecialistAppointments> appointmentsList = List.of();
         List<String> nearestDates = List.of();
@@ -84,6 +87,15 @@ public class VisitorsController {
                 model.addAttribute("day" + (1 + i), nearestDates.get(i));
             }
         }
+
+        // Обработка параметров пагинации
+        int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;
+        int size = request.getSession().getAttribute("size") != null ? (int) request.getSession().getAttribute("size") : 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
+
+        Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPageVisitor(visitor.getId(), pageable);
+        model.addAttribute("vacantSeatsVisitor", vacantSeatsPage.getContent());
+        model.addAttribute("page", vacantSeatsPage);
     }
 
     @ModelAttribute(name = "visitor")
@@ -187,6 +199,22 @@ public class VisitorsController {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
 
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @GetMapping("/vacantSeatsVisitor")
+    public String getVacantSeats(Model model, @ModelAttribute("visitor") Person visitor,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+        if (page < 0) {
+            page = 0; // Устанавливаем на страницу 0, если индекс меньше 0
+        }
+        request.getSession().setAttribute("page", page);
+        request.getSession().setAttribute("size", size);
+        Page<VacantSeat> all = vacantSeatService.findAllVacantSeatForVisitor(visitor.getId(), PageRequest.of(page, size));
+        model.addAttribute("vacantSeatsVisitor", all.getContent());
+        model.addAttribute("page", all);
+        model.addAttribute("size", size);
         return ENROLL_VIEW_REDIRECT;
     }
 
