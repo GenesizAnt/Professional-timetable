@@ -146,12 +146,13 @@
         <div class="row">
             <div class="col-12">
                 <h3 class="text-center color1 mb-5">Выбери клиента, а затем запиши или отмени прием</h3>
-                <div class="alert alert-danger text-center" role="alert" th:if="${param.error != null}">
-                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
-                        <use xlink:href="#exclamation-triangle-fill"/>
-                    </svg>
-                    <span style="color:firebrick" th:text="${param.error}"></span>
-                </div>
+                <div id="error-container"></div>
+                <!--                <div class="alert alert-danger text-center" role="alert" th:if="${param.error != null}">-->
+<!--                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">-->
+<!--                        <use xlink:href="#exclamation-triangle-fill"/>-->
+<!--                    </svg>-->
+<!--                    <span style="color:firebrick" th:text="${param.error}"></span>-->
+<!--                </div>-->
             </div>
             <div class="row">
                 <div class="col-md-6 col-sm-12 text-center">
@@ -407,20 +408,27 @@
             </table>
             <nav aria-label="Page navigation" class="pagination-container">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-                        <a class="page-link" th:href="@{/enroll(page=${page.number - 1}, size=${param.size})}"
-                           aria-label="Previous">
+                    <!-- Если данных нет, показываем только одну страницу -->
+                    <li th:if="${page.totalPages == 0}" class="page-item active">
+                        <a class="page-link">1</a>
+                    </li>
+
+                    <!-- Если данные есть -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/enroll(page=${page.number - 1}, size=${param.size})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+
+                    <!-- Генерация номеров страниц -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
                         th:classappend="${page.number == i} ? 'active'">
-                        <a class="page-link" th:href="@{/enroll/vacantSeats(page=${i}, size=${param.size})}"
-                           th:text="${i + 1}"></a>
+                        <a class="page-link" th:href="@{/enroll/vacantSeats(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
                     </li>
-                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/enroll/vacantSeats(page=${page.number + 1}, size=${param.size})}"
+
+                    <!-- Кнопка перехода на следующую страницу -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/enroll/vacantSeats(page=${page.number + 1}, size=${param.size})}"
                            aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
@@ -481,18 +489,27 @@
         </table>
         <nav aria-label="Page navigation" class="pagination-container">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${pageAp.first} ? 'disabled'">
+                <!-- Условие для проверки: если данных нет -->
+                <li th:if="${pageAp.totalPages == 0}" class="page-item active">
+                    <a class="page-link">1</a>
+                </li>
+
+                <!-- Если данные есть -->
+                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.first} ? 'disabled'">
                     <a class="page-link" th:href="@{/enroll(pageAp=${pageAp.number - 1}, size=${param.size})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, pageAp.totalPages - 1)}"
+
+                <!-- Генерация номеров страниц -->
+                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, pageAp.totalPages - 1)}"
                     th:classappend="${pageAp.number == i} ? 'active'">
                     <a class="page-link" th:href="@{/enroll/aproveReceptions(pageAp=${i}, size=${param.size})}"
                        th:text="${i + 1}"></a>
                 </li>
-                <li class="page-item" th:classappend="${pageAp.last} ? 'disabled'">
+
+                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.last} ? 'disabled'">
                     <a class="page-link"
                        th:href="@{/enroll/aproveReceptions(page=${pageAp.number + 1}, size=${param.size})}"
                        aria-label="Next">
@@ -540,9 +557,12 @@
                     // Если ответ успешный, браузер автоматически выполнит редирект
                     location.reload();
                 } else {
-                    return response.json().then(error => {
-                        throw new Error(error.error);
+                    return response.json().then(errorData => {
+                        displayError(errorData.error); // Вызов функции для отображения ошибки
                     });
+                    // return response.json().then(error => {
+                    //     throw new Error(error.error);
+                    // });
                 }
             }).catch(error => {
                     // Обрабатываем ошибки при отправке запроса на сервер
@@ -550,6 +570,20 @@
             });
         });
     });
+
+    // Функция для отображения ошибки
+    function displayError(errorMessage) {
+        // Находим блок, в который будем вставлять ошибку
+        const errorContainer = document.getElementById('error-container');
+        errorContainer.innerHTML = `
+        <div class="alert alert-danger text-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                <use xlink:href="#exclamation-triangle-fill"/>
+            </svg>
+            <span style="color:firebrick">${errorMessage}</span>
+        </div>
+    `;
+    }
 
 
 
