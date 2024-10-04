@@ -93,42 +93,43 @@
             <!--                    <br>-->
             <!--                </div>-->
             <div class="row">
-                <div class="col-md-6 col-sm-12 text-center">
-                    <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>
-                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                            data-bs-target="#listAssigned">
-                        <h6 class="text-center">Подтверждение оплаты</h6>
-                    </button>
-                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listAssignedLabel">Выбери клиента для подтверждения оплаты</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:method="POST" th:action="@{/administration/agreement}">
-                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>
-                                            <option value="">Список клиентов</option>
-                                            <option th:each="client : ${listName}"
-                                                    th:value="${client.idAppointment}"
-                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">
-                                            </option>
-                                        </select>
-                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"
-                                                role="button">Подтвердить оплату</button>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line"></div>
-                </div>
+<!--                <div class="col-md-6 col-sm-12 text-center">-->
+<!--                <div class="col-md-6 col-sm-12 text-center">-->
+<!--                    <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>-->
+<!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                            data-bs-target="#listAssigned">-->
+<!--                        <h6 class="text-center">Подтверждение оплаты</h6>-->
+<!--                    </button>-->
+<!--                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"-->
+<!--                         aria-hidden="true">-->
+<!--                        <div class="modal-dialog">-->
+<!--                            <div class="modal-content">-->
+<!--                                <div class="modal-header bg-success text-white">-->
+<!--                                    <h5 class="modal-title" id="listAssignedLabel">Выбери клиента для подтверждения оплаты</h5>-->
+<!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                                </div>-->
+<!--                                <div class="modal-body">-->
+<!--                                    <form th:method="POST" th:action="@{/administration/agreement}">-->
+<!--                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>-->
+<!--                                            <option value="">Список клиентов</option>-->
+<!--                                            <option th:each="client : ${listName}"-->
+<!--                                                    th:value="${client.idAppointment}"-->
+<!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
+<!--                                            </option>-->
+<!--                                        </select>-->
+<!--                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"-->
+<!--                                                role="button">Подтвердить оплату</button>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                                <div class="modal-footer">-->
+<!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="line"></div>-->
+<!--                </div>-->
                 <div class="col-md-6 col-sm-12 text-center">
                     <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>
                     <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -140,7 +141,7 @@
                         <div class="modal-dialog modal-dialog-scrollable modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listUnregisteredLabel">Список оплаченных консультаций</h5>
+                                    <h5 class="modal-title" id="listUnregisteredLabel">Клиент отметил, что оплатил</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                 </div>

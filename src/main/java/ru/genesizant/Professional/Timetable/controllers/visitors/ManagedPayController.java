@@ -21,6 +21,7 @@ import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -90,6 +91,14 @@ public class ManagedPayController {
         } else {
             return ERROR_LOGIN;
         }
+        return "redirect:/managed/managed_pay";
+    }
+
+    @PostMapping("/confirm") // Укажите здесь URL, который соответствует URL в JavaScript запросе
+    public String handleTableClick(@ModelAttribute("visitor") Person visitor,
+                                   @RequestBody Map<String, String> applicationFromSpecialist) {
+        specialistAppointmentsService.agreementVisitorPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+        log.info("Клиент: " + visitor.getFullName() + ". Нажал кнопку подтверждение оплаты на консультацию: " + applicationFromSpecialist.get("id"));
         return "redirect:/managed/managed_pay";
     }
 }

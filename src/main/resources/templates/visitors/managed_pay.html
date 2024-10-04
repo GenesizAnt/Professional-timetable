@@ -64,42 +64,42 @@
     <div class="container">
         <div class="row">
             <div class="row">
-                <div class="col-md-6 col-sm-12 text-center">
-                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>
-                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                            data-bs-target="#listAssigned">
-                        <h6 class="text-center">Уведомление специалиста об оплате</h6>
-                    </button>
-                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listAssignedLabel">Выберите консультацию, которую вы оплатили (отображаются только подтвержденные специалистом встречи)</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:method="POST" th:action="@{/managed/make_payment}">
-                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>
-                                            <option value="">Список консультаций</option>
-                                            <option th:each="client : ${needPay}"
-                                                    th:value="${client.idAppointment}"
-                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment}">
-                                            </option>
-                                        </select>
-                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"
-                                                role="button">Подтвердить оплату</button>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line"></div>
-                </div>
+<!--                <div class="col-md-6 col-sm-12 text-center">-->
+<!--                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>-->
+<!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                            data-bs-target="#listAssigned">-->
+<!--                        <h6 class="text-center">Уведомление специалиста об оплате</h6>-->
+<!--                    </button>-->
+<!--                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"-->
+<!--                         aria-hidden="true">-->
+<!--                        <div class="modal-dialog">-->
+<!--                            <div class="modal-content">-->
+<!--                                <div class="modal-header bg-success text-white">-->
+<!--                                    <h5 class="modal-title" id="listAssignedLabel">Выберите консультацию, которую вы оплатили (отображаются только подтвержденные специалистом встречи)</h5>-->
+<!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                                </div>-->
+<!--                                <div class="modal-body">-->
+<!--                                    <form th:method="POST" th:action="@{/managed/make_payment}">-->
+<!--                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>-->
+<!--                                            <option value="">Список консультаций</option>-->
+<!--                                            <option th:each="client : ${needPay}"-->
+<!--                                                    th:value="${client.idAppointment}"-->
+<!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment}">-->
+<!--                                            </option>-->
+<!--                                        </select>-->
+<!--                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"-->
+<!--                                                role="button">Подтвердить оплату</button>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                                <div class="modal-footer">-->
+<!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="line"></div>-->
+<!--                </div>-->
 <!--                <div class="col-md-6 col-sm-12 text-center">-->
 <!--                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>-->
 <!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
@@ -141,7 +141,75 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="table-responsive-sm custom-table">
+            <table class="table table-secondary table-bordered table-striped">
+                <thead>
+                <tr>
+<!--                    <th scope="col">Клиент</th>-->
+                    <th scope="col">Дата</th>
+                    <th scope="col">Время</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="debtors : ${needPay}">
+                    <td hidden th:text="${debtors.idAppointment}"></td>
+<!--                    <td class="col-client" th:text="${debtors.fullName}"></td>-->
+                    <td class="col-date" th:text="${debtors.dateAppointment}"></td>
+                    <td class="col-time" th:text="${debtors.timeAppointment}"></td>
+                    <td class="col-action">
+                        <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
+
+<script th:inline="javascript">
+    var csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+    $(document).ready(function(){
+        // При нажатии на запись
+        $('.confirm-slot').click(function(){
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+            var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
+            var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
+            var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+                date: date,
+                time: time,
+                client: client
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/managed/confirm", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+</script>
 
 </body>
 </html>
