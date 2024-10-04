@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-@Comment("Хранение данных по платежным возможностям специалиста")
+@Comment("Хранение данных по платежным ссылкам специалиста")
 @Entity
 @NoArgsConstructor
 @Getter

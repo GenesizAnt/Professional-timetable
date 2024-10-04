@@ -12,15 +12,15 @@ public enum DayOfWeekRus {
 
     private final String titleRus;
 
-    public String getTitleRusShort() {
-        return titleRusShort;
+    private final String titleShortRus;
+
+    DayOfWeekRus(String titleRus, String titleShortRus) {
+        this.titleRus = titleRus;
+        this.titleShortRus = titleShortRus;
     }
 
-    private final String titleRusShort;
-
-    DayOfWeekRus(String titleRus, String titleRusShort) {
-        this.titleRus = titleRus;
-        this.titleRusShort = titleRusShort;
+    public String getTitleShortRus() {
+        return titleShortRus;
     }
 
     public String getTitleRus() {
@@ -42,15 +42,14 @@ public enum DayOfWeekRus {
 
     public static String getRusDayWeekShort(String engDayWeek) {
         return switch (engDayWeek.toUpperCase()) {
-            case "SUNDAY" -> SUNDAY.getTitleRusShort();
-            case "MONDAY" -> MONDAY.getTitleRusShort();
-            case "TUESDAY" -> TUESDAY.getTitleRusShort();
-            case "WEDNESDAY" -> WEDNESDAY.getTitleRusShort();
-            case "THURSDAY" -> THURSDAY.getTitleRusShort();
-            case "FRIDAY" -> FRIDAY.getTitleRusShort();
-            case "SATURDAY" -> SATURDAY.getTitleRusShort();
+            case "SUNDAY" -> SUNDAY.getTitleShortRus();
+            case "MONDAY" -> MONDAY.getTitleShortRus();
+            case "TUESDAY" -> TUESDAY.getTitleShortRus();
+            case "WEDNESDAY" -> WEDNESDAY.getTitleShortRus();
+            case "THURSDAY" -> THURSDAY.getTitleShortRus();
+            case "FRIDAY" -> FRIDAY.getTitleShortRus();
+            case "SATURDAY" -> SATURDAY.getTitleShortRus();
             default -> "Неверное название дня недели";
         };
     }
-
 }
