@@ -94,6 +94,11 @@ public class VisitorsController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPageVisitor(visitor.getId(), pageable);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        vacantSeatsPage.getContent().forEach(vacantSeat -> {
+            vacantSeat.setFormattedDate(vacantSeat.getDateVacant().format(formatter));
+        });
+
         model.addAttribute("vacantSeatsVisitor", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
     }

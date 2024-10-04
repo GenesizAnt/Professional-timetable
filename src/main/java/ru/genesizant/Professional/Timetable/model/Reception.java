@@ -65,4 +65,11 @@ public class Reception {
     @Comment("Было ли уведомление за 3 часа")
     @Column(name = "notify_3_hours")
     private boolean notify3hours;
+
+    @Transient
+    private String formattedDate;
+
+    public void setFormattedDate(String format) {
+        this.formattedDate = format;
+    }
 }

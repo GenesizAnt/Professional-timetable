@@ -43,4 +43,11 @@ public class VacantSeat {
     @ManyToOne
     @JoinColumn(name = "spec_id", referencedColumnName = "id")
     private Person specId;
+
+    @Transient
+    private String formattedDate;
+    
+    public void setFormattedDate(String format) {
+        this.formattedDate = format;
+    }
 }

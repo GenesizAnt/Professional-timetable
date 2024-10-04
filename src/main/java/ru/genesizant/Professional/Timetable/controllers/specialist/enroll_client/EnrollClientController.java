@@ -86,6 +86,11 @@ public class EnrollClientController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        vacantSeatsPage.getContent().forEach(vacantSeat -> {
+            vacantSeat.setFormattedDate(vacantSeat.getDateVacant().format(formatter));
+        });
+
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
 
@@ -95,6 +100,11 @@ public class EnrollClientController {
         Pageable pageableAp = PageRequest.of(pageAp, sizeAp, Sort.by("dateVacant").and(Sort.by("timeVacant")));
 
         Page<Reception> aproveReceptions = receptionService.getReceptionsPage(specialist, pageableAp);
+        DateTimeFormatter formatterReceptions = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        aproveReceptions.getContent().forEach(reception -> {
+            reception.setFormattedDate(reception.getDateVacant().format(formatterReceptions));
+        });
+
         model.addAttribute("aproveReceptions", aproveReceptions.getContent());
         model.addAttribute("pageAp", aproveReceptions);
     }

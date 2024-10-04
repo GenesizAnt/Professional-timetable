@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -76,6 +77,11 @@ public class CalendarManagementController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateVacant").and(Sort.by("timeVacant")));
 
         Page<VacantSeat> vacantSeatsPage = vacantSeatService.getVacantSeatsPage(specialist, pageable);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        vacantSeatsPage.getContent().forEach(vacantSeat -> {
+            vacantSeat.setFormattedDate(vacantSeat.getDateVacant().format(formatter));
+        });
+
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
 

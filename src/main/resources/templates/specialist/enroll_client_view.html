@@ -393,7 +393,7 @@
                 <tr th:each="vacantSeat : ${vacantSeats}">
                     <td hidden th:text="${vacantSeat.id}"></td>
                     <td class="col-dayOfWeek" th:text="${vacantSeat.dayOfWeek}"></td>
-                    <td class="col-date" th:text="${vacantSeat.dateVacant}"></td>
+                    <td class="col-date" th:text="${vacantSeat.formattedDate}"></td>
                     <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
                         <span th:if="${vacantSeat.idVisitor != null}">
@@ -456,7 +456,7 @@
             <tr th:each="reception : ${aproveReceptions}">
                 <td hidden th:text="${reception.id}"></td>
                 <td class="col-dayOfWeekAp" th:text="${reception.dayOfWeek}"></td>
-                <td class="col-dateAp" th:text="${reception.dateVacant}"></td>
+                <td class="col-dateAp" th:text="${reception.formattedDate}"></td>
                 <td class="col-timeAp" th:text="${reception.timeVacant}"></td>
                 <td class="col-clientAp">
                     <span th:if="${reception.visitorIdReception != null}" style="display: flex; flex-direction: column; align-items: center;">
