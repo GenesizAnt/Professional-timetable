@@ -78,4 +78,11 @@ public class ReceptionService {
                 isNotifyOneDay,
                 isNotifyThreeHours);
     }
+
+    public List<Reception> findNeedPayReception(SpecialistsAndClient assignedToSpecialist) {
+        return receptionRepository.findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepayment(
+                assignedToSpecialist.getSpecialistList(),
+                assignedToSpecialist.getVisitorList(),
+                false);
+    }
 }

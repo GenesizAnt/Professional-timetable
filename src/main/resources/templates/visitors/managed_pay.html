@@ -20,6 +20,12 @@
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+    <style>
+        .col-client, .col-date, .col-time, .col-action {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
@@ -147,18 +153,18 @@
             <table class="table table-secondary table-bordered table-striped">
                 <thead>
                 <tr>
-<!--                    <th scope="col">Клиент</th>-->
-                    <th scope="col">Дата</th>
-                    <th scope="col">Время</th>
                     <th scope="col"></th>
+                    <th scope="col" class="text-center">Дата</th>
+                    <th scope="col" class="text-center">Время</th>
+                    <th scope="col" class="text-center">Статус</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="debtors : ${needPay}">
-                    <td hidden th:text="${debtors.idAppointment}"></td>
-<!--                    <td class="col-client" th:text="${debtors.fullName}"></td>-->
-                    <td class="col-date" th:text="${debtors.dateAppointment}"></td>
-                    <td class="col-time" th:text="${debtors.timeAppointment}"></td>
+                    <td hidden th:text="${debtors.id}"></td>
+                    <td class="col-client" th:text="${debtors.dayOfWeek}"></td>
+                    <td class="col-date" th:text="${debtors.formattedDate}"></td>
+                    <td class="col-time" th:text="${debtors.timeVacant}"></td>
                     <td class="col-action">
                         <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>
                     </td>

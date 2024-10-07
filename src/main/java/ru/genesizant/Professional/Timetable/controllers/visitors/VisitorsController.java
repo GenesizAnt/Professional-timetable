@@ -15,11 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
-import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
+import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.services.*;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
@@ -50,43 +47,49 @@ public class VisitorsController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final VacantSeatService vacantSeatService;
+    private final ReceptionService receptionService;
 
     @ModelAttribute
     public void getPayloadPage(@ModelAttribute("visitor") Person visitor, Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = List.of();
-        List<String> nearestDates = List.of();
-        if (assignedToSpecialist.isPresent()) {
-            Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
-            nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
-            appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist(assignedToSpecialist.get().getSpecialistList().getId());
-            model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
-            model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
-        }
-        List<AgreementAppointmentDTO> times = new ArrayList<>();
-        List<AgreementAppointmentDTO> needAgree = new ArrayList<>();
-        if (!appointmentsList.isEmpty()) {
-            for (SpecialistAppointments appointments : appointmentsList) {
-                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
-                appointmentDTO.setIdAppointment(appointments.getId());
-                appointmentDTO.setDateAppointment(appointments.getVisitDate());
-                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-                if (!appointments.isPrepayment() && appointments.getVisitorAppointments().getId().equals(request.getSession().getAttribute("id")) && !appointments.isPrepaymentVisitor()) {
-                    times.add(appointmentDTO);
-                }
-                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
-                    needAgree.add(appointmentDTO);
-                }
-            }
-        }
-        model.addAttribute("visitDates", times);
-        model.addAttribute("needAgree", needAgree);
+        model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+        model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+        List<Reception> needPay = receptionService.findNeedPayReception(assignedToSpecialist.get());
 
-        if (!nearestDates.isEmpty()) {
-            for (int i = 0; i < nearestDates.size(); i++) {
-                model.addAttribute("day" + (1 + i), nearestDates.get(i));
-            }
-        }
+//        Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
+//        List<SpecialistAppointments> appointmentsList = List.of();
+//        List<String> nearestDates = List.of();
+//        if (assignedToSpecialist.isPresent()) {
+//            Map<LocalDate, Map<String, String>> schedule = datesAppointmentsService.getCalendarFreeScheduleById(assignedToSpecialist.get().getSpecialistList().getId());
+//            nearestDates = datesAppointmentsService.getFiveNearestDates(schedule, assignedToSpecialist.get().getVisitorList().getFullName());
+//            appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist(assignedToSpecialist.get().getSpecialistList().getId());
+//            model.addAttribute("nameClient", assignedToSpecialist.get().getVisitorList().getUsername());
+//            model.addAttribute("idSpecialist", assignedToSpecialist.get().getSpecialistList().getId());
+//        }
+//        List<AgreementAppointmentDTO> times = new ArrayList<>();
+//        List<AgreementAppointmentDTO> needAgree = new ArrayList<>();
+//        if (!appointmentsList.isEmpty()) {
+//            for (SpecialistAppointments appointments : appointmentsList) {
+//                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
+//                appointmentDTO.setIdAppointment(appointments.getId());
+//                appointmentDTO.setDateAppointment(appointments.getVisitDate());
+//                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
+//                if (!appointments.isPrepayment() && appointments.getVisitorAppointments().getId().equals(request.getSession().getAttribute("id")) && !appointments.isPrepaymentVisitor()) {
+//                    times.add(appointmentDTO);
+//                }
+//                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
+//                    needAgree.add(appointmentDTO);
+//                }
+//            }
+//        }
+        model.addAttribute("needPay", needPay);
+//        model.addAttribute("needAgree", needAgree);
+
+//        if (!nearestDates.isEmpty()) {
+//            for (int i = 0; i < nearestDates.size(); i++) {
+//                model.addAttribute("day" + (1 + i), nearestDates.get(i));
+//            }
+//        }
 
         // Обработка параметров пагинации
         int page = request.getSession().getAttribute("page") != null ? (int) request.getSession().getAttribute("page") : 0;

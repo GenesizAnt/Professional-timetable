@@ -9,16 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
-import ru.genesizant.Professional.Timetable.model.Person;
-import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
-import ru.genesizant.Professional.Timetable.model.SpecialistPay;
-import ru.genesizant.Professional.Timetable.model.SpecialistsAndClient;
+import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
-import ru.genesizant.Professional.Timetable.services.PersonService;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
-import ru.genesizant.Professional.Timetable.services.SpecialistPayService;
-import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
+import ru.genesizant.Professional.Timetable.services.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,29 +33,39 @@ public class ManagedPayController {
     private final SpecialistsAndClientService specialistsAndClientService;
     private final SpecialistPayService specialistPayService;
     private final PersonService personService;
+    private final VacantSeatService vacantSeatService;
+    private final ReceptionService receptionService;
 
     @ModelAttribute
     public void getPayloadPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-        List<SpecialistAppointments> appointmentsList = List.of();
+//        List<SpecialistAppointments> appointmentsList = List.of();
         Optional<SpecialistPay> specialistPay = Optional.empty();
         if (assignedToSpecialist.isPresent()) {
-            appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"), assignedToSpecialist.get().getSpecialistList().getId());
+//            appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"), assignedToSpecialist.get().getSpecialistList().getId());
             specialistPay = specialistPayService.findBySpecialistPay(assignedToSpecialist.get().getSpecialistList().getId());
         }
-        List<AgreementAppointmentDTO> needPay = new ArrayList<>();
-        if (!appointmentsList.isEmpty()) {
-            for (SpecialistAppointments appointments : appointmentsList) {
-                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
-                appointmentDTO.setIdAppointment(appointments.getId());
-                appointmentDTO.setDateAppointment(appointments.getVisitDate());
-                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-                if (!appointments.isPrepaymentVisitor()) {
-                    needPay.add(appointmentDTO);
-                }
-            }
-            model.addAttribute("needPay", needPay);
-        }
+//        List<AgreementAppointmentDTO> needPay = new ArrayList<>();
+//        if (!appointmentsList.isEmpty()) {
+//            for (SpecialistAppointments appointments : appointmentsList) {
+//                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
+//                appointmentDTO.setIdAppointment(appointments.getId());
+//                appointmentDTO.setDateAppointment(appointments.getVisitDate());
+//                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
+//                if (!appointments.isPrepaymentVisitor()) {
+//                    needPay.add(appointmentDTO);
+//                }
+//            }
+//            model.addAttribute("needPay", needPay);
+//        }
+
+        List<Reception> needPay = receptionService.findNeedPayReception(assignedToSpecialist.get());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        needPay.forEach(reception -> {
+            reception.setFormattedDate(reception.getDateVacant().format(formatter));
+        });
+        model.addAttribute("needPay", needPay);
+
         specialistPay.ifPresent(pay -> model.addAttribute("link", pay.getLinkPay()));
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }

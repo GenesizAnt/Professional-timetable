@@ -59,6 +59,7 @@ public class SpecialistAppointmentsService {
     }
 
     // Подтверждение или Отмена оплаты по конкретному клиенту - кнопка специалиста
+    //ToDo поменять на новый класс + подтвреждение спеца это и подвтверждение клиента одновременно
     public void agreementPrePay(Long idAgreement, Boolean isPrePay) {
         Optional<SpecialistAppointments> appointments = specialistAppointmentsRepository.findById(idAgreement);
         appointments.get().setPrepayment(isPrePay);
