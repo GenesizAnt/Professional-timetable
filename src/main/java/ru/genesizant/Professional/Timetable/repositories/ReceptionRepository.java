@@ -45,5 +45,5 @@ public interface ReceptionRepository extends JpaRepository<Reception, Long> {
                                                                        @Param("isNotifyOneDay") boolean isNotifyOneDay,
                                                                        @Param("isNotifyThreeHours") boolean isNotifyThreeHours);
 
-    List<Reception> findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepayment(Person specialist, Person visitor, boolean prepayment);
+    List<Reception> findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepaymentVisitor(Person specialist, Person visitor, boolean prepayment);
 }

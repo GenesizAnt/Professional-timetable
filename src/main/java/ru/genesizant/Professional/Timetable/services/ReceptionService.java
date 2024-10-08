@@ -80,9 +80,16 @@ public class ReceptionService {
     }
 
     public List<Reception> findNeedPayReception(SpecialistsAndClient assignedToSpecialist) {
-        return receptionRepository.findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepayment(
+        return receptionRepository.findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepaymentVisitor(
                 assignedToSpecialist.getSpecialistList(),
                 assignedToSpecialist.getVisitorList(),
                 false);
     }
+
+//    public List<Reception> findNeedPayReception(SpecialistsAndClient assignedToSpecialist) {
+//        return receptionRepository.findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepayment(
+//                assignedToSpecialist.getSpecialistList(),
+//                assignedToSpecialist.getVisitorList(),
+//                false);
+//    }
 }

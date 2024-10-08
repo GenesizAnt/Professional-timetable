@@ -183,18 +183,18 @@
         $('.confirm-slot').click(function(){
             var row = $(this).closest('tr');
             var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
-            var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
-            var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
-            var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
+            // var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
+            // var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
+            // var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
 
 
             // Отправляем данные на контроллер для обработки
             var applicationFromSpecialist = {
                 // specialistId: idSpecialist,
-                id: id,
-                date: date,
-                time: time,
-                client: client
+                id: id
+                // date: date,
+                // time: time,
+                // client: client
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер

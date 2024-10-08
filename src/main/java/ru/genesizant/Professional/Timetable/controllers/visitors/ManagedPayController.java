@@ -102,7 +102,12 @@ public class ManagedPayController {
     @PostMapping("/confirm") // Укажите здесь URL, который соответствует URL в JavaScript запросе
     public String handleTableClick(@ModelAttribute("visitor") Person visitor,
                                    @RequestBody Map<String, String> applicationFromSpecialist) {
-        specialistAppointmentsService.agreementVisitorPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+        Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        reception.setPrepaymentVisitor(true);
+        receptionService.save(reception);
+
+        //ОТПРАВКА СООБЩЕНИЕЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ
+
         log.info("Клиент: " + visitor.getFullName() + ". Нажал кнопку подтверждение оплаты на консультацию: " + applicationFromSpecialist.get("id"));
         return "redirect:/managed/managed_pay";
     }

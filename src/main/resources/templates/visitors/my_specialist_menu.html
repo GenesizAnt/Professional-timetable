@@ -29,11 +29,11 @@
         }
 
         th:first-child, td:first-child {
-            width: 16%; /* ширина первого столбца */
+            width: 15%; /* ширина первого столбца */
         }
 
         th:nth-child(3), td:nth-child(3) {
-            width: 20%; /* новая ширина третьего столбца */
+            width: 18%; /* новая ширина третьего столбца */
         }
 
         th, td {
@@ -235,9 +235,9 @@
                     <td class="col-client">
                         <span th:if="${vacantSeat.idVisitor != null}">
                             <span>Вы записаны</span>
-                            <a href="javascript:void(0)" class="cancel-client">(отменить)</a>
+                            <a href="javascript:void(0)" class="cancel-visitor">(отменить)</a>
                         </span>
-                        <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-client">Записаться</a>
+                        <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-visitor">Записаться</a>
                     </td>
                 </tr>
                 </tbody>
@@ -274,6 +274,86 @@
         </div>
     </div>
 </section>
+
+<script th:inline="javascript">
+    let csrfToken = document.querySelector('input[name="_csrf"]').value;
+    var idSpecialist = JSON.parse(/*[[${idSpecialist}]]*/ '');
+    // let selectedCustomerId1 = /*[[${selectedCustomerId}]]*/ '';
+    // let registeredStatus1 = /*[[${registeredStatus}]]*/ '';
+
+    $(document).ready(function () {
+        // При нажатии на запись
+        $('.record-visitor').click(function () {
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                specialistId: idSpecialist,
+                id: id
+                // selectedCustomerId: selectedCustomerId1,
+                // registeredStatus: registeredStatus1
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/visitors/record-visitor", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+
+                if (response.ok) {
+                    // Если ответ успешный, браузер автоматически выполнит редирект
+                    location.reload();
+                } else {
+                    // return response.json().then(errorData => {
+                    //     displayError(errorData.error); // Вызов функции для отображения ошибки
+                    // });
+                    // return response.json().then(error => {
+                    //     throw new Error(error.error);
+                    // });
+                }
+            })
+        });
+    });
+
+    $(document).ready(function () {
+        // При нажатии на запись
+        $('.cancel-visitor').click(function () {
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                specialistId: idSpecialist,
+                id: id
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/visitors/cancel", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+
+</script>
 
 <!--<script th:inline="javascript">-->
 

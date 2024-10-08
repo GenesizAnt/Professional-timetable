@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.dto.PersonFullName;
+import ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor;
 import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.*;
@@ -29,7 +30,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static ru.genesizant.Professional.Timetable.enums.StatusPerson.SPECIALIST;
 import static ru.genesizant.Professional.Timetable.enums.StatusPerson.VISITOR;
+import static ru.genesizant.Professional.Timetable.enums.StatusRegisteredVisitor.REGISTERED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -195,8 +198,8 @@ public class VisitorsController {
     // Отменить запись
     @PostMapping("/cancellingBookingVisitor")
     public String cancellingBookingVisitor(@ModelAttribute("visitor") Person visitor,
-                                    @RequestParam("selectedSpecialistId") String selectedSpecialistId,
-                                    @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
+                                           @RequestParam("selectedSpecialistId") String selectedSpecialistId,
+                                           @RequestParam("meetingCancel") LocalDateTime meetingCancel) {
         if (meetingCancel != null) {
             datesAppointmentsService.cancellingBookingAppointments(meetingCancel, Long.valueOf(selectedSpecialistId));
             Optional<SpecialistAppointments> appointmentsCancel = specialistAppointmentsService.getAppointmentsSpecificDay(Long.valueOf(selectedSpecialistId), meetingCancel);
@@ -207,6 +210,34 @@ public class VisitorsController {
             return encodeError("Для отмены записи нужно выбрать КЛИЕНТА и ДАТУ отмены приема");
         }
 
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/record-visitor")
+    public String recordVisitorReception(@ModelAttribute("visitor") Person visitor, @RequestBody Map<String, String> applicationFromSpecialist) {
+        VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        Person specialist = personService.findById(Long.valueOf(applicationFromSpecialist.get("specialistId"))).orElseThrow();
+        receptionService.recordNewReception(vacantSeat, visitor, null, specialist, VISITOR, REGISTERED);
+        vacantSeat.setIdVisitor(visitor.getId());
+        vacantSeat.setFullname(visitor.getFullName());
+        vacantSeat.setStatusRegistration(REGISTERED.name());
+        vacantSeatService.save(vacantSeat);
+
+        //ОТПРАВКА СООБЩЕНИЕЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ
+
+        return ENROLL_VIEW_REDIRECT;
+    }
+
+    @PostMapping("/cancel")
+    public String cancelEnrollVisitor(@ModelAttribute("visitor") Person visitor, @RequestBody Map<String, String> applicationFromSpecialist) {
+        VacantSeat vacantSeat = vacantSeatService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
+        Person specialist = personService.findById(Long.valueOf(applicationFromSpecialist.get("specialistId"))).orElseThrow();
+        sendMessageService.notifyCancellation(VISITOR, vacantSeat, specialist);
+        vacantSeat.setIdVisitor(null);
+        vacantSeat.setFullname(null);
+        vacantSeat.setStatusRegistration(null);
+        vacantSeatService.save(vacantSeat);
+        receptionService.removeByVacantSeat(vacantSeat, specialist);
         return ENROLL_VIEW_REDIRECT;
     }
 
