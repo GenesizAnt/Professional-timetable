@@ -24,7 +24,7 @@ import java.util.Optional;
 public interface ReceptionRepository extends JpaRepository<Reception, Long> {
     Page<Reception> findBySpecIdReception(Person specialist, Pageable pageableAp);
 
-    Page<Reception> findByDateVacantGreaterThanEqualAndSpecIdReception(LocalDate currentDate, Person specialist, Pageable pageable);
+    Page<Reception> findByDateVacantGreaterThanEqualAndSpecIdReceptionAndConfirmedSpecialist(LocalDate currentDate, Person specialist, Pageable pageable, boolean confirmed);
     Optional<Reception> findByDateVacantAndTimeVacantAndSpecIdReception(LocalDate localDate, LocalTime localTime, Person specialist);
 
     @Modifying
@@ -46,4 +46,6 @@ public interface ReceptionRepository extends JpaRepository<Reception, Long> {
                                                                        @Param("isNotifyThreeHours") boolean isNotifyThreeHours);
 
     List<Reception> findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepaymentVisitor(Person specialist, Person visitor, boolean prepayment);
+
+    List<Reception> findBySpecIdReception_IdAndPrepayment(long idSpecialist, boolean prepayment);
 }

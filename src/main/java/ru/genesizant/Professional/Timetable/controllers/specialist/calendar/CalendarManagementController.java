@@ -296,6 +296,9 @@ public class CalendarManagementController {
     public String getVacantSeats(Model model,
                                  @RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+        if (page < 0) {
+            page = 0; // Устанавливаем на страницу 0, если индекс меньше 0
+        }
         request.getSession().setAttribute("page", page);
         request.getSession().setAttribute("size", size);
         Page<VacantSeat> all = vacantSeatService.findAll(PageRequest.of(page, size));

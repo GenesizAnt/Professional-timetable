@@ -535,45 +535,45 @@
 <!--                </div>-->
 <!--                <div class="line"></div>-->
 <!--            </div>-->
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-eraser"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#deleteTime">
-                    <h6 class="text-center">Удалить время доступное для приема</h6>
-                </button>
-                <div class="modal fade" id="deleteTime" tabindex="-1" aria-labelledby="deleteTimeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="deleteTimeLabel">Выбери время для удаления</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">
-                                    <div class="col-12">
-                                        <label for="dateOne">Дата:</label>
-                                        <input type="date" id="dateOne" name="dateOne">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="selectedTimeAdmission">Время:</label>
-                                        <input type="time" id="selectedTimeAdmission" name="selectedTimeAdmission"
-                                               value="">
-                                    </div>
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-eraser"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#deleteTime">-->
+<!--                    <h6 class="text-center">Удалить время доступное для приема</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="deleteTime" tabindex="-1" aria-labelledby="deleteTimeLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="deleteTimeLabel">Выбери время для удаления</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/timeAdmissionFormDelete}">-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="dateOne">Дата:</label>-->
+<!--                                        <input type="date" id="dateOne" name="dateOne">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12">-->
+<!--                                        <label for="selectedTimeAdmission">Время:</label>-->
+<!--                                        <input type="time" id="selectedTimeAdmission" name="selectedTimeAdmission"-->
+<!--                                               value="">-->
+<!--                                    </div>-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Удалить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
 <!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
 <!--                <div class="itd_circle"><i class="fa-solid fa-house-lock"></i></div>-->
 <!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
@@ -616,39 +616,39 @@
 <!--                </div>-->
 <!--                <div class="line"></div>-->
 <!--            </div>-->
-            <div class="col-xl-4 col-md-6 col-sm-12 text-center">
-                <div class="itd_circle"><i class="fa-solid fa-trash"></i></div>
-                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                        data-bs-target="#selectedDateBefore">
-                    <h6 class="text-center">Очистить даты из календаря</h6>
-                </button>
-                <div class="modal fade" id="selectedDateBefore" tabindex="-1" aria-labelledby="selectedDateBeforeLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="selectedDateBeforeLabel">Выбери дату, до которой нужно
-                                    очистить календарь</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form th:method="POST" th:action="@{/calendar/dateBeforeClear}">
-                                    <label for="selectedDateBeforeClear">Выберите дату:</label>
-                                    <input type="date" id="selectedDateBeforeClear" name="selectedDateBeforeClear">
-                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">
-                                        Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="line"></div>
-            </div>
+<!--            <div class="col-xl-4 col-md-6 col-sm-12 text-center">-->
+<!--                <div class="itd_circle"><i class="fa-solid fa-trash"></i></div>-->
+<!--                <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                        data-bs-target="#selectedDateBefore">-->
+<!--                    <h6 class="text-center">Очистить даты из календаря</h6>-->
+<!--                </button>-->
+<!--                <div class="modal fade" id="selectedDateBefore" tabindex="-1" aria-labelledby="selectedDateBeforeLabel"-->
+<!--                     aria-hidden="true">-->
+<!--                    <div class="modal-dialog">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header bg-success text-white">-->
+<!--                                <h5 class="modal-title" id="selectedDateBeforeLabel">Выбери дату, до которой нужно-->
+<!--                                    очистить календарь</h5>-->
+<!--                                <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                        aria-label="Close"></button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form th:method="POST" th:action="@{/calendar/dateBeforeClear}">-->
+<!--                                    <label for="selectedDateBeforeClear">Выберите дату:</label>-->
+<!--                                    <input type="date" id="selectedDateBeforeClear" name="selectedDateBeforeClear">-->
+<!--                                    <button type="submit" class="btn btn-info btn-enroll" tabindex="-1" role="button">-->
+<!--                                        Удалить-->
+<!--                                    </button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="line"></div>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -692,19 +692,32 @@
             </table>
             <nav aria-label="Page navigation" class="pagination-container">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+
+                    <!-- Если данных нет, показываем только одну страницу -->
+                    <li th:if="${page.totalPages == 0}" class="page-item active">
+                        <a class="page-link">1</a>
+                    </li>
+
+                    <!-- Если данные есть -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.first} ? 'disabled'">
                         <a class="page-link" th:href="@{/calendar(page=${page.number - 1}, size=${param.size})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${page.number == i} ? 'active'">
+
+                    <!-- Генерация номеров страниц -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${page.number == i} ? 'active'">
                         <a class="page-link" th:href="@{/calendar/vacantSeats(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
                     </li>
-                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+
+                    <!-- Кнопка перехода на следующую страницу -->
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:classappend="${page.last} ? 'disabled'">
                         <a class="page-link" th:href="@{/calendar/vacantSeats(page=${page.number + 1}, size=${param.size})}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
+
                 </ul>
             </nav>
         </div>

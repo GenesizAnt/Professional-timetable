@@ -136,6 +136,7 @@ public class EnrollClientController {
     }
 
     // Подтверждение записи встречи, которую инициировал клиент
+    //ToDo НУЖЕН ЛИ ЭТОТ КОНТРОООООООООООООООООООООООООООООООООООООООООООООООООООООООЛЕР
     @PostMapping("/agree-spec")
     public String agreeReceptionSpec(@RequestBody Map<String, String> applicationFromSpecialist) {
         Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));

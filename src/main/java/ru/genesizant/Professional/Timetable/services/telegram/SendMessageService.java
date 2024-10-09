@@ -107,7 +107,7 @@ public class SendMessageService {
                     getDiffDay(localDate),
                     localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                     localTime.format(DateTimeFormatter.ofPattern("HH:mm")));
-            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s подтвердил назначенную встречу на%s %s в %s",
+            case SPECIALIST -> responseMsg = String.format("%s, сообщаем, что специалист %s назначил встречу на%s %s в %s",
                     recipient.getFirstName(),
                     sender.getFirstName(),
                     getDiffDay(localDate),

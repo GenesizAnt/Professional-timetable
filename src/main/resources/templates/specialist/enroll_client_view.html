@@ -439,7 +439,7 @@
     </div>
 </section>
 
-<h5 class="text-center color1 mb-5">Таблица подтверждения записей</h5>
+<h5 class="text-center color1 mb-5">Приемы назначенные клиентом</h5>
 <div class="container">
     <div class="table-responsive-sm custom-tableAp">
         <table class="table table-secondary table-bordered table-striped">
@@ -460,18 +460,7 @@
                 <td class="col-timeAp" th:text="${reception.timeVacant}"></td>
                 <td class="col-clientAp">
                     <span th:if="${reception.visitorIdReception != null}" style="display: flex; flex-direction: column; align-items: center;">
-                        <span th:text="${reception.visitorIdReception.getFullName()}" style="text-align: center;"><br>
-                            <span th:text="'Подтверждено'"
-                                  style="color: #1196de; text-align: center;">
-                            </span>
-                        </span>
-                        <span th:if="${reception.confirmedVisitor == true}"
-                              th:text="'Подтверждено'"
-                              style="color: #1196de; text-align: center; margin-top: 5px;">
-                        </span>
-                        <span th:if="${reception.confirmedVisitor == false}" style="color: #ea7777; text-align: center; margin-top: 5px;">
-                              <a href="javascript:void(0)" class="agree-visitor">Не подтверждено</a>
-                        </span>
+                        <span th:text="${reception.visitorIdReception.getFullName()}" style="text-align: center;"></span>
                     </span>
                 </td>
                 <td class="col-specAp">

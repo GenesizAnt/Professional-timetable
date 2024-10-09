@@ -32,17 +32,37 @@
             word-wrap: break-word;
         }
 
-        .col-client { width: 30%; }
-        .col-date { width: 23%; }
-        .col-time { width: 17%; }
-        .col-action { width: 30%; }
+        .col-dayOfWeek {
+            width: 5%;
+        }
+
+        .col-date {
+            width: 23%;
+        }
+
+        .col-time {
+            width: 8%;
+        }
+
+        .col-client {
+            width: 32%;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-specialist {
+            width: 32%;
+            text-align: center;
+            vertical-align: middle;
+        }
     </style>
 
 </head>
 <body>
 <ul class="nav nav-pills justify-content-center">
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" th:href="@{/specialist/start_menu_specialist}">Меню специалиста</a>
+        <a class="nav-link active" aria-current="page" th:href="@{/specialist/start_menu_specialist}">Меню
+            специалиста</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" th:href="@{/enroll/enroll_page}">Запись клиента</a>
@@ -64,7 +84,8 @@
     <div class="container">
         <div class="row text-center text-white">
             <div class="col-12">
-                <h2 class="text-center text-white" th:text="${name} + ', здесь ты можешь увидеть список необходимых предоплат и подвердить оплату'">
+                <h2 class="text-center text-white"
+                    th:text="${name} + ', здесь ты можешь увидеть список необходимых предоплат и подвердить оплату'">
                     Привет, специалист</h2>
             </div>
         </div>
@@ -75,11 +96,13 @@
     <div class="container">
         <div class="row">
             <div th:if="${#lists.size(visitDates) > 0}">
-                <div class="alert alert-danger text-center" role="alert" style="display: flex; align-items: center; justify-content: center;">
+                <div class="alert alert-danger text-center" role="alert"
+                     style="display: flex; align-items: center; justify-content: center;">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                         <use xlink:href="#exclamation-triangle-fill"/>
                     </svg>
-                    <span style="color: firebrick;" th:text="'Внимание! Есть неоплаченные консультации, см. в таблице ниже'"></span>
+                    <span style="color: firebrick;"
+                          th:text="'Внимание! Есть неоплаченные консультации, см. в таблице ниже'"></span>
                     <br>
                 </div>
             </div>
@@ -93,81 +116,81 @@
             <!--                    <br>-->
             <!--                </div>-->
             <div class="row">
-<!--                <div class="col-md-6 col-sm-12 text-center">-->
-<!--                <div class="col-md-6 col-sm-12 text-center">-->
-<!--                    <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>-->
-<!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
-<!--                            data-bs-target="#listAssigned">-->
-<!--                        <h6 class="text-center">Подтверждение оплаты</h6>-->
-<!--                    </button>-->
-<!--                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"-->
-<!--                         aria-hidden="true">-->
-<!--                        <div class="modal-dialog">-->
-<!--                            <div class="modal-content">-->
-<!--                                <div class="modal-header bg-success text-white">-->
-<!--                                    <h5 class="modal-title" id="listAssignedLabel">Выбери клиента для подтверждения оплаты</h5>-->
-<!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--                                </div>-->
-<!--                                <div class="modal-body">-->
-<!--                                    <form th:method="POST" th:action="@{/administration/agreement}">-->
-<!--                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>-->
-<!--                                            <option value="">Список клиентов</option>-->
-<!--                                            <option th:each="client : ${listName}"-->
-<!--                                                    th:value="${client.idAppointment}"-->
-<!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
-<!--                                            </option>-->
-<!--                                        </select>-->
-<!--                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"-->
-<!--                                                role="button">Подтвердить оплату</button>-->
-<!--                                    </form>-->
-<!--                                </div>-->
-<!--                                <div class="modal-footer">-->
-<!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="line"></div>-->
-<!--                </div>-->
-                <div class="col-md-6 col-sm-12 text-center">
-                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>
-                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                            data-bs-target="#listUnregistered">
-                        <h6 class="text-center">Уже оплаченные</h6>
-                    </button>
-                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listUnregisteredLabel">Клиент отметил, что оплатил</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:method="POST" th:action="@{/administration/no_agreement}">
-                                        <select class="form-select" size="10" aria-label="Select Client"
-                                                name="agreementId" required>
-                                            <option value="">Выбери консультацию необходимую к оплате</option>
-                                            <option th:each="client : ${agreePay}"
-                                                    th:value="${client.idAppointment}"
-                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">
-                                            </option>
-                                        </select>
-                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                                role="button">Необходимо оплатить!</button>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line"></div>
-                </div>
+                <!--                <div class="col-md-6 col-sm-12 text-center">-->
+                <!--                <div class="col-md-6 col-sm-12 text-center">-->
+                <!--                    <div class="itd_circle"><i class="fa-brands fa-amazon-pay"></i></div>-->
+                <!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+                <!--                            data-bs-target="#listAssigned">-->
+                <!--                        <h6 class="text-center">Подтверждение оплаты</h6>-->
+                <!--                    </button>-->
+                <!--                    <div class="modal fade" id="listAssigned" tabindex="-1" aria-labelledby="listAssignedLabel"-->
+                <!--                         aria-hidden="true">-->
+                <!--                        <div class="modal-dialog">-->
+                <!--                            <div class="modal-content">-->
+                <!--                                <div class="modal-header bg-success text-white">-->
+                <!--                                    <h5 class="modal-title" id="listAssignedLabel">Выбери клиента для подтверждения оплаты</h5>-->
+                <!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                <!--                                </div>-->
+                <!--                                <div class="modal-body">-->
+                <!--                                    <form th:method="POST" th:action="@{/administration/agreement}">-->
+                <!--                                        <select class="form-select" aria-label="Select Client" name="agreementId" required>-->
+                <!--                                            <option value="">Список клиентов</option>-->
+                <!--                                            <option th:each="client : ${listName}"-->
+                <!--                                                    th:value="${client.idAppointment}"-->
+                <!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
+                <!--                                            </option>-->
+                <!--                                        </select>-->
+                <!--                                        <button type="submit" class="btn btn-info btn-enroll" tabindex="-1"-->
+                <!--                                                role="button">Подтвердить оплату</button>-->
+                <!--                                    </form>-->
+                <!--                                </div>-->
+                <!--                                <div class="modal-footer">-->
+                <!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+                <!--                                    </button>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                    <div class="line"></div>-->
+                <!--                </div>-->
+                <!--                <div class="col-md-6 col-sm-12 text-center">-->
+                <!--                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>-->
+                <!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+                <!--                            data-bs-target="#listUnregistered">-->
+                <!--                        <h6 class="text-center">Уже оплаченные</h6>-->
+                <!--                    </button>-->
+                <!--                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"-->
+                <!--                         aria-hidden="true">-->
+                <!--                        <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
+                <!--                            <div class="modal-content">-->
+                <!--                                <div class="modal-header bg-success text-white">-->
+                <!--                                    <h5 class="modal-title" id="listUnregisteredLabel">Клиент отметил, что оплатил</h5>-->
+                <!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+                <!--                                            aria-label="Close"></button>-->
+                <!--                                </div>-->
+                <!--                                <div class="modal-body">-->
+                <!--                                    <form th:method="POST" th:action="@{/administration/no_agreement}">-->
+                <!--                                        <select class="form-select" size="10" aria-label="Select Client"-->
+                <!--                                                name="agreementId" required>-->
+                <!--                                            <option value="">Выбери консультацию необходимую к оплате</option>-->
+                <!--                                            <option th:each="client : ${agreePay}"-->
+                <!--                                                    th:value="${client.idAppointment}"-->
+                <!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
+                <!--                                            </option>-->
+                <!--                                        </select>-->
+                <!--                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
+                <!--                                                role="button">Необходимо оплатить!</button>-->
+                <!--                                    </form>-->
+                <!--                                </div>-->
+                <!--                                <div class="modal-footer">-->
+                <!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+                <!--                                    </button>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                    <div class="line"></div>-->
+                <!--                </div>-->
                 <div class="col-md-6 col-sm-12 text-center">
                     <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>
                     <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
@@ -179,7 +202,8 @@
                         <div class="modal-dialog modal-dialog-scrollable modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listVisitorPayLabel">Список консультаций, которые клиент отметил как оплаченные</h5>
+                                    <h5 class="modal-title" id="listVisitorPayLabel">Список консультаций, которые клиент
+                                        отметил как оплаченные</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                 </div>
@@ -194,7 +218,8 @@
                                             </option>
                                         </select>
                                         <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                                role="button">Подтвердить оплату</button>
+                                                role="button">Подтвердить оплату
+                                        </button>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -215,20 +240,34 @@
             <table class="table table-secondary table-bordered table-striped">
                 <thead>
                 <tr>
-                    <th scope="col">Клиент</th>
+                    <th scope="col"></th> <!-- Колонка для дня недели -->
                     <th scope="col">Дата</th>
                     <th scope="col">Время</th>
-                    <th scope="col"></th>
+                    <th scope="col">Клиент</th>
+                    <th scope="col">Спец</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="debtors : ${listName}">
-                    <td hidden th:text="${debtors.idAppointment}"></td>
-                    <td class="col-client" th:text="${debtors.fullName}"></td>
-                    <td class="col-date" th:text="${debtors.dateAppointment}"></td>
-                    <td class="col-time" th:text="${debtors.timeAppointment}"></td>
-                    <td class="col-action">
-                        <a href="javascript:void(0)" class="confirm-slot">Подтвердить оплату</a>
+                <tr th:each="reception : ${listName}">
+                    <!-- День недели -->
+                    <td class="col-dayOfWeek" th:text="${reception.dayOfWeek}"></td>
+
+                    <!-- Дата -->
+                    <td class="col-date" th:text="${reception.formattedDate}"></td>
+
+                    <!-- Время -->
+                    <td class="col-time" th:text="${reception.timeVacant}"></td>
+
+                    <!-- Клиент: проверка оплаты -->
+                    <td class="col-client">
+                        <span th:if="${reception.prepaymentVisitor}" th:text="'оплачено'"></span>
+                        <span th:if="${!reception.prepaymentVisitor}" th:text="'НЕ оплачено'"></span>
+                    </td>
+
+                    <!-- Специалист: проверка оплаты -->
+                    <td class="col-specialist">
+                        <span th:if="${reception.prepayment}" th:text="'оплачено'"></span>
+                        <span th:if="${!reception.prepayment}" th:text="'НЕ оплачено'"></span>
                     </td>
                 </tr>
                 </tbody>
@@ -241,9 +280,9 @@
 <script th:inline="javascript">
     var csrfToken = document.querySelector('input[name="_csrf"]').value;
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         // При нажатии на запись
-        $('.confirm-slot').click(function(){
+        $('.confirm-slot').click(function () {
             var row = $(this).closest('tr');
             var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
             var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи

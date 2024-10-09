@@ -52,7 +52,7 @@ public class ReceptionService {
     }
 
     public Page<Reception> getReceptionsPage(Person specialist, Pageable pageableAp) {
-        return receptionRepository.findByDateVacantGreaterThanEqualAndSpecIdReception(LocalDate.now(), specialist, pageableAp);
+        return receptionRepository.findByDateVacantGreaterThanEqualAndSpecIdReceptionAndConfirmedSpecialist(LocalDate.now(), specialist, pageableAp, false);
     }
 
     public Reception findById(Long id) {
@@ -84,6 +84,10 @@ public class ReceptionService {
                 assignedToSpecialist.getSpecialistList(),
                 assignedToSpecialist.getVisitorList(),
                 false);
+    }
+
+    public List<Reception> findListDebitors(long id) {
+        return receptionRepository.findBySpecIdReception_IdAndPrepayment(id, false);
     }
 
 //    public List<Reception> findNeedPayReception(SpecialistsAndClient assignedToSpecialist) {

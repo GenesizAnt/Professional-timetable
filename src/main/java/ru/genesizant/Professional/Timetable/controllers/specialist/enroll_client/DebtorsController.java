@@ -9,11 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.model.Person;
+import ru.genesizant.Professional.Timetable.model.Reception;
 import ru.genesizant.Professional.Timetable.model.SpecialistAppointments;
 import ru.genesizant.Professional.Timetable.services.PersonService;
+import ru.genesizant.Professional.Timetable.services.ReceptionService;
 import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,44 +31,50 @@ public class DebtorsController {
 
     private final SpecialistAppointmentsService specialistAppointmentsService;
     private final PersonService personService;
+    private final ReceptionService receptionService;
 
     @ModelAttribute
     public void getPayloadPage(Model model, HttpServletRequest request) {
-        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
-        List<AgreementAppointmentDTO> needPay = new ArrayList<>();
-        List<AgreementAppointmentDTO> agreePay = new ArrayList<>();
-        List<AgreementAppointmentDTO> maybePay = new ArrayList<>();
-        if (!appointmentsList.isEmpty()) {
-            for (SpecialistAppointments appointments : appointmentsList) {
-                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
-                appointmentDTO.setIdAppointment(appointments.getId());
-                appointmentDTO.setFullName(appointments.getVisitorAppointments().getFullName());
-                appointmentDTO.setDateAppointment(appointments.getVisitDate());
-                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
-                    maybePay.add(appointmentDTO); //клиент подтвердил, спец нет
-                }
-                if (appointments.isPrepayment()) {
-                    agreePay.add(appointmentDTO); // спец подтвердил
-                } else {
-                    needPay.add(appointmentDTO); // ни спец ни клиент не подтвердил оплату
-                }
-            }
-            model.addAttribute("listName", needPay);
-            model.addAttribute("agreePay", agreePay);
-            model.addAttribute("maybePay", maybePay);
-        }
-        List<LocalDateTime> times = new ArrayList<>();
-        if (!appointmentsList.isEmpty()) {
-            for (SpecialistAppointments appointments : appointmentsList) {
-                if (!appointments.isPrepayment()) {
-                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
-                }
-            }
-            //ToDo здесь еще должно быть время посещения
-            //ToDo Перебор по всему списку??
-        }
-        model.addAttribute("visitDates", times);
+//        List<SpecialistAppointments> appointmentsList = specialistAppointmentsService.findAllAppointmentsBySpecialist((long) request.getSession().getAttribute("id"));
+        List<Reception> appointmentsList = receptionService.findListDebitors((long) request.getSession().getAttribute("id"));
+//        List<AgreementAppointmentDTO> needPay = new ArrayList<>();
+//        List<AgreementAppointmentDTO> agreePay = new ArrayList<>();
+//        List<AgreementAppointmentDTO> maybePay = new ArrayList<>();
+//        if (!appointmentsList.isEmpty()) {
+//            for (Reception appointments : appointmentsList) {
+//                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
+//                appointmentDTO.setIdAppointment(appointments.getId());
+//                appointmentDTO.setFullName(appointments.getVisitorAppointments().getFullName());
+//                appointmentDTO.setDateAppointment(appointments.getVisitDate());
+//                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
+//                if (appointments.isPrepaymentVisitor() && !appointments.isPrepayment()) {
+//                    maybePay.add(appointmentDTO); //клиент подтвердил, спец нет
+//                }
+//                if (appointments.isPrepayment()) {
+//                    agreePay.add(appointmentDTO); // спец подтвердил
+//                } else {
+//                    needPay.add(appointmentDTO); // ни спец ни клиент не подтвердил оплату
+//                }
+//            }
+//            model.addAttribute("agreePay", agreePay);
+//            model.addAttribute("maybePay", maybePay);
+//        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        appointmentsList.forEach(reception -> {
+            reception.setFormattedDate(reception.getDateVacant().format(formatter));
+        });
+        model.addAttribute("listName", appointmentsList);
+//        List<LocalDateTime> times = new ArrayList<>();
+//        if (!appointmentsList.isEmpty()) {
+//            for (SpecialistAppointments appointments : appointmentsList) {
+//                if (!appointments.isPrepayment()) {
+//                    times.add(appointments.getVisitDate().atTime(appointments.getAppointmentTime()));
+//                }
+//            }
+//            //ToDo здесь еще должно быть время посещения
+//            //ToDo Перебор по всему списку??
+//        }
+        model.addAttribute("visitDates", appointmentsList);
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
 
