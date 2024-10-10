@@ -249,6 +249,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="reception : ${listName}">
+                    <td hidden th:text="${reception.id}"></td>
                     <!-- День недели -->
                     <td class="col-dayOfWeek" th:text="${reception.dayOfWeek}"></td>
 
@@ -261,13 +262,13 @@
                     <!-- Клиент: проверка оплаты -->
                     <td class="col-client">
                         <span th:if="${reception.prepaymentVisitor}" th:text="'оплачено'"></span>
-                        <span th:if="${!reception.prepaymentVisitor}" th:text="'НЕ оплачено'"></span>
+                        <a th:if="${!reception.prepaymentVisitor}" class="confirm-slot2" th:data-status="visitor" href="javascript:void(0)">НЕ оплачено</a>
                     </td>
 
                     <!-- Специалист: проверка оплаты -->
                     <td class="col-specialist">
                         <span th:if="${reception.prepayment}" th:text="'оплачено'"></span>
-                        <span th:if="${!reception.prepayment}" th:text="'НЕ оплачено'"></span>
+                        <a th:if="${!reception.prepayment}" class="confirm-slot2" th:data-status="specialist" href="javascript:void(0)">НЕ оплачено</a>
                     </td>
                 </tr>
                 </tbody>
@@ -284,23 +285,65 @@
         // При нажатии на запись
         $('.confirm-slot').click(function () {
             var row = $(this).closest('tr');
+            var status = $(this).data('status');
             var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
-            var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
-            var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
-            var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
+            // var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
+            // var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
+            // var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
 
 
             // Отправляем данные на контроллер для обработки
             var applicationFromSpecialist = {
                 // specialistId: idSpecialist,
                 id: id,
-                date: date,
-                time: time,
-                client: client
+                status: status
+                // date: date,
+                // time: time,
+                // client: client
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер
             fetch("/administration/confirm", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+                    // Здесь могут быть другие заголовки, если необходимо
+                },
+                body: JSON.stringify(applicationFromSpecialist)
+            }).then(response => {
+                location.reload();
+                // Обрабатываем ответ от сервера
+            })
+                .catch(error => {
+                    // Обрабатываем ошибки при отправке запроса на сервер
+                });
+        });
+    });
+
+    $(document).ready(function () {
+        // При нажатии на запись
+        $('.confirm-slot2').click(function () {
+            var status = $(this).data('status');
+            var row = $(this).closest('tr');
+            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+            // var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
+            // var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
+            // var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
+
+
+            // Отправляем данные на контроллер для обработки
+            var applicationFromSpecialist = {
+                // specialistId: idSpecialist,
+                id: id,
+                status: status
+                // date: date,
+                // time: time,
+                // client: client
+            }; // Ваши данные для отправки на контроллер
+            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+            // Отправляем данные на сервер
+            fetch("/administration/confirm2", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

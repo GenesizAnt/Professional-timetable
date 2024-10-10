@@ -119,4 +119,12 @@ public class DebtorsController {
         return ENROLL_VIEW_REDIRECT;
     }
 
+    @PostMapping("/confirm2") // Укажите здесь URL, который соответствует URL в JavaScript запросе
+    public String handleTableClick2(@ModelAttribute("specialist") Person person,
+                                   @RequestBody Map<String, String> applicationFromSpecialist) {
+//        specialistAppointmentsService.agreementPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+        log.info("Спец: " + person.getFullName() + ". Подтвердил оплату через таблицу по консультации с ID:" + applicationFromSpecialist.get("id"));
+        return ENROLL_VIEW_REDIRECT;
+    }
+
 }
