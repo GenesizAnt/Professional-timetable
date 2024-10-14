@@ -153,84 +153,84 @@
                 <!--                    </div>-->
                 <!--                    <div class="line"></div>-->
                 <!--                </div>-->
-                <!--                <div class="col-md-6 col-sm-12 text-center">-->
-                <!--                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>-->
-                <!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
-                <!--                            data-bs-target="#listUnregistered">-->
-                <!--                        <h6 class="text-center">Уже оплаченные</h6>-->
-                <!--                    </button>-->
-                <!--                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"-->
-                <!--                         aria-hidden="true">-->
-                <!--                        <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
-                <!--                            <div class="modal-content">-->
-                <!--                                <div class="modal-header bg-success text-white">-->
-                <!--                                    <h5 class="modal-title" id="listUnregisteredLabel">Клиент отметил, что оплатил</h5>-->
-                <!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-                <!--                                            aria-label="Close"></button>-->
-                <!--                                </div>-->
-                <!--                                <div class="modal-body">-->
-                <!--                                    <form th:method="POST" th:action="@{/administration/no_agreement}">-->
-                <!--                                        <select class="form-select" size="10" aria-label="Select Client"-->
-                <!--                                                name="agreementId" required>-->
-                <!--                                            <option value="">Выбери консультацию необходимую к оплате</option>-->
-                <!--                                            <option th:each="client : ${agreePay}"-->
-                <!--                                                    th:value="${client.idAppointment}"-->
-                <!--                                                    th:text="${'Консультация на ' + client.dateAppointment + ' в ' + client.timeAppointment + ' клиента ' + client.fullName}">-->
-                <!--                                            </option>-->
-                <!--                                        </select>-->
-                <!--                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
-                <!--                                                role="button">Необходимо оплатить!</button>-->
-                <!--                                    </form>-->
-                <!--                                </div>-->
-                <!--                                <div class="modal-footer">-->
-                <!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
-                <!--                                    </button>-->
-                <!--                                </div>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-                <!--                    <div class="line"></div>-->
-                <!--                </div>-->
-                <div class="col-md-6 col-sm-12 text-center">
-                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>
-                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
-                            data-bs-target="#listVisitorPay">
-                        <h6 class="text-center">Клиент оплатил</h6>
-                    </button>
-                    <div class="modal fade" id="listVisitorPay" tabindex="-1" aria-labelledby="listVisitorPayLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="listVisitorPayLabel">Список консультаций, которые клиент
-                                        отметил как оплаченные</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:method="POST" th:action="@{/administration/agreement}">
-                                        <select class="form-select" size="10" aria-label="Select Client"
-                                                name="agreementId" required>
-                                            <option value="">Выбери консультацию для подтверждения оплаты</option>
-                                            <option th:each="appointment : ${maybePay}"
-                                                    th:value="${appointment.idAppointment}"
-                                                    th:text="${'Консультация на ' + appointment.dateAppointment + ' в ' + appointment.timeAppointment + ' клиента ' + appointment.fullName}">
-                                            </option>
-                                        </select>
-                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
-                                                role="button">Подтвердить оплату
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                <div class="col-md-6 col-sm-12 text-center">
+                                    <div class="itd_circle"><i class="fa-solid fa-comments-dollar"></i></div>
+                                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"
+                                            data-bs-target="#listUnregistered">
+                                        <h6 class="text-center">Уже оплаченные</h6>
                                     </button>
+                                    <div class="modal fade" id="listUnregistered" tabindex="-1" aria-labelledby="listUnregisteredLabel"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-success text-white">
+                                                    <h5 class="modal-title" id="listUnregisteredLabel">Клиент отметил, что оплатил</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form th:method="POST" th:action="@{/administration/no_agreement}">
+                                                        <select class="form-select" size="10" aria-label="Select Client"
+                                                                name="agreementId" required>
+                                                            <option value="">Выбери консультацию необходимую к оплате</option>
+                                                            <option th:each="client : ${agreePay}"
+                                                                    th:value="${client.id}"
+                                                                    th:text="${'Консультация на ' + client.dateVacant + ' в ' + client.timeVacant + ' клиента ' + client.visitorIdReception.fullName}">
+                                                            </option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"
+                                                                role="button">Необходимо оплатить!</button>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="line"></div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line"></div>
-                </div>
+<!--                <div class="col-md-6 col-sm-12 text-center">-->
+<!--                    <div class="itd_circle"><i class="fa-solid fa-person-circle-question"></i></div>-->
+<!--                    <button type="button" class="btn btn-primary btn-list" data-bs-toggle="modal"-->
+<!--                            data-bs-target="#listVisitorPay">-->
+<!--                        <h6 class="text-center">Клиент оплатил</h6>-->
+<!--                    </button>-->
+<!--                    <div class="modal fade" id="listVisitorPay" tabindex="-1" aria-labelledby="listVisitorPayLabel"-->
+<!--                         aria-hidden="true">-->
+<!--                        <div class="modal-dialog modal-dialog-scrollable modal-lg">-->
+<!--                            <div class="modal-content">-->
+<!--                                <div class="modal-header bg-success text-white">-->
+<!--                                    <h5 class="modal-title" id="listVisitorPayLabel">Список консультаций, которые клиент-->
+<!--                                        отметил как оплаченные</h5>-->
+<!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                            aria-label="Close"></button>-->
+<!--                                </div>-->
+<!--                                <div class="modal-body">-->
+<!--                                    <form th:method="POST" th:action="@{/administration/agreement}">-->
+<!--                                        <select class="form-select" size="10" aria-label="Select Client"-->
+<!--                                                name="agreementId" required>-->
+<!--                                            <option value="">Выбери консультацию для подтверждения оплаты</option>-->
+<!--                                            <option th:each="appointment : ${maybePay}"-->
+<!--                                                    th:value="${appointment.idAppointment}"-->
+<!--                                                    th:text="${'Консультация на ' + appointment.dateAppointment + ' в ' + appointment.timeAppointment + ' клиента ' + appointment.fullName}">-->
+<!--                                            </option>-->
+<!--                                        </select>-->
+<!--                                        <button type="submit" class="btn btn-info btn-enroll btn-sm" tabindex="-1"-->
+<!--                                                role="button">Подтвердить оплату-->
+<!--                                        </button>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                                <div class="modal-footer">-->
+<!--                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="line"></div>-->
+<!--                </div>-->
             </div>
         </div>
     </div>
@@ -262,13 +262,13 @@
                     <!-- Клиент: проверка оплаты -->
                     <td class="col-client">
                         <span th:if="${reception.prepaymentVisitor}" th:text="'оплачено'"></span>
-                        <a th:if="${!reception.prepaymentVisitor}" class="confirm-slot2" th:data-status="visitor" href="javascript:void(0)">НЕ оплачено</a>
+                        <a th:if="${!reception.prepaymentVisitor}" class="confirm-pay" th:data-status="visitor" href="javascript:void(0)">НЕ оплачено</a>
                     </td>
 
                     <!-- Специалист: проверка оплаты -->
                     <td class="col-specialist">
                         <span th:if="${reception.prepayment}" th:text="'оплачено'"></span>
-                        <a th:if="${!reception.prepayment}" class="confirm-slot2" th:data-status="specialist" href="javascript:void(0)">НЕ оплачено</a>
+                        <a th:if="${!reception.prepayment}" class="confirm-pay" th:data-status="specialist" href="javascript:void(0)">НЕ оплачено</a>
                     </td>
                 </tr>
                 </tbody>
@@ -283,7 +283,7 @@
 
     $(document).ready(function () {
         // При нажатии на запись
-        $('.confirm-slot').click(function () {
+        $('.confirm-pay').click(function () {
             var row = $(this).closest('tr');
             var status = $(this).data('status');
             var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
@@ -303,7 +303,7 @@
             }; // Ваши данные для отправки на контроллер
             // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
             // Отправляем данные на сервер
-            fetch("/administration/confirm", {
+            fetch("/administration/confirm-pay", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -321,45 +321,45 @@
         });
     });
 
-    $(document).ready(function () {
-        // При нажатии на запись
-        $('.confirm-slot2').click(function () {
-            var status = $(this).data('status');
-            var row = $(this).closest('tr');
-            var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
-            // var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
-            // var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
-            // var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
-
-
-            // Отправляем данные на контроллер для обработки
-            var applicationFromSpecialist = {
-                // specialistId: idSpecialist,
-                id: id,
-                status: status
-                // date: date,
-                // time: time,
-                // client: client
-            }; // Ваши данные для отправки на контроллер
-            // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
-            // Отправляем данные на сервер
-            fetch("/administration/confirm2", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
-                    // Здесь могут быть другие заголовки, если необходимо
-                },
-                body: JSON.stringify(applicationFromSpecialist)
-            }).then(response => {
-                location.reload();
-                // Обрабатываем ответ от сервера
-            })
-                .catch(error => {
-                    // Обрабатываем ошибки при отправке запроса на сервер
-                });
-        });
-    });
+    // $(document).ready(function () {
+    //     // При нажатии на запись
+    //     $('.confirm-slot2').click(function () {
+    //         var status = $(this).data('status');
+    //         var row = $(this).closest('tr');
+    //         var id = row.find('td:eq(0)').text(); // Получаем значение ID выбранной записи
+    //         // var date = row.find('td:eq(2)').text(); // Получаем значение даты выбранной записи
+    //         // var time = row.find('td:eq(3)').text(); // Получаем значение времени выбранной записи
+    //         // var client = row.find('td:eq(1)').text(); // Получаем значение клиента выбранной записи
+    //
+    //
+    //         // Отправляем данные на контроллер для обработки
+    //         var applicationFromSpecialist = {
+    //             // specialistId: idSpecialist,
+    //             id: id,
+    //             status: status
+    //             // date: date,
+    //             // time: time,
+    //             // client: client
+    //         }; // Ваши данные для отправки на контроллер
+    //         // Здесь вы можете заполнить объект applicationFromVisitor необходимыми данными
+    //         // Отправляем данные на сервер
+    //         fetch("/administration/confirm2", {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'X-CSRF-Token': csrfToken // Добавляем CSRF токен в заголовок запроса
+    //                 // Здесь могут быть другие заголовки, если необходимо
+    //             },
+    //             body: JSON.stringify(applicationFromSpecialist)
+    //         }).then(response => {
+    //             location.reload();
+    //             // Обрабатываем ответ от сервера
+    //         })
+    //             .catch(error => {
+    //                 // Обрабатываем ошибки при отправке запроса на сервер
+    //             });
+    //     });
+    // });
 </script>
 </body>
 </html>

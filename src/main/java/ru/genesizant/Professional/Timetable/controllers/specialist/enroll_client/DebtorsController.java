@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -64,6 +65,8 @@ public class DebtorsController {
             reception.setFormattedDate(reception.getDateVacant().format(formatter));
         });
         model.addAttribute("listName", appointmentsList);
+        List<Reception> agreePay = appointmentsList.stream().filter(reception -> reception.isPrepaymentVisitor() && !reception.isPrepayment()).toList();
+        model.addAttribute("agreePay", agreePay);
 //        List<LocalDateTime> times = new ArrayList<>();
 //        if (!appointmentsList.isEmpty()) {
 //            for (SpecialistAppointments appointments : appointmentsList) {
@@ -73,7 +76,9 @@ public class DebtorsController {
 //            }
 //            //ToDo здесь еще должно быть время посещения
 //            //ToDo Перебор по всему списку??
-//        }
+//        } agreePay
+
+
         model.addAttribute("visitDates", appointmentsList);
         model.addAttribute("name", request.getSession().getAttribute("name"));
     }
@@ -90,41 +95,49 @@ public class DebtorsController {
     }
 
     //Кнопка для подтверждения оплаты по конкретному клиенту
-    @PostMapping("/agreement")
-    public String agreementAppointment(@ModelAttribute("specialist") Person person,
-                                       @RequestParam("agreementId") String agreementId) {
-        if (!agreementId.isEmpty()) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId), Boolean.TRUE);
-            log.info("Спец: " + person.getFullName() + ". Подтвердил оплату по консультации с ID:" + agreementId);
-        }
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    @PostMapping("/agreement")
+//    public String agreementAppointment(@ModelAttribute("specialist") Person person,
+//                                       @RequestParam("agreementId") String agreementId) {
+//        if (!agreementId.isEmpty()) {
+//            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId), Boolean.TRUE);
+//            log.info("Спец: " + person.getFullName() + ". Подтвердил оплату по консультации с ID:" + agreementId);
+//        }
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
     //Кнопка для ОТМЕНЫ подтверждения оплаты по конкретному клиенту
     @PostMapping("/no_agreement")
     public String noAgreementAppointment(@ModelAttribute("specialist") Person person,
                                          @RequestParam("agreementId") String agreementId) {
         if (!agreementId.isEmpty()) {
-            specialistAppointmentsService.agreementPrePay(Long.valueOf(agreementId), Boolean.FALSE);
+            Reception reception = receptionService.findById(Long.valueOf(agreementId));
+            reception.setPrepaymentVisitor(false);
+            receptionService.save(reception);
             log.info("Спец: " + person.getFullName() + ". Отменил оплату по консультации с ID:" + agreementId);
         }
         return ENROLL_VIEW_REDIRECT;
     }
 
-    @PostMapping("/confirm") // Укажите здесь URL, который соответствует URL в JavaScript запросе
+    @PostMapping("/confirm-pay")
     public String handleTableClick(@ModelAttribute("specialist") Person person,
                                    @RequestBody Map<String, String> applicationFromSpecialist) {
-        specialistAppointmentsService.agreementPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+
+        Reception reception = receptionService.findById(Long.parseLong(applicationFromSpecialist.get("id")));
+        switch (applicationFromSpecialist.get("status")) {
+            case "visitor" -> reception.setPrepaymentVisitor(true);
+            case "specialist" -> reception.setPrepayment(true);
+        }
+        receptionService.save(reception);
         log.info("Спец: " + person.getFullName() + ". Подтвердил оплату через таблицу по консультации с ID:" + applicationFromSpecialist.get("id"));
         return ENROLL_VIEW_REDIRECT;
     }
 
-    @PostMapping("/confirm2") // Укажите здесь URL, который соответствует URL в JavaScript запросе
-    public String handleTableClick2(@ModelAttribute("specialist") Person person,
-                                   @RequestBody Map<String, String> applicationFromSpecialist) {
-//        specialistAppointmentsService.agreementPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
-        log.info("Спец: " + person.getFullName() + ". Подтвердил оплату через таблицу по консультации с ID:" + applicationFromSpecialist.get("id"));
-        return ENROLL_VIEW_REDIRECT;
-    }
+//    @PostMapping("/confirm2")
+//    public String handleTableClick2(@ModelAttribute("specialist") Person person,
+//                                   @RequestBody Map<String, String> applicationFromSpecialist) {
+////        specialistAppointmentsService.agreementPrePay(Long.valueOf(applicationFromSpecialist.get("id")), Boolean.TRUE);
+//        log.info("Спец: " + person.getFullName() + ". Подтвердил оплату через таблицу по консультации с ID:" + applicationFromSpecialist.get("id"));
+//        return ENROLL_VIEW_REDIRECT;
+//    }
 
 }

@@ -24,34 +24,36 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
     <style>
-        /*.custom-table table {*/
-        /*    width: 100%;*/
-        /*}*/
-        .custom-table table,
-        .custom-tableAp table {
+        .custom-table table {
             width: 100%;
-            /*table-layout: fixed; !* Фиксированная компоновка *!*/
-        }
-
-        .custom-table table, .custom-tableAp table {
             /*table-layout: fixed;*/
         }
 
-        /*.custom-table td {*/
-        /*    word-wrap: break-word;*/
+        .custom-tableAp table {
+            width: 100%;
+            /*table-layout: fixed;*/
+        }
+
+        /*.custom-table table, .custom-tableAp table {*/
+
         /*}*/
-        .custom-table td, .custom-tableAp td {
+
+        .custom-tableAp td {
+            word-wrap: break-word;
+        }
+
+        .custom-table td {
             word-wrap: break-word;
         }
 
         .col-dayOfWeekAp {
-            width: 9%;
+            width: 4%;
             text-align: center;
             vertical-align: middle;
         }
 
         .col-dateAp {
-            width: 30%;
+            width: 32%;
             text-align: center;
             vertical-align: middle;
         }
@@ -63,7 +65,7 @@
         }
 
         .col-clientAp {
-            width: 35%;
+            width: 38%;
             text-align: center;
             vertical-align: middle;
         }
@@ -91,8 +93,6 @@
             text-align: center;
             vertical-align: middle;
         }
-
-
     </style>
 
 </head>
