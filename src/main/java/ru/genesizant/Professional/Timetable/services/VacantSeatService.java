@@ -65,6 +65,20 @@ public class VacantSeatService {
         return timeList;
     }
 
+    public boolean isDateWithinRangeOfAppointments(String startDate, String endDate, Person id) {
+        List<VacantSeat> allVisitDatesBySpecialistId = vacantSeatRepository.findBySpecId(id);
+        LocalDate startDateObject = formatDate(startDate);
+        LocalDate endDateObject = formatDate(endDate);
+        for (VacantSeat datesAppointments : allVisitDatesBySpecialistId) {
+            LocalDate date = datesAppointments.getDateVacant();
+            if (date.isEqual(startDateObject) || date.isEqual(endDateObject)
+                    || (date.isAfter(startDateObject) && date.isBefore(endDateObject))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<VacantSeat> getVacantSeats(Person specialist) {
         List<VacantSeat> bySpecId = vacantSeatRepository.findBySpecId(specialist);
 
