@@ -4,17 +4,15 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.genesizant.Professional.Timetable.dto.AgreementAppointmentDTO;
 import ru.genesizant.Professional.Timetable.model.*;
 import ru.genesizant.Professional.Timetable.config.security.JWTUtil;
 import ru.genesizant.Professional.Timetable.services.*;
+import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,39 +23,21 @@ import java.util.Optional;
 @RequestMapping("/managed")
 public class ManagedPayController {
 
-    @Value("${error_login}")
-    private String ERROR_LOGIN;
     private final JWTUtil jwtUtil;
+    private final SendMessageService sendMessageService;
 
-    private final SpecialistAppointmentsService specialistAppointmentsService;
     private final SpecialistsAndClientService specialistsAndClientService;
     private final SpecialistPayService specialistPayService;
     private final PersonService personService;
-    private final VacantSeatService vacantSeatService;
     private final ReceptionService receptionService;
 
     @ModelAttribute
     public void getPayloadPage(Model model, HttpServletRequest request) {
         Optional<SpecialistsAndClient> assignedToSpecialist = specialistsAndClientService.findByVisitorListId((Long) request.getSession().getAttribute("id"));
-//        List<SpecialistAppointments> appointmentsList = List.of();
         Optional<SpecialistPay> specialistPay = Optional.empty();
         if (assignedToSpecialist.isPresent()) {
-//            appointmentsList = specialistAppointmentsService.findAppointmentsByVisitor((Long) request.getSession().getAttribute("id"), assignedToSpecialist.get().getSpecialistList().getId());
             specialistPay = specialistPayService.findBySpecialistPay(assignedToSpecialist.get().getSpecialistList().getId());
         }
-//        List<AgreementAppointmentDTO> needPay = new ArrayList<>();
-//        if (!appointmentsList.isEmpty()) {
-//            for (SpecialistAppointments appointments : appointmentsList) {
-//                AgreementAppointmentDTO appointmentDTO = new AgreementAppointmentDTO();
-//                appointmentDTO.setIdAppointment(appointments.getId());
-//                appointmentDTO.setDateAppointment(appointments.getVisitDate());
-//                appointmentDTO.setTimeAppointment(appointments.getAppointmentTime());
-//                if (!appointments.isPrepaymentVisitor()) {
-//                    needPay.add(appointmentDTO);
-//                }
-//            }
-//            model.addAttribute("needPay", needPay);
-//        }
 
         List<Reception> needPay = receptionService.findNeedPayReception(assignedToSpecialist.get());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -86,28 +66,13 @@ public class ManagedPayController {
         return "visitors/managed_pay";
     }
 
-    // Кнопка Подтверждение оплаты
-    @PostMapping("/make_payment")
-    public String makePayment(@ModelAttribute("visitor") Person visitor,
-                                         @RequestParam("agreementId") String agreementId) {
-        if (!agreementId.isEmpty()) {
-            specialistAppointmentsService.agreementVisitorPrePay(Long.valueOf(agreementId), Boolean.TRUE);
-            log.info("Клиент: " + visitor.getFullName() + ". Нажал кнопку подтверждение оплаты на консультацию: " + agreementId);
-        } else {
-            return ERROR_LOGIN;
-        }
-        return "redirect:/managed/managed_pay";
-    }
-
     @PostMapping("/confirm") // Укажите здесь URL, который соответствует URL в JavaScript запросе
     public String handleTableClick(@ModelAttribute("visitor") Person visitor,
                                    @RequestBody Map<String, String> applicationFromSpecialist) {
         Reception reception = receptionService.findById(Long.valueOf(applicationFromSpecialist.get("id")));
         reception.setPrepaymentVisitor(true);
         receptionService.save(reception);
-
-        //ОТПРАВКА СООБЩЕНИЕЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯ
-
+        sendMessageService.notifyPaymentFromClient(visitor.getFullName(), reception.getSpecIdReception(), reception);
         log.info("Клиент: " + visitor.getFullName() + ". Нажал кнопку подтверждение оплаты на консультацию: " + applicationFromSpecialist.get("id"));
         return "redirect:/managed/managed_pay";
     }

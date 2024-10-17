@@ -14,8 +14,6 @@ public class BaseScheduleService {
 
     private final BaseScheduleRepository baseScheduleRepository;
 
-//    public createNewBaseSchedule()
-
     public Optional<BaseSchedule> getBaseScheduleSpecialist(Person spec) {
         return baseScheduleRepository.findBySpecialistBaseSchedule(spec);
     }

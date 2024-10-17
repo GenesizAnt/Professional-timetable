@@ -72,4 +72,8 @@ public class Reception {
     public void setFormattedDate(String format) {
         this.formattedDate = format;
     }
+
+    public String getDateAndTimeReception() {
+        return String.format("%s в %s", this.dateVacant, this.timeVacant);
+    }
 }

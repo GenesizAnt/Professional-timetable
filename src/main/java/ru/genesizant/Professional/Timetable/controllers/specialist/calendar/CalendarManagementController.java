@@ -32,8 +32,6 @@ import java.util.*;
 @RequestMapping("/calendar")
 public class CalendarManagementController {
 
-    private final ObjectMapper objectMapper;
-    @Value("${error_login}")
     private final String CALENDAR_VIEW_REDIRECT = "redirect:/calendar/admission_calendar_view";
 
     private final PersonService personService;

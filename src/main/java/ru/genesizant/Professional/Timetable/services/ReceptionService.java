@@ -89,15 +89,4 @@ public class ReceptionService {
     public List<Reception> findListDebitors(long id) {
         return receptionRepository.findBySpecIdReception_IdAndPrepayment(id, false);
     }
-
-//    public Reception getReception(long id) {
-//        return receptionRepository.findById(id).orElseThrow();
-//    }
-
-//    public List<Reception> findNeedPayReception(SpecialistsAndClient assignedToSpecialist) {
-//        return receptionRepository.findBySpecIdReceptionAndAndVisitorIdReceptionAndPrepayment(
-//                assignedToSpecialist.getSpecialistList(),
-//                assignedToSpecialist.getVisitorList(),
-//                false);
-//    }
 }

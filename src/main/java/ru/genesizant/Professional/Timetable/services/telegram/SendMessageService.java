@@ -10,7 +10,6 @@ import ru.genesizant.Professional.Timetable.model.Person;
 import ru.genesizant.Professional.Timetable.model.Reception;
 import ru.genesizant.Professional.Timetable.model.VacantSeat;
 import ru.genesizant.Professional.Timetable.services.ReceptionService;
-import ru.genesizant.Professional.Timetable.services.SpecialistAppointmentsService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,7 +30,6 @@ public class SendMessageService {
     private final TelegramBot telegramBot;
 
     public void notifyCancellation(StatusPerson statusPerson, VacantSeat vacantSeat, Person specialistId) {
-        //ToDo изменить применение метода на стороне клиента
         Optional<Reception> reception = receptionService.findByVacantSeat(vacantSeat, specialistId);
         if (reception.isPresent()) {
             Optional<UserTelegram> specialist = userTelegramService.findByPersonId(specialistId.getId());
@@ -58,7 +56,6 @@ public class SendMessageService {
     }
 
     public void notifyEnrollNewAppointment(StatusPerson statusPerson, LocalDate localDate, LocalTime localTime, Long visitorId, Long specialistId) {
-        //ToDo изменить применение метода на стороне клиента
         Optional<UserTelegram> specialist = userTelegramService.findByPersonId(specialistId);
         Optional<UserTelegram> visitor = userTelegramService.findByPersonId(visitorId);
         if (visitor.isPresent() && specialist.isPresent()) {
@@ -92,10 +89,28 @@ public class SendMessageService {
         }
     }
 
+    public void notifyPaymentFromClient(String visitorFullName, Person specialist, Reception reception) {
+        Optional<UserTelegram> spec = userTelegramService.findByPersonId(specialist.getId());
+        if (spec.isPresent()) {
+            try {
+                telegramBot.execute(createMessage(spec.get().getChatId(), paymentFromClientMessage(specialist, visitorFullName, reception)));
+            } catch (TelegramApiException e) {
+                log.error("Ошибка отправки сообщения о оплате клиента: " + visitorFullName + " у специалиста " + specialist.getId());
+            }
+        }
+    }
+
     private String newClientMessage(Person specialist, Person client) {
         return String.format("%s, произошла регистрация нового клиента: %s",
                 specialist.getUsername(),
                 client.getFullName());
+    }
+
+    private String paymentFromClientMessage(Person specialist, String client, Reception reception) {
+        return String.format("%s, клиент %s отметил оплату приема на %s",
+                specialist.getUsername(),
+                client,
+                reception.getDateAndTimeReception());
     }
 
     private String enrollNewAppointmentMessage(UserTelegram recipient, UserTelegram sender, LocalDate localDate, LocalTime localTime, StatusPerson statusPerson) {

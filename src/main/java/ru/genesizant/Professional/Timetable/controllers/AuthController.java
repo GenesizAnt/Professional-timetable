@@ -21,7 +21,6 @@ import ru.genesizant.Professional.Timetable.services.PersonService;
 import ru.genesizant.Professional.Timetable.services.RegistrationService;
 import ru.genesizant.Professional.Timetable.services.SpecialistsAndClientService;
 import ru.genesizant.Professional.Timetable.services.telegram.SendMessageService;
-import ru.genesizant.Professional.Timetable.util.PersonValidator;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -58,13 +57,9 @@ public class AuthController {
                                       @RequestParam String specialistPhone) {
 
         Person person = concertPerson(personDTO, role);
-//        personValidator.validate(person, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return "/auth/registration"; //ToDo сделать прозрачный текст подсказку как вводить номер телефона
-//        }
+
         Optional<Person> specialist = personService.findSpecialistByPhoneNumber("+" + specialistPhone.trim());
         if (specialist.isEmpty() && role.equals("client")) {
-//            bindingResult.rejectValue("errorNumber", "", "Некорректный номер телефона");
             return "redirect:/auth/registration?errorNumber=" + URLEncoder.encode(specialistPhone, StandardCharsets.UTF_8);
         }
         if (personService.findByEmail(person.getEmail()).isPresent()) {
@@ -75,7 +70,7 @@ public class AuthController {
         }
 
         String jwtToken = jwtUtil.generateToken(person.getEmail());
-        session.setAttribute("jwtToken", jwtToken); // ToDo добавить в форму регистрации зарегистрироваться как специалист
+        session.setAttribute("jwtToken", jwtToken);
 
         registrationService.register(person, jwtToken);
 
