@@ -396,11 +396,10 @@
                     <td class="col-date" th:text="${vacantSeat.formattedDate}"></td>
                     <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
-                        <span th:if="${vacantSeat.idVisitor != null}">
-                            <span th:text="${vacantSeat.fullname}"></span>
-                            <a href="javascript:void(0)" class="cancel-client">(отменить)</a>
-<!--                            <a href="javascript:void(0)" class="cancel-client" th:href="@{'/enroll/cancel/' + ${vacantSeat.id}}">(отменить)</a>-->
-                        </span>
+                    <span th:if="${vacantSeat.idVisitor != null}">
+                        <span th:text="${vacantSeat.fullname}"></span>
+                        <a href="javascript:void(0)" class="cancel-client">(отменить)</a>
+                    </span>
                         <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-client">Записать</a>
                     </td>
                 </tr>
@@ -421,7 +420,7 @@
                     </li>
 
                     <!-- Генерация номеров страниц -->
-                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
                         th:classappend="${page.number == i} ? 'active'">
                         <a class="page-link" th:href="@{/enroll/vacantSeats(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
                     </li>
@@ -441,72 +440,73 @@
 
 <h5 class="text-center color1 mb-5">Приемы назначенные клиентом</h5>
 <div class="container">
-    <div class="table-responsive-sm custom-tableAp">
-        <table class="table table-secondary table-bordered table-striped">
-            <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col" style="text-align: center;">Дата</th>
-                <th scope="col" style="text-align: center;">Время</th>
-                <th scope="col" style="text-align: center;">Клиент</th>
-                <th scope="col" style="text-align: center;">Спец</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="reception : ${aproveReceptions}">
-                <td hidden th:text="${reception.id}"></td>
-                <td class="col-dayOfWeekAp" th:text="${reception.dayOfWeek}"></td>
-                <td class="col-dateAp" th:text="${reception.formattedDate}"></td>
-                <td class="col-timeAp" th:text="${reception.timeVacant}"></td>
-                <td class="col-clientAp">
+    <div class="container">
+        <div class="table-responsive-sm custom-tableAp">
+            <table class="table table-secondary table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col" style="text-align: center;">Дата</th>
+                    <th scope="col" style="text-align: center;">Время</th>
+                    <th scope="col" style="text-align: center;">Клиент</th>
+                    <th scope="col" style="text-align: center;">Спец</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reception : ${aproveReceptions}">
+                    <td hidden th:text="${reception.id}"></td>
+                    <td class="col-dayOfWeekAp" th:text="${reception.dayOfWeek}"></td>
+                    <td class="col-dateAp" th:text="${reception.formattedDate}"></td>
+                    <td class="col-timeAp" th:text="${reception.timeVacant}"></td>
+                    <td class="col-clientAp">
                     <span th:if="${reception.visitorIdReception != null}" style="display: flex; flex-direction: column; align-items: center;">
                         <span th:text="${reception.visitorIdReception.getFullName()}" style="text-align: center;"></span>
                     </span>
-                </td>
-                <td class="col-specAp">
+                    </td>
+                    <td class="col-specAp">
                     <span th:if="${reception.confirmedSpecialist == true}"
                           th:text="'Подт-но'"
                           style="color: #1196de; text-align: center;">
                         </span>
-                    <span th:if="${reception.confirmedSpecialist == false}" style="color: #ea7777; text-align: center;">
-<!--                            <span th:text="'Не подт-но'"></span>-->
-                            <a href="javascript:void(0)" class="agree-spec">Не подт-но</a>
+                        <span th:if="${reception.confirmedSpecialist == false}" style="color: #ea7777; text-align: center;">
+                        <a href="javascript:void(0)" class="agree-spec">Не подт-но</a>
                     </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <nav aria-label="Page navigation" class="pagination-container">
-            <ul class="pagination justify-content-center">
-                <!-- Условие для проверки: если данных нет -->
-                <li th:if="${pageAp.totalPages == 0}" class="page-item active">
-                    <a class="page-link">1</a>
-                </li>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation" class="pagination-container">
+                <ul class="pagination justify-content-center">
+                    <!-- Условие для проверки: если данных нет -->
+                    <li th:if="${pageAp.totalPages == 0}" class="page-item active">
+                        <a class="page-link">1</a>
+                    </li>
 
-                <!-- Если данные есть -->
-                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/enroll(pageAp=${pageAp.number - 1}, size=${param.size})}"
-                       aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
+                    <!-- Если данные есть -->
+                    <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/enroll(pageAp=${pageAp.number - 1}, size=${param.size})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
 
-                <!-- Генерация номеров страниц -->
-                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, pageAp.totalPages - 1)}"
-                    th:classappend="${pageAp.number == i} ? 'active'">
-                    <a class="page-link" th:href="@{/enroll/aproveReceptions(pageAp=${i}, size=${param.size})}"
-                       th:text="${i + 1}"></a>
-                </li>
+                    <!-- Генерация номеров страниц -->
+                    <li th:if="${pageAp.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(startPageAp, endPageAp)}"
+                        th:classappend="${pageAp.number == i} ? 'active'">
+                        <a class="page-link" th:href="@{/enroll/aproveReceptions(pageAp=${i}, size=${param.size})}"
+                           th:text="${i + 1}"></a>
+                    </li>
 
-                <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.last} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/enroll/aproveReceptions(page=${pageAp.number + 1}, size=${param.size})}"
-                       aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+                    <li th:if="${pageAp.totalPages > 0}" class="page-item" th:classappend="${pageAp.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/enroll/aproveReceptions(page=${pageAp.number + 1}, size=${param.size})}"
+                           aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 </section>

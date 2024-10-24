@@ -53,6 +53,16 @@ public class VisitorsController {
             vacantSeat.setFormattedDate(vacantSeat.getDateVacant().format(formatter));
         });
 
+
+        int totalPages = vacantSeatsPage.getTotalPages();
+        int currentPage = vacantSeatsPage.getNumber();
+        int visiblePages = 5; // Количество отображаемых страниц
+
+        int startPage = Math.max(0, currentPage - visiblePages / 2);
+        int endPage = Math.min(totalPages - 1, startPage + visiblePages - 1);
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("vacantSeatsVisitor", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
     }

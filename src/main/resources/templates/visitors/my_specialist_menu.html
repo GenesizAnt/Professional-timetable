@@ -233,10 +233,10 @@
                     <td class="col-date" th:text="${vacantSeat.formattedDate}"></td>
                     <td class="col-time" th:text="${vacantSeat.timeVacant}"></td>
                     <td class="col-client">
-                        <span th:if="${vacantSeat.idVisitor != null}">
-                            <span>Вы записаны</span>
-                            <a href="javascript:void(0)" class="cancel-visitor">(отменить)</a>
-                        </span>
+                    <span th:if="${vacantSeat.idVisitor != null}">
+                        <span>Вы записаны</span>
+                        <a href="javascript:void(0)" class="cancel-visitor">(отменить)</a>
+                    </span>
                         <a th:if="${vacantSeat.idVisitor == null}" href="javascript:void(0)" class="record-visitor">Записаться</a>
                     </td>
                 </tr>
@@ -257,7 +257,7 @@
                     </li>
 
                     <!-- Генерация номеров страниц -->
-                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                    <li th:if="${page.totalPages > 0}" class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
                         th:classappend="${page.number == i} ? 'active'">
                         <a class="page-link" th:href="@{/visitors/vacantSeatsVisitor(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
                     </li>

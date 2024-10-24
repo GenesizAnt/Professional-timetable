@@ -65,6 +65,17 @@ public class EnrollClientController {
             vacantSeat.setFormattedDate(vacantSeat.getDateVacant().format(formatter));
         });
 
+        int totalPages = vacantSeatsPage.getTotalPages();
+        int currentPage = vacantSeatsPage.getNumber();
+        int visiblePages = 5; // Количество отображаемых страниц
+
+        int startPage = Math.max(0, currentPage - visiblePages / 2);
+        int endPage = Math.min(totalPages - 1, startPage + visiblePages - 1);
+
+        // Передайте эти значения в модель
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
         model.addAttribute("vacantSeats", vacantSeatsPage.getContent());
         model.addAttribute("page", vacantSeatsPage);
 
@@ -78,6 +89,17 @@ public class EnrollClientController {
         aproveReceptions.getContent().forEach(reception -> {
             reception.setFormattedDate(reception.getDateVacant().format(formatterReceptions));
         });
+
+        int totalPagesAp = aproveReceptions.getTotalPages();
+        int currentPageAp = aproveReceptions.getNumber();
+        int visiblePagesAp = 5; // Количество отображаемых страниц
+
+        int startPageAp = Math.max(0, currentPageAp - visiblePagesAp / 2);
+        int endPageAp = Math.min(totalPagesAp - 1, startPageAp + visiblePagesAp - 1);
+
+// Передайте эти значения в модель
+        model.addAttribute("startPageAp", startPageAp);
+        model.addAttribute("endPageAp", endPageAp);
 
         model.addAttribute("aproveReceptions", aproveReceptions.getContent());
         model.addAttribute("pageAp", aproveReceptions);
