@@ -126,6 +126,14 @@ public class SpecialistProfileController {
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
+    @PostMapping("/editTemplate")
+    public void editTemplateSchedule(@ModelAttribute("specialist") Person specialist,
+                                     @RequestParam("editParam") String editParam,
+                                     @RequestParam("scheduleId") String scheduleId,
+                                     @RequestParam("editParameter") String editParameter) {
+        System.out.println();
+    }
+
     private void updateSchedule(Integer countDays, Boolean monday, Boolean tuesday, Boolean wednesday, Boolean thursday, Boolean friday, Boolean saturday, Boolean sunday, Person specialist, LocalTime startTime, LocalTime endTime, LocalTime minInterval, BaseSchedule baseSchedule) {
         baseSchedule.setStartTime(startTime);
         baseSchedule.setEndTime(endTime);
