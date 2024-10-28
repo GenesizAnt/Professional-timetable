@@ -159,13 +159,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editStartTimeForm" th:action="@{/spec_profile/editTemplate}" method="post">
+                    <form id="editStartTimeForm" th:action="@{/spec_profile/editStartTime}" method="post">
                         <div class="mb-3">
                             <label for="newStartTime" class="form-label">Новое время начала:</label>
-                            <input type="text" class="form-control" id="newStartTime" name="editParameter" required>
+                            <input type="time" class="form-control" id="newStartTime" name="newStartTime" required>
                         </div>
                         <input type="hidden" name="scheduleId" th:value="${schedule.id}">
-                        <input type="hidden" th:name="editParam" th:value="startTime"/>
                         <button type="submit" class="btn btn-primary">Сохранить</button>
                     </form>
                 </div>
@@ -196,13 +195,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editEndTimeForm" th:action="@{/spec_profile/editTemplate}" method="post">
+                    <form id="editEndTimeForm" th:action="@{/spec_profile/editEndTime}" method="post">
                         <div class="mb-3">
                             <label for="newEndTime" class="form-label">Новое время окончания:</label>
-                            <input type="text" class="form-control" id="newEndTime" name="editParameter" required>
+                            <input type="time" class="form-control" id="newEndTime" name="newEndTime" required>
                         </div>
                         <input type="hidden" name="scheduleId" th:value="${schedule.id}">
-                        <input type="hidden" th:name="editParam" th:value="endTime"/>
                         <button type="submit" class="btn btn-primary">Сохранить</button>
                     </form>
                 </div>
@@ -232,13 +230,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editIntervalTimeForm" th:action="@{/spec_profile/editTemplate}" method="post">
+                    <form id="editIntervalTimeForm" th:action="@{/spec_profile/editInterval}" method="post">
                         <div class="mb-3">
                             <label for="intervalTime" class="form-label">Новое время окончания:</label>
-                            <input type="text" class="form-control" id="intervalTime" name="editParameter" required>
+                            <input type="time" class="form-control" id="intervalTime" name="editInterval" required>
                         </div>
                         <input type="hidden" name="scheduleId" th:value="${schedule.id}">
-                        <input type="hidden" th:name="editParam" th:value="interval"/>
                         <button type="submit" class="btn btn-primary">Сохранить</button>
                     </form>
                 </div>
@@ -247,13 +244,37 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <label><strong>Кол-во дней для применения шаблона</strong></label>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-4">
             <span th:if="${schedule != null and schedule.countDays != null}"
                               th:text="${schedule.countDays}"></span>
             <span th:if="${schedule == null or schedule.countDays == null}">Не указано</span>
+        </div>
+        <div class="col-12 col-md-2 d-flex justify-content-end">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editCountDayModal">Изменить</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editCountDayModal" tabindex="-1" aria-labelledby="editCountDayLable" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCountDayLable">Изменить время окончания приемов</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCountDayForm" th:action="@{/spec_profile/editCountDay}" method="post">
+                        <div class="mb-3">
+                            <label for="countDay" class="form-label">Новое время окончания:</label>
+                            <input type="number" class="form-control" id="countDay" name="editCountDay" required>
+                        </div>
+                        <input type="hidden" name="scheduleId" th:value="${schedule.id}">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -271,6 +292,59 @@
                 <li th:if="${schedule != null and schedule.saturday}">Суббота</li>
                 <li th:if="${schedule != null and schedule.sunday}">Воскресенье</li>
             </ul>
+        </div>
+        <div class="col-12 col-md-2 d-flex justify-content-end">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editHolidayModal">Изменить</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editHolidayModal" tabindex="-1" aria-labelledby="editHolidayLable" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editHolidayLable">Изменить время окончания приемов</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editHolidayForm" th:action="@{/spec_profile/editHoliday}" method="post">
+                        <div class="mb-3">
+                            <label for="countDay" class="form-label">Новое время окончания:</label>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="monday">
+                                    <label class="form-check-label">Понедельник</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="tuesday">
+                                    <label class="form-check-label">Вторник</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="wednesday">
+                                    <label class="form-check-label">Среда</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="thursday">
+                                    <label class="form-check-label">Четверг</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="friday">
+                                    <label class="form-check-label">Пятница</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="saturday">
+                                    <label class="form-check-label">Суббота</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sunday">
+                                    <label class="form-check-label">Воскресенье</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="scheduleId" th:value="${schedule.id}">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

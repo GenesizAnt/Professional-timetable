@@ -26,4 +26,8 @@ public class BaseScheduleService {
         Optional<BaseSchedule> schedule = baseScheduleRepository.findBySpecialistBaseSchedule(specialist);
         return schedule.isPresent();
     }
+
+    public Optional<BaseSchedule> findById(Long valueOf) {
+        return baseScheduleRepository.findById(valueOf);
+    }
 }

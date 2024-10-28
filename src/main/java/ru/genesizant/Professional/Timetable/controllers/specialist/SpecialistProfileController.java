@@ -126,12 +126,85 @@ public class SpecialistProfileController {
         return PROFILE_SPEC_VIEW_REDIRECT;
     }
 
-    @PostMapping("/editTemplate")
-    public void editTemplateSchedule(@ModelAttribute("specialist") Person specialist,
-                                     @RequestParam("editParam") String editParam,
-                                     @RequestParam("scheduleId") String scheduleId,
-                                     @RequestParam("editParameter") String editParameter) {
-        System.out.println();
+    @PostMapping("/editStartTime")
+    public String editStartTime(@ModelAttribute("specialist") Person specialist,
+                              @RequestParam("newStartTime") LocalTime newStartTime,
+                              @RequestParam("scheduleId") String scheduleId) {
+        Optional<BaseSchedule> editTemplate = baseScheduleService.findById(Long.valueOf(scheduleId));
+        if (editTemplate.isPresent()) {
+            editTemplate.get().setStartTime(newStartTime);
+            baseScheduleService.saveBaseSchedule(editTemplate.get());
+            return PROFILE_SPEC_VIEW_REDIRECT;
+        } else {
+            return encodeError("Шаблон расписания еще не создан!");
+        }
+    }
+
+    @PostMapping("/editEndTime")
+    public String editEndTime(@ModelAttribute("specialist") Person specialist,
+                                @RequestParam("newEndTime") LocalTime newEndTime,
+                                @RequestParam("scheduleId") String scheduleId) {
+        Optional<BaseSchedule> editTemplate = baseScheduleService.findById(Long.valueOf(scheduleId));
+        if (editTemplate.isPresent()) {
+            editTemplate.get().setEndTime(newEndTime);
+            baseScheduleService.saveBaseSchedule(editTemplate.get());
+            return PROFILE_SPEC_VIEW_REDIRECT;
+        } else {
+            return encodeError("Шаблон расписания еще не создан!");
+        }
+    }
+
+    @PostMapping("/editCountDay")
+    public String editCountDay(@ModelAttribute("specialist") Person specialist,
+                              @RequestParam("editCountDay") Integer editCountDay,
+                              @RequestParam("scheduleId") String scheduleId) {
+        Optional<BaseSchedule> editTemplate = baseScheduleService.findById(Long.valueOf(scheduleId));
+        if (editTemplate.isPresent()) {
+            editTemplate.get().setCountDays(editCountDay);
+            baseScheduleService.saveBaseSchedule(editTemplate.get());
+            return PROFILE_SPEC_VIEW_REDIRECT;
+        } else {
+            return encodeError("Шаблон расписания еще не создан!");
+        }
+    }
+    @PostMapping("/editInterval")
+    public String editInterval(@ModelAttribute("specialist") Person specialist,
+                              @RequestParam("editInterval") LocalTime editInterval,
+                              @RequestParam("scheduleId") String scheduleId) {
+        Optional<BaseSchedule> editTemplate = baseScheduleService.findById(Long.valueOf(scheduleId));
+        if (editTemplate.isPresent()) {
+            editTemplate.get().setMinInterval(editInterval);
+            baseScheduleService.saveBaseSchedule(editTemplate.get());
+            return PROFILE_SPEC_VIEW_REDIRECT;
+        } else {
+            return encodeError("Шаблон расписания еще не создан!");
+        }
+    }
+
+    @PostMapping("/editHoliday")
+    public String editHoliday(@ModelAttribute("specialist") Person specialist,
+                              @RequestParam(value = "monday", required = false) Boolean monday,
+                              @RequestParam(value = "tuesday", required = false) Boolean tuesday,
+                              @RequestParam(value = "wednesday", required = false) Boolean wednesday,
+                              @RequestParam(value = "thursday", required = false) Boolean thursday,
+                              @RequestParam(value = "friday", required = false) Boolean friday,
+                              @RequestParam(value = "saturday", required = false) Boolean saturday,
+                              @RequestParam(value = "sunday", required = false) Boolean sunday,
+                               @RequestParam("scheduleId") String scheduleId) {
+        Optional<BaseSchedule> editTemplate = baseScheduleService.findById(Long.valueOf(scheduleId));
+        if (editTemplate.isPresent()) {
+            editTemplate.get().setMonday(monday != null && monday);
+            editTemplate.get().setTuesday(tuesday != null && tuesday);
+            editTemplate.get().setWednesday(wednesday != null && wednesday);
+            editTemplate.get().setThursday(thursday != null && thursday);
+            editTemplate.get().setFriday(friday != null && friday);
+            editTemplate.get().setSaturday(saturday != null && saturday);
+            editTemplate.get().setSunday(sunday != null && sunday);
+            baseScheduleService.saveBaseSchedule(editTemplate.get());
+            return PROFILE_SPEC_VIEW_REDIRECT;
+        } else {
+            return encodeError("Шаблон расписания еще не создан!");
+        }
     }
 
     private void updateSchedule(Integer countDays, Boolean monday, Boolean tuesday, Boolean wednesday, Boolean thursday, Boolean friday, Boolean saturday, Boolean sunday, Person specialist, LocalTime startTime, LocalTime endTime, LocalTime minInterval, BaseSchedule baseSchedule) {

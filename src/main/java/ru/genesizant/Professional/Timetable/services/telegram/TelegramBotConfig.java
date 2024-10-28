@@ -22,11 +22,11 @@ public class TelegramBotConfig {
 
     @EventListener(ContextRefreshedEvent.class)
     public void init() {
-//        try {
-//            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-//            telegramBotsApi.registerBot(telegramBot);
-//        } catch (TelegramApiException e) {
-//            log.error("Ошибка создания ТГ бота. Текст ошибки: " + e.getMessage());
-//        }
+        try {
+            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(telegramBot);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка создания ТГ бота. Текст ошибки: " + e.getMessage());
+        }
     }
 }
